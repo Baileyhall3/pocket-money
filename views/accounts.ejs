@@ -1,0 +1,62 @@
+<% layout('layout') %>
+<div class="content-wrapper">
+    <div style="width: 80%; margin-top: 40px;">
+        <div class="container-header">
+            <h2>My Accounts</h2>
+            <h3><a class="link" onclick="openModal('newAccountModal')" href="#" id="addAccount">Add New</a></h3>
+        </div>
+            <% if (accounts.length > 0) { %>
+                <% accounts.forEach((account)=> { %>
+                    <div class="account-container container-rounded-pointer">
+                        <div class="account-chart-container">
+                            <canvas id="account1-chart"></canvas>
+                        </div>
+                        <div class="account-details">
+                            <h5 class="account-title">
+                                <%= account.name %>
+                                <% if (account.sharedWithId) { %>
+                                    - shared with <%= account.sharedWithId %>
+                                <% } %>
+                            </h5>
+                            <div class="transaction">
+                                <div class="money-bar-header">
+                                    <h5 style="font-size: 18px; margin: 0; color: rgb(131, 131, 131);">Greggs</h5>
+                                    <p style="font-size: 20px; margin: 0;">- £3.40</p>
+                                </div>
+                                <div class="money-bar-header" style="margin-bottom: 20px;">
+                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Food</h5>
+                                    <p style="font-size: 14px; margin: 0;">4 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="transaction">
+                                <div class="money-bar-header">
+                                    <h5 style="font-size: 18px; margin: 0; color: rgb(131, 131, 131);">Pizza Grande</h5>
+                                    <p style="font-size: 20px; margin: 0;">- £44.40</p>
+                                </div>
+                                <div class="money-bar-header" style="margin-bottom: 20px;">
+                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Food</h5>
+                                    <p style="font-size: 14px; margin: 0;">Yesterday</p>
+                                </div>
+                            </div>
+                            <div class="transaction">
+                                <div class="money-bar-header">
+                                    <h5 style="font-size: 18px; margin: 0;">Deposit</h5>
+                                    <p style="font-size: 20px; margin: 0; color: #45a049">£2,000</p>
+                                </div>
+                                <div class="money-bar-header" style="margin-bottom: 20px;">
+                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Paycheck</h5>
+                                    <p style="font-size: 14px; margin: 0;">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="account-container container-rounded-pointer">
+                    No accounts created yet! Let's create one
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>

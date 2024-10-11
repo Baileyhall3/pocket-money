@@ -37,7 +37,7 @@ p {
     width: 250px; /* Sidebar width */
     background-color: #f4f4f9;
     padding: 10px;
-    transition: width 0.3s ease; /* Smooth collapse/expand */
+    transition: width 0.3s ease;
     z-index: 100;
 }
 
@@ -78,6 +78,14 @@ p {
     transform: rotate(180deg);
 }
 
+.side-nav.collapsed .nav-menu li a {
+    display: none; /* Hide menu text */
+}
+
+.side-nav.collapsed .profile-dropdown-container {
+    display: none; /* Hide profile dropdown when collapsed */
+}
+
 /* Navigation menu */
 .nav-menu {
     margin-top: 50px; /* Spacing between logo and menu items */
@@ -101,22 +109,6 @@ p {
     transition: color 0.3s ease;
 }
 
-/* Collapse button styling */
-.collapse-btn {
-    position: absolute;
-    top: 15px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-    color: black;
-    transition: transform 0.3s ease;
-}
-
-/* Collapse button when collapsed */
-.side-nav.collapsed .collapse-btn {
-    transform: rotate(180deg);
-}
-
 .link.active {
     background-color: #f3f3ff; /* Lighter background color */
     color: black; /* Active text color */
@@ -133,6 +125,65 @@ p {
     border-radius: 15px; /* Ensure the rounded effect on hover */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow on hover */
     transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+/* Profile button styling */
+.profile-btn {
+    display: flex;
+    align-items: center;
+    background-color: #f4f4f9;
+    border: none;
+    padding: 10px 15px;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+/* Profile button icon and text alignment */
+.profile-btn i {
+    font-size: 22px; /* Make icon bigger */
+    margin-right: 10px;
+}
+
+.profile-btn span {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.icon-buttons {
+    position: absolute;
+    top: 15px;
+    right: 40px;
+    display: flex;
+    gap: 15px;
+}
+
+/* Right buttons */
+.icon-btn {
+    background-color: #f4f4f9;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+.icon-btn i {
+    font-size: 18px;
+    color: #333;
+}
+
+/* Hover state for the icon button */
+.icon-btn:hover {
+    background-color: #e0e0e5;
 }
 
 .dropdown {
@@ -325,10 +376,52 @@ li {
     border-bottom: 1px solid #555; /* Darker borders */
 }
 
+.alerts-btn {
+    padding: 2px 5px;
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 .transaction {
     margin-top: 20px;
     margin-bottom: 20px;
     border-top: 1px solid rgb(131 131 131);
+}
+
+.chart-wrapper {
+    display: flex; 
+    justify-content: space-between; 
+    gap: 40px; 
+    margin-top: 70px;
+}
+
+.savings-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows the items to wrap to the next row */
+    gap: 40px;
+    width: 100%;
+    justify-content: flex-start; /* Align the items to the start of the container */
+}
+
+
+.side-container {
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s ease, box-shadow 0.6s ease;
+    cursor: pointer;
+    overflow: hidden;
+    width: 20%;
+    max-width: 200px;
+}
+
+.side-container:hover {
+    transform: scale(1.05); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
 
 .money-bar-header {
@@ -432,15 +525,6 @@ li {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
     position: relative;
-}
-
-.content-wrapper {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 80%;
-    margin-left: 200px;
 }
 
 .charts-wrapper {
@@ -778,6 +862,62 @@ li {
     font-weight: 100;
 }
 
+
+.account-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    /* width: 100%; */
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%; /* Make the wrapper wider */
+    margin: 0 auto; /* Center the wrapper */
+    margin-left: 200px;
+    transition: margin-left 0.3s ease;
+}
+
+.account-chart-container {
+    width: 50%;
+    height: auto;
+}
+
+.account-details {
+    width: 45%;
+}
+
+.transaction {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-top: 1px solid rgb(131, 131, 131);
+    padding-top: 10px;
+}
+
+.money-bar-header {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.truncate {
+    text-overflow: ellipsis;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+canvas {
+    max-width: 100%; /* Ensure canvas doesn't overflow */
+}
 
 /* Mobile-specific Styles */
 @media (max-width: 768px) {

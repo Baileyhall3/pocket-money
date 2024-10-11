@@ -1,0 +1,56 @@
+<nav class="side-nav" id="side-nav">
+    <div class="nav-logo">
+        <h2 style="margin-top: 5px; margin-bottom: 5px;">
+            <a class="nav-title" style="color: black;" href="/">Pocket Money</a>
+        </h2>
+    </div>
+
+    <!-- Collapse Button -->
+    <div class="collapse-btn" id="collapse-btn">&#9776;</div> <!-- Hamburger Icon -->
+
+    <div class="profile-dropdown-container">
+        <div class="dropdown">
+            <button class="profile-btn" id="profile-btn">
+                <i class="fa fa-user"></i>
+                <span id="user-name"><%= user.firstName %></span>
+            </button>
+            <div class="dropdown-content left" id="profile-dropdown">
+                <a href="#">My Profile</a>
+                <a href="#" id="logout">Log out</a>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav-menu">
+        <li><a id="home-link" href="/" class="link"><i class="fa fa-home"></i> Dashboard</a></li>
+        <li><a id="savings-link" href="savings" class="link"><i class="fa fa-bank"></i> Savings</a></li>
+        <li><a id="accounts-link" href="accounts" class="link"><i class="fa fa-credit-card"></i> Accounts</a></li>
+        <li><a id="reports-link" href="#" class="link"><i class="fa fa-bar-chart"></i> Reports</a></li>
+        <li><a id="transactions-link" href="#" class="link"><i class="fa fa-exchange"></i> Transactions</a></li>
+        <li><a id="settings-link" href="#" class="link"><i class="fa fa-cog"></i> Settings</a></li>
+    </ul>
+</nav>
+
+<!-- Right-aligned icon buttons -->
+<div class="icon-buttons">
+    <div class="dropdown">
+        <button class="icon-btn" id="add-btn">
+            <i class="fa fa-plus"></i> <!-- Plus Icon -->
+        </button>
+        <div class="dropdown-content right" id="add-dropdown">
+            <a href="#">Add Account</a>
+            <a href="#">New Pot</a>
+            <a href="#">New Budget</a>
+            <a href="#">Log Transaction</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <button class="icon-btn" id="alerts-btn">
+            <i class="fa fa-bell"></i>
+        </button>
+        <div class="dropdown-content right alerts-dropdown" id="alerts-dropdown">
+            <!-- Alert items here -->
+        </div>
+    </div>
+</div>

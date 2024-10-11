@@ -1,0 +1,74 @@
+<% layout('layout') %>
+<div class="content-wrapper">
+    <div style="margin-left: 100px;">
+        <div class="chart-wrapper" style="width: 1360px;">
+            <!-- Savings History Chart -->
+            <div class="chart-container" style="width: 60%;">
+                <h3>Savings History</h3>
+                <canvas id="savings-chart"></canvas>
+            </div>
+
+            <!-- Savings by Account Chart -->
+            <div class="chart-container" style="width: 500px;">
+                <h3>Savings by Account</h3>
+                <canvas id="savingsByAccountChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <div style="max-width: 1360px;">
+            <div style="margin-bottom: 30px; align-self: self-start;">
+                <div class="container-header">
+                    <h2>My Pots</h2>
+                    <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
+                </div>
+                <div class="savings-container">
+                    <% if (pots.length > 0) { %>
+                        <% pots.forEach((pot)=> { %>
+                            <div class="side-container" data-type="pot">
+                                <h5 style="font-size: 16px">
+                                    <%= pot.name %>
+                                    <% if (pot.sharedWithId) { %>
+                                        - shared with <%= pot.sharedWithId %>
+                                    <% } %>
+                                </h5>
+                                <h5 style="font-size: 18px; color: #45a049;">£550 out of £<%= pot.targetAmount %></h5>
+                                <canvas id="pot1-chart"></canvas>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div>
+                            No pots created. Let's create one!
+                        </div>
+                    <% } %>
+                </div>  
+            </div>
+            
+            <div style="margin-bottom: 30px; align-self: self-start;">
+                <div class="container-header">
+                    <h2>My Budgets</h2>
+                    <h3><a id="addBudget" onclick="openModal('newBudgetModal')" class="link" href="#">Add New</a></h3>
+                </div>
+                <div class="savings-container">
+                    <% if (budgets.length > 0) { %>
+                        <% budgets.forEach((budget)=> { %>
+                            <div class="side-container" data-type="budget">
+                                <h5 style="font-size: 16px">
+                                    <%= budget.name %>
+                                    <% if (budget.sharedWithId) { %>
+                                        - shared with <%= budget.sharedWithId %>
+                                    <% } %>
+                                </h5>
+                                <h5 style="font-size: 18px; color: #45a049;">£550 out of £<%= budget.amount %></h5>
+                                <canvas id="budget1-chart"></canvas>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div>
+                            No budgets created. Let's create one!
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
