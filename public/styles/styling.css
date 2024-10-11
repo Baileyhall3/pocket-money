@@ -1,0 +1,825 @@
+@import url('https://fonts.googleapis.com/css2?family=Playball&family=Playwrite+IS:wght@100..400&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    /* background-color: #f7f7f7; */
+    display: flex;
+    justify-content: center;
+    /* align-items: flex-start; */
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+h5 {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+p {
+    color: rgb(131 131 131);
+}
+
+.nav-title {
+    font-weight: 100;
+    font-family: "Playball", cursive;
+    font-size: 36px;
+    color: black; /* Updated to remove white color */
+    text-decoration: none;
+}
+
+/* Sidebar container */
+.side-nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 250px; /* Sidebar width */
+    background-color: #f4f4f9;
+    padding: 10px;
+    transition: width 0.3s ease; /* Smooth collapse/expand */
+    z-index: 100;
+}
+
+/* Hiding the content (logo, links) when collapsed */
+.side-nav.collapsed {
+    width: 50px;
+}
+
+/* Hide the logo and links content when collapsed */
+.side-nav.collapsed .nav-logo,
+.side-nav.collapsed .nav-menu {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Show content again when expanded */
+.side-nav .nav-logo,
+.side-nav .nav-menu {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Collapse button styling */
+.collapse-btn {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: black;
+    transition: transform 0.3s ease;
+}
+
+/* Rotate button when collapsed */
+.side-nav.collapsed .collapse-btn {
+    transform: rotate(180deg);
+}
+
+/* Navigation menu */
+.nav-menu {
+    margin-top: 50px; /* Spacing between logo and menu items */
+}
+
+.nav-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.nav-menu ul li {
+    margin-bottom: 20px; /* Spacing between links */
+}
+
+.link {
+    text-decoration: none;
+    color: black; /* Normal link color */
+    display: block;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: color 0.3s ease;
+}
+
+/* Collapse button styling */
+.collapse-btn {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: black;
+    transition: transform 0.3s ease;
+}
+
+/* Collapse button when collapsed */
+.side-nav.collapsed .collapse-btn {
+    transform: rotate(180deg);
+}
+
+.link.active {
+    background-color: #f3f3ff; /* Lighter background color */
+    color: black; /* Active text color */
+    border-radius: 15px; /* Rounded container */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow */
+    padding: 10px 15px; /* Padding to make the container more prominent */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for all links, including the active one */
+.link:hover {
+    background-color: #f3f3ff; /* Same lighter background on hover */
+    color: black; /* Hover text color */
+    border-radius: 15px; /* Ensure the rounded effect on hover */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow on hover */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    padding: 20px;
+}
+
+.sidebar {
+    width: 200px; /* Initial sidebar width */
+    transition: width 0.2s;
+    min-width: 200px; /* Minimum width for the sidebar */
+    max-width: 500px; /* Maximum width for the sidebar */
+    margin-top: 40px;
+}
+.sidebar h3 {
+    margin-top: 0;
+}
+.sidebar input,
+.sidebar button,
+.sidebar select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.divider {
+    width: 10px; /* Thicker divider */
+    cursor: col-resize;
+    background-color: #ccc;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 50px;
+}
+
+.divider:hover {
+    background-color: #aaa;
+}
+
+.divider .arrow-left,
+.divider .arrow-right {
+    font-size: 12px;
+    color: #333;
+    position: absolute;
+}
+
+.divider .arrow-left {
+    left: 2px;
+}
+
+.divider .arrow-right {
+    right: 2px;
+}
+
+.content {
+    flex-grow: 1;
+    padding-left: 20px;
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.total-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0;
+}
+
+#money-bar {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #ffffff;
+    position: relative;
+}
+
+.money-pot {
+    height: 100%;
+    display: flex;
+    position: relative;
+    transition: width 0.5s;
+    cursor: grab;
+}
+
+.money-pot:active {
+    cursor: grabbing;
+}
+
+.actual-value {
+    height: 100%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.money-pot:not(:first-child) {
+    margin-left: 2px;
+}
+
+/* Global colours */
+.remaining {
+    background-color: #A9A9A9;
+}
+
+.expense {
+    color: rgb(131, 131, 131);
+}
+
+.income {
+    color: #45a049;
+}
+
+.delete-btn {
+    cursor: pointer;
+    color: red;
+    margin-left: 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.container-rounded {
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container-rounded-pointer {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s ease, box-shadow 0.6s ease;
+    cursor: pointer;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.container-rounded-pointer:hover {
+    transform: scale(1.02); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
+}
+
+/* Dark Mode Styling */
+.dark-mode {
+    background-color: #1a1a1a;  /* Dark background */
+    color: white;  /* White text */
+}
+
+/* Dark Mode for containers */
+.dark-mode .icon-btn {
+    background-color: #333333; /* Dark grey container */
+}
+
+.dark-mode .dropdown-content {
+    background-color: #333333; /* Dark grey dropdown */
+}
+
+.dark-mode a {
+    color: white; /* White links in dark mode */
+}
+
+.dark-mode .alert-item, 
+.dark-mode .dropdown-content a {
+    border-bottom: 1px solid #555; /* Darker borders */
+}
+
+.transaction {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-top: 1px solid rgb(131 131 131);
+}
+
+.money-bar-header {
+    justify-content: space-between; 
+    display: flex; 
+    align-items: center; 
+    /* margin-bottom: 5px; */
+}
+
+/* Styling for the dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f4f4f9;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 10px;
+    min-width: 160px;
+    z-index: 1;
+}
+
+.left {
+    left: 0;
+}
+
+.right {
+    right: 0;
+}
+
+/* Dropdown link styling */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Last item without border */
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+/* Hover effect */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown on button click */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.money-pot {
+    height: 100%;
+    display: flex;
+    position: relative;
+    transition: width 0.5s;
+}
+
+.money-pot .actual-value {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    position: absolute;
+    width: 100%;
+}
+
+.money-pot.red {
+    background-color: rgb(131, 131, 131);
+}
+
+.money-pot.green {
+    background-color: rgb(69, 160, 73);;
+}
+
+.remaining {
+    background-color: rgb(200, 200, 200);
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+    width: calc(100% - 40px);
+    margin-top: 70px;
+    gap: 20px;
+    transition: margin-left 0.3s ease;
+}
+
+.chart-container {
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    margin-left: 200px;
+}
+
+.charts-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 40px;
+}
+
+.transaction-section {
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; 
+    width: 30%; 
+    margin-right: 40px;
+    margin-left: 40px;
+}
+
+/* Transaction list item styling */
+.transaction {
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.transaction-sub {
+    display: flex;
+    justify-content: space-between;
+    color: gray;
+    font-size: 14px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid #36A2EB;
+    background-color: #36A2EB;
+    color: white;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.marker-container {
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+}
+
+/* Thin vertical line for "today" */
+.today-marker {
+    position: absolute;
+    width: 1px;
+    background-color: black;
+    height: 60px;
+    top: -10px; /* Extending above and below the bar */
+}
+
+.today-label {
+    position: absolute;
+    color: black;
+    font-size: 12px;
+    top: -20px;
+    transform: translateX(-50%); /* Center the label over the line */
+}
+
+.charts {
+    width: 80%;
+}
+
+.chart1 {
+    width: 100% !important;
+    height: 100% !important; /* Set height for the canvas */
+    max-height: 400px;
+}
+
+.transaction-name {
+    font-size: 18px; 
+    margin: 0; 
+}
+
+.transaction-amount {
+    font-size: 20px; 
+    margin: 0;
+}
+
+.transaction-category {
+    font-size: 16px; 
+    margin: 0; 
+    font-weight: 100;
+}
+
+.transaction-time {
+    font-size: 14px; 
+    margin: 0;
+}
+
+.account-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login {
+    background-color: #f4f4f9;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 400px; /* Fixed width for the container */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: -10px; /* Position error message closer to input */
+    margin-bottom: 10px; /* Space below error message */
+}
+
+.container-header {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+}
+
+/* Flexbox container for form fields */
+.input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Individual input fields or selects */
+.input-col {
+    width: 100%;
+    position: relative;
+}
+
+.search input, 
+.transaction-filter select, 
+.transaction-sort select, 
+.input-col input {
+    width: 100%;
+    padding: 10px 15px;
+    padding-left: 40px; /* Space for icons */
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Position icons to the left inside input fields */
+.search .fa-search, 
+.transaction-filter .fa-filter, 
+.transaction-sort .fa-sort, 
+.input-col .fa-calendar {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+/* Placeholder styling */
+.search input::placeholder {
+    color: #aaa;
+}
+
+/* Input field focus outline */
+.search input:focus, 
+.transaction-filter select:focus, 
+.transaction-sort select:focus, 
+.input-col input:focus {
+    outline: none;
+    border-color: rgb(69, 160, 73);;
+}
+
+.search,
+.date-filter {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+/* For date range inputs */
+.date-filter input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    padding-left: 40px; /* Space for calendar icons */
+    box-sizing: border-box;
+}
+
+.date-filter .fa-calendar {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.date-filter .input-col {
+    position: relative;
+    width: 48%; /* Split in half to fit both inputs side-by-side */
+}
+
+/* Input row for date filters */
+.date-filter .input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.date-filter input:focus {
+    border-color: rgb(69, 160, 73);;
+}
+
+
+/* login / register forms */
+.login h2 {
+    margin-bottom: 30px; 
+    font-size: 28px; 
+}
+
+.login form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+}
+
+.login input {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 30px; 
+    font-size: 16px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.login button {
+    padding: 15px;
+    background-color: #45a049;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.login button:hover {
+    background-color: #39963d;
+}
+
+.login a {
+    font-size: 14px;
+    color: #007BFF;
+    text-decoration: none;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.login p {
+    font-size: 14px;
+    margin-top: 10px;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.login a:hover {
+    text-decoration: underline;
+}
+
+/* Friends list */
+.friends {
+    width: 800px;
+    margin-top: 40px;
+}
+
+.friends-list {
+    margin-top: 20px;
+}
+
+.friend-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-top: 1px solid rgb(131 131 131);
+}
+
+.friend-icon {
+    margin-right: 10px;
+    font-size: 24px;
+    border-radius: 50%;
+    background-color: #fff;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friend-name {
+    font-size: 18px;
+    flex-grow: 1;
+    margin-left: 10px;
+    font-weight: 100;
+}
+
+
+/* Mobile-specific Styles */
+@media (max-width: 768px) {
+    .side-nav.collapsed {
+        background-color: transparent;
+    }
+
+    .content-wrapper {
+        margin-left: 0px;
+        width: 100%;
+    }
+
+    .charts {
+        width: 100%;
+    }
+
+    .account-container {
+        display: block;
+    }
+
+    .account-details {
+        width: 100%;
+    }
+
+    .account-chart-container {
+        width: 100%;
+        height: 500px; /* Set height for the container */
+    }
+
+    canvas{
+        height: 400px;
+    }
+
+    .account-title {
+        font-size: 18px;
+    }
+
+    .transaction-name {
+        font-size: 14px;
+    }
+
+    .transaction-amount {
+        font-size: 16px; 
+    }
+}
