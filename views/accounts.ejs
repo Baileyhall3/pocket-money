@@ -15,7 +15,12 @@
                             <h5 class="account-title">
                                 <%= account.name %>
                                 <% if (account.sharedWithId) { %>
-                                    - shared with <%= account.sharedWithId %>
+                                    - shared with 
+                                    <% if (account.sharedWithId === user.id) { %>
+                                        me
+                                    <% } else { %>
+                                        <%= account.sharedWithId %>
+                                    <% } %>
                                 <% } %>
                             </h5>
                             <div class="transaction">

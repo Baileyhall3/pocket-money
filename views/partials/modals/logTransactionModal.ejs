@@ -1,0 +1,58 @@
+<div id="logTransactionModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>New Transaction</h2>
+        </div>
+        
+        <form id="logTransactionForm">
+            <label for="transactionName">Name:</label>
+            <input type="text" id="transactionName" name="transactionName" required>
+        
+            <label for="transactionAmount">Amount (£):</label>
+            <input type="number" id="transactionAmount" name="transactionAmount" required>
+
+            <label for="transactionDate">Date (optional):</label>
+            <input type="date" id="transactionDate" name="transactionDate">
+
+            <div class="modal-row">
+                <div class="modal-item">
+                    <label for="transactionType">Type:</label>
+                    <select id="transactionType" name="transactionType" required>
+                        <option value="" selected>-- Select Type --</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                </div>
+                
+                <div class="modal-item">
+                    <label for="transactionCategory">Category:</label>
+                    <select id="transactionCategory" name="transactionCategory" required>
+                        <option value="" selected>-- Select Category --</option>
+                        <option value="paycheck">Pay Check</option>
+                        <option value="deposit">Deposit</option>
+                        <option value="onlineShopping">Online Shopping</option>
+                        <option value="groceries">Groceries</option>
+                        <option value="transfer">Transferring Money</option>
+                    </select>
+                </div>
+            </div>
+            
+
+            <label for="transactionAccount">Account:</label>
+            <select id="transactionAccount" name="transactionAccount" required>
+                <option value="" selected>-- Select Account --</option>
+                <option value="barclays">Barclays</option>
+                <option value="monzo">Monzo</option>
+                <option value="joint">Joint</option>
+            </select>
+        
+            <label for="recurring">
+                <input type="checkbox" id="recurring" name="recurring">
+                This transaction is recurring (will use date of transaction as recurring date)
+            </label>
+        
+            <button type="submit" class="btn">Log Transaction</button>
+        </form>
+    </div>
+</div>

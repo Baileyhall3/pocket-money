@@ -1,0 +1,39 @@
+<div id="newAccountModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>New Account</h2>
+        </div>
+        
+        <form id="newAccountForm">
+            <label for="accountName">Name:</label>
+            <input type="text" id="accountName" name="accountName" required>
+        
+            <label for="defaultCurrency">Default Currency:</label>
+            <select id="defaultCurrency" name="defaultCurrency" required>
+                <option value="£">£ - British Pound</option>
+                <option value="€">€ - Euro</option>
+            </select>
+        
+            <label for="accountType">Type:</label>
+            <select id="accountType" name="accountType" required>
+                <option value="personal">Personal</option>
+                <option value="savings">Savings</option>
+                <option value="joint">Joint</option>
+            </select>
+        
+            <!-- Joining Partner Field (Disabled unless 'Joint' is selected) -->
+            <label for="joiningPartner">Joining Partner:</label>
+            <select id="joiningPartner" name="joiningPartner" disabled>
+                <option value="">Select a joining partner</option>
+            </select>
+        
+            <label for="defaultAccount">
+                <input type="checkbox" id="defaultAccount" name="defaultAccount">
+                Make this my default account
+            </label>
+        
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+    </div>
+</div>

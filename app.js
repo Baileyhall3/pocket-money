@@ -40,6 +40,15 @@ app.get('/savings', userController.getUser, budgetsController.getBudgetsForUser,
     });
 });
 
+app.get('/profile', userController.getUser, userController.getUsers, userController.getFriends, (req, res) => {
+    res.render('profile', {
+        title: "Profile",
+        user: req.user,
+        users: req.users,
+        friends: req.friendsList
+    });
+});
+
 app.listen(port, () => {
   console.log(`App listening at port ${port}`)
 });

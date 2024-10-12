@@ -1,0 +1,28 @@
+<div id="newPotModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>New Pot</h2>
+        </div>
+        
+        <form id="newPotForm">
+            <label for="potName">Name:</label>
+            <input type="text" id="potName" name="potName" required>
+        
+            <label for="savingGoal">Saving Goal (£):</label>
+            <input type="number" id="savingGoal" name="savingGoal" required>
+
+            <label for="targetDate">Target Date:</label>
+            <input type="date" id="targetDate" name="targetDate">
+        
+            <label for="sharedWith">Share With:</label>
+            <select id="sharedWith" name="sharedWith">
+                <option value="" selected>-- Select Pot Partner (optional) --</option>
+                <option value="lottie">Lottie</option>
+                <option value="mam">Gayle</option>
+            </select>
+        
+            <button type="submit" class="btn">Create Pot</button>
+        </form>
+    </div>
+</div>
