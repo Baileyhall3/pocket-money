@@ -4,64 +4,127 @@
         <div class="container-header">
             <h2>My Accounts</h2>
             <h3><a class="link" onclick="openModal('newAccountModal')" href="#" id="addAccount">Add New</a></h3>
-        </div>
-            <% if (accounts.length > 0) { %>
-                <% accounts.forEach((account)=> { %>
-                    <div class="account-container container-rounded-pointer">
-                        <div class="account-chart-container">
-                            <canvas id="account1-chart"></canvas>
-                        </div>
-                        <div class="account-details">
-                            <h5 class="account-title">
-                                <%= account.name %>
-                                <% if (account.sharedWithId) { %>
-                                    - shared with 
-                                    <% if (account.sharedWithId === user.id) { %>
-                                        me
-                                    <% } else { %>
-                                        <%= account.sharedWithId %>
-                                    <% } %>
-                                <% } %>
-                            </h5>
-                            <div class="transaction">
-                                <div class="money-bar-header">
-                                    <h5 style="font-size: 18px; margin: 0; color: rgb(131, 131, 131);">Greggs</h5>
-                                    <p style="font-size: 20px; margin: 0;">- £3.40</p>
-                                </div>
-                                <div class="money-bar-header" style="margin-bottom: 20px;">
-                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Food</h5>
-                                    <p style="font-size: 14px; margin: 0;">4 hours ago</p>
-                                </div>
-                            </div>
-                            <div class="transaction">
-                                <div class="money-bar-header">
-                                    <h5 style="font-size: 18px; margin: 0; color: rgb(131, 131, 131);">Pizza Grande</h5>
-                                    <p style="font-size: 20px; margin: 0;">- £44.40</p>
-                                </div>
-                                <div class="money-bar-header" style="margin-bottom: 20px;">
-                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Food</h5>
-                                    <p style="font-size: 14px; margin: 0;">Yesterday</p>
-                                </div>
-                            </div>
-                            <div class="transaction">
-                                <div class="money-bar-header">
-                                    <h5 style="font-size: 18px; margin: 0;">Deposit</h5>
-                                    <p style="font-size: 20px; margin: 0; color: #45a049">£2,000</p>
-                                </div>
-                                <div class="money-bar-header" style="margin-bottom: 20px;">
-                                    <h5 style="font-size: 16px; margin: 0; color: rgb(131, 131, 131); font-weight: 100;">Paycheck</h5>
-                                    <p style="font-size: 14px; margin: 0;">2 days ago</p>
-                                </div>
-                            </div>
-                        </div>
+
+            <!-- Modal for new account -->
+            <div id="newAccountModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="close">&times;</span>
+                        <h2>New Account</h2>
                     </div>
-                <% }); %>
-            <% } else { %>
-                <div class="account-container container-rounded-pointer">
-                    No accounts created yet! Let's create one
+                    
+                    <form id="newAccountForm">
+                        <label for="accountName">Name:</label>
+                        <input type="text" id="accountName" name="accountName" required>
+                    
+                        <label for="defaultCurrency">Default Currency:</label>
+                        <select id="defaultCurrency" name="defaultCurrency" required>
+                            <option value="£">£ - British Pound</option>
+                            <option value="€">€ - Euro</option>
+                        </select>
+                    
+                        <label for="accountType">Type:</label>
+                        <select id="accountType" name="accountType" required>
+                            <option value="personal">Personal</option>
+                            <option value="savings">Savings</option>
+                            <option value="joint">Joint</option>
+                        </select>
+                    
+                        <!-- Joining Partner Field (Disabled unless 'Joint' is selected) -->
+                        <label for="joiningPartner">Joining Partner:</label>
+                        <select id="joiningPartner" name="joiningPartner" disabled>
+                            <option value="">--- Select a joining partner ---</option>
+                            <% if (friends.length > 0) { %>
+                                <% friends.forEach((friend, index) => { %>
+                                    <option value="friend.userId"><%= friend.userName %></option>
+                                <% }); %>
+                            <% } %>
+                        </select>
+                    
+                        <label for="defaultAccount">
+                            <input type="checkbox" id="defaultAccount" name="defaultAccount">
+                            Make this my default account
+                        </label>
+                    
+                        <button type="submit" class="btn">Create Account</button>
+                    </form>
                 </div>
-            <% } %>
+            </div>
+        </div>
+        <% if (accounts.length > 0) { %>
+            <% accounts.forEach((account) => { %>
+                <div class="account-container container-rounded-pointer">
+                    <div class="account-chart-container">
+                        <canvas id="account1-chart"></canvas>
+                    </div>
+                    <div class="account-details">
+                        <h5 class="account-title">
+                            <%= account.name %>
+                            <% if (account.sharedWithId) { %>
+                                - shared with 
+                                <% if (account.sharedWithId === user.id) { %>
+                                    me
+                                <% } else { %>
+                                    <%= account.sharedWithId %>
+                                <% } %>
+                            <% } %>
+                        </h5>
+                        <% 
+                            const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
+                            const limitedTransactions = accountTransactions.slice(0, 3);
+                        %>
+                        <% if (limitedTransactions.length > 0) { %>
+                            <% limitedTransactions.forEach(transaction => { %>
+                                <% if (transaction.accountId === account.id) { %>
+                                    <div class="transaction">
+                                        <div class="money-bar-header">
+                                            <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                            </h5>
+                                            <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                                <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                            </p>
+                                        </div>
+                                        <div class="money-bar-header" style="margin-bottom: 20px;">
+                                            <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                <%= transaction.category %>
+                                            </h5>
+                                            <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                                <%= transaction.dateMade %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="">
+                                No transactions for this account yet! Let's log one
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="account-container container-rounded-pointer">
+                No accounts created yet! <a onclick="openModal('newAccountModal')" href="#">Let's create one</a>
+            </div>
+        <% } %>
+        
+        
+        
 
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('accountType').addEventListener('change', function() {
+        const joiningPartnerInput = document.getElementById('joiningPartner');
+        if (this.value === 'joint') {
+            joiningPartnerInput.disabled = false;
+        } else {
+            joiningPartnerInput.disabled = true;
+            joiningPartnerInput.value = '';
+        }
+    });
+</script>

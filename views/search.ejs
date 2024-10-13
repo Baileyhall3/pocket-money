@@ -1,0 +1,61 @@
+<% layout('layout') %>
+
+<div class="container-rounded" style="margin-top: 30px; width: 30%;">
+    <div class="search input-row" style="width: 100%;">
+        <i class="fa fa-search"></i>
+        <input type="text" id="user-search-bar" placeholder="Search users...">
+    </div>
+    <div class="friends-list" id="users-list">
+        <% 
+            const usersExcludingCurrent = searchResults.filter(result => result.id != user.id);
+        %>
+        <% if (usersExcludingCurrent.length > 0) { %>
+            <% usersExcludingCurrent.forEach((result, index) => { %>
+                <div class="friend-row" data-name="<%= result.firstName %>">
+                    <!-- <a href="#" onclick="openModal('userModal-<%= index %>')"><i class="fa fa-user friend-icon" style="display: flex;"></i></a> -->
+                    <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                    <span class="friend-name">
+                        <%= result.firstName + ' ' + result.lastName %>
+                    </span>
+    
+                    <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                        <div class="dropdown-content">
+                            <a href="#" onclick="openModal('userModal-<%= index %>')">Details</a>
+                            <a href="#">Nudge</a>
+                        </div>
+                    </div>
+    
+                    <!-- Modal for this friend's friends list -->
+                    <div id="userModal-<%= index %>" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('userModal-<%= index %>')">&times;</span>
+                            <h2>
+                                <%= result.firstName + ' ' + result.lastName %>
+                            </h2>
+                            <h2>Friends since <%= result.created %></h2>
+                            <h3>Friends List</h3>
+                            <% if (result.friendsOfUser.length > 0) { %>
+                                <p>Friends of this user:</p>
+                                <ul>
+                                    <% result.friendsOfUser.forEach(friend => { %>
+                                        <li><%= friend %></li>
+                                    <% }) %>
+                                </ul>
+                            <% } else { %>
+                                <p>This user has no other friends listed.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div>No users found.</div>
+        <% } %>
+    </div>
+</div>
+
+<script src="/js/shared.js"></script>
+
+<script>
+    searchUsers('user-search-bar', 'users-list');
+</script>

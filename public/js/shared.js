@@ -1,13 +1,13 @@
 // Function to find users (client-side)
-function searchFriends(inputId, listId) {
+function searchUsers(inputId, listId) {
     const searchInput = document.getElementById(inputId);
-    const friendsList = document.getElementById(listId);
+    const usersList = document.getElementById(listId);
 
-    if (!searchInput || !friendsList) return;
+    if (!searchInput || !usersList) return;
 
     searchInput.addEventListener('input', function() {
         const filter = searchInput.value.toLowerCase();
-        const friends = friendsList.getElementsByClassName('friend-row');
+        const friends = usersList.getElementsByClassName('friend-row');
 
         Array.from(friends).forEach(friend => {
             const friendName = friend.getAttribute('data-name').toLowerCase();

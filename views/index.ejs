@@ -58,41 +58,37 @@
         </div>
 
         <div class="container-rounded container-rounded-pointer" data-type="transaction">
-            <h5 style="font-size: 24px;">Recent Transactions</h5>
-            <div class="transaction">
-                <div class="money-bar-header" style="margin-top: 20px;">
-                    <h5 style="font-size: 18px; margin: 0; color: rgb(131 131 131);">Greggs</h5>
-                    <p style="font-size: 20px; margin: 0;">- £3.40</p>
+            <h5 class="account-title">Recent Transactions</h5>
+            <% if (transactions.length > 0) { %>
+                <% transactions.slice(0, 3).forEach(transaction => { %>
+                        <div class="transaction">
+                            <div class="money-bar-header">
+                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                    <%= transaction.name %>
+                                </h5>
+                                <p style="font-size: 20px; margin: 0;">
+                                    £<%= transaction.amount %>
+                                </p>
+                            </div>
+                            <div class="money-bar-header" style="margin-bottom: 20px;">
+                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                    <%= transaction.category %>
+                                </h5>
+                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                    <%= transaction.dateMade %>
+                                </p>
+                            </div>
+                        </div>
+                <% }); %>
+            <% } else { %>
+                <div class="">
+                    No transactions yet! Let's log one
                 </div>
-                <div class="money-bar-header" style="margin-bottom: 20px;">
-                    <h5 style="font-size: 16px; margin: 0; color: rgb(131 131 131); font-weight: 100;">Food</h5>
-                    <p style="font-size: 14px; margin: 0;">4 hours ago</p>
-                </div>
-            </div>
-            <div class="transaction">
-                <div class="money-bar-header" style="margin-top: 20px;">
-                    <h5 style="font-size: 18px; margin: 0; color: rgb(131 131 131);">Pizza Grande</h5>
-                    <p style="font-size: 20px; margin: 0;">- £44.40</p>
-                </div>
-                <div class="money-bar-header" style="margin-bottom: 20px;">
-                    <h5 style="font-size: 16px; margin: 0; color: rgb(131 131 131); font-weight: 100;">Food</h5>
-                    <p style="font-size: 14px; margin: 0;">Yesterday</p>
-                </div>
-            </div>
-            <div class="transaction">
-                <div class="money-bar-header" style="margin-top: 20px;">
-                    <h5 style="font-size: 18px; margin: 0;">Deposit</h5>
-                    <p style="font-size: 20px; margin: 0; color: #45a049">£2,0000</p>
-                </div>
-                <div class="money-bar-header" style="margin-bottom: 20px;">
-                    <h5 style="font-size: 16px; margin: 0; color: rgb(131 131 131); font-weight: 100;">Paycheck</h5>
-                    <p style="font-size: 14px; margin: 0;">2 days ago</p>
-                </div>
-            </div>
+            <% } %>
         </div>
 
         <div class="container-rounded container-rounded-pointer" data-type="account">
-            <h5 style="font-size: 24px;">My Accounts</h5>
+            <h5 class="account-title">My Accounts</h5>
             <% if (accounts.length > 0) { %>
                 <% accounts.slice(0, 3).forEach((account)=> { %>
                     <div class="transaction">

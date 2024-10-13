@@ -33,11 +33,7 @@ const friends = [
 ];
 
 exports.getUser = (req, res, next) => {
-    
-    // Attach user data to the response locals (to be accessed in views)
     req.user = user;
-    
-    // Call next middleware
     next();
 };
 
@@ -84,3 +80,47 @@ exports.getFriends = (req, res, next) => {
     req.friendsList = friendsList;
     next();
 };
+
+
+exports.searchUsers = (req, res, next) => {
+    const userId = req.user.id;  // Logged-in user's ID
+    const searchTerm = req.query.search || ""; // Get the search term from the query string (e.g., ?search=Bailey)
+    
+    // Filter users based on the search term (case-insensitive search by first name, last name, or email)
+    const matchingUsers = users.filter(user => {
+        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+        const email = user.email.toLowerCase();
+        const searchQuery = searchTerm.toLowerCase();
+        return fullName.includes(searchQuery) || email.includes(searchQuery);
+    });
+
+    // Get the logged-in user's friends
+    const userFriends = friends.filter(friend => friend.userId === userId || friend.friendId === userId);
+
+    // Map over the matching users and add extra details (whether they are a friend, and their friends list)
+    const searchResultsWithFriends = matchingUsers.map(user => {
+        // Check if the searched user is a friend
+        const isFriend = userFriends.some(friend => friend.userId === user.id || friend.friendId === user.id);
+
+        // Get the friends of this user (excluding the current user)
+        const friendsOfUser = friends.filter(f => f.userId === user.id || f.friendId === user.id)
+            .filter(f => f.userId !== userId && f.friendId !== userId) // Exclude current user
+            .map(f => {
+                const friendId = (f.userId === user.id) ? f.friendId : f.userId;
+                const friendUser = users.find(u => u.id === friendId); // Find friend's details
+                return `${friendUser.firstName} ${friendUser.lastName}`;
+            });
+
+        return {
+            ...user,
+            isFriend, // Whether the user is a friend of the logged-in user
+            friendsOfUser // List of the user's friends (names)
+        };
+    });
+
+    // Attach the results to the request object
+    req.searchResults = searchResultsWithFriends;
+
+    next();
+};
+
