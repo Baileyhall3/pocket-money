@@ -13,11 +13,13 @@ const res = require('express/lib/response');
 const accountsRoutes = require('./routes/accounts');
 const usersRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
+const transactionsRoutes = require('./routes/transactions');
 
 // Routes
 app.use(accountsRoutes);
 app.use(usersRoutes);
 app.use(dashboardRoutes);
+app.use(transactionsRoutes);
 
 app.listen(port, () => {
   console.log(`App listening at port ${port}`)
