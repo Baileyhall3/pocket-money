@@ -21,7 +21,39 @@
                     <h2>My Pots</h2>
                     <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
                 </div>
-                <div class="savings-container">
+            
+                <!-- This section will be visible on mobile (carousel) -->
+                <div class="carousel-container mobile-only">
+                    <div class="carousel-nav left-arrow" id="leftArrow" style="display: none;">&#9664;</div>
+                    <div class="carousel-wrapper">
+                        <div class="savings-carousel" id="savingsCarousel">
+                            <% if (pots.length > 0) { %>
+                                <% pots.forEach((pot, index) => { %>
+                                    <div class="pot-card" data-type="pot">
+                                        <h5 style="font-size: 16px">
+                                            <%= pot.name %>
+                                            <% if (pot.sharedWithId) { %>
+                                                - shared with <%= pot.sharedWithId %>
+                                            <% } %>
+                                        </h5>
+                                        <h5 style="font-size: 18px; color: #45a049;">
+                                            £550 out of £<%= pot.targetAmount %>
+                                        </h5>
+                                        <canvas id="pot<%= index + 1 %>-chart"></canvas>
+                                    </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div>
+                                    No pots created. Let's create one!
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="carousel-nav right-arrow" id="rightArrow">&#9654;</div>
+                </div>
+            
+                <!-- Desktop version of the pot layout (same as before) -->
+                <div class="savings-container desktop-only">
                     <% if (pots.length > 0) { %>
                         <% pots.forEach((pot)=> { %>
                             <div class="side-container" data-type="pot">
@@ -31,7 +63,9 @@
                                         - shared with <%= pot.sharedWithId %>
                                     <% } %>
                                 </h5>
-                                <h5 style="font-size: 18px; color: #45a049;">£550 out of £<%= pot.targetAmount %></h5>
+                                <h5 style="font-size: 18px; color: #45a049;">
+                                    £550 out of £<%= pot.targetAmount %>
+                                </h5>
                                 <canvas id="pot1-chart"></canvas>
                             </div>
                         <% }); %>
@@ -40,8 +74,9 @@
                             No pots created. Let's create one!
                         </div>
                     <% } %>
-                </div>  
+                </div>
             </div>
+            
             
             <div style="margin-bottom: 30px; align-self: self-start;">
                 <div class="container-header">
@@ -72,3 +107,45 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const carousel = document.getElementById('savingsCarousel');
+        const leftArrow = document.getElementById('leftArrow');
+        const rightArrow = document.getElementById('rightArrow');
+
+        let currentIndex = 0;
+        const potCards = document.querySelectorAll('.pot-card');
+        const totalPots = potCards.length;
+
+        // Set arrow visibility based on the current index
+        const updateArrowVisibility = () => {
+            console.log(currentIndex)
+            leftArrow.style.display = currentIndex === 0 ? 'none' : 'flex';
+            rightArrow.style.display = currentIndex === totalPots - 1 ? 'none' : 'flex';
+        };
+
+        // Scroll carousel to the left
+        leftArrow.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                updateArrowVisibility();
+            }
+        });
+
+        // Scroll carousel to the right
+        rightArrow.addEventListener('click', () => {
+            if (currentIndex < totalPots - 1) {
+                currentIndex++;
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                updateArrowVisibility();
+            }
+        });
+
+        // Initial arrow visibility update
+        updateArrowVisibility();
+    });
+
+
+</script>

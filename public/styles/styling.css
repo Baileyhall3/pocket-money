@@ -674,6 +674,40 @@ li {
     align-items: center;
 }
 
+/* Filters and search bar */
+.date-filter input {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    padding-left: 40px;
+    box-sizing: border-box;
+}
+
+.date-filter input:focus {
+    border-color: rgb(69, 160, 73);;
+}
+
+.date-filter .fa-calendar {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+}
+
+.date-filter .input-col {
+    position: relative;
+    width: 48%; 
+}
+
+.date-filter .input-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
 /* Flexbox container for form fields */
 .input-row {
     display: flex;
@@ -732,42 +766,6 @@ li {
     margin-bottom: 20px;
     position: relative;
 }
-
-/* For date range inputs */
-.date-filter input {
-    width: 100%;
-    padding: 10px 15px;
-    border-radius: 30px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    padding-left: 40px; /* Space for calendar icons */
-    box-sizing: border-box;
-}
-
-.date-filter .fa-calendar {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-}
-
-.date-filter .input-col {
-    position: relative;
-    width: 48%; /* Split in half to fit both inputs side-by-side */
-}
-
-/* Input row for date filters */
-.date-filter .input-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.date-filter input:focus {
-    border-color: rgb(69, 160, 73);;
-}
-
 
 /* login / register forms */
 .login h2 {
@@ -913,8 +911,131 @@ canvas {
     max-width: 100%; /* Ensure canvas doesn't overflow */
 }
 
+/* Style for collapsible sections */
+.collapsible {
+    background-color: #f4f4f9;
+    color: black;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.collapsible.active, .collapsible:hover {
+    background-color: #ddd;
+}
+
+.collapsible i {
+    font-size: 20px;
+    margin-left: auto;
+}
+
+.sub-collapsible {
+    background-color: #eaeaea;
+    font-size: 16px;
+    padding: 8px;
+    margin-left: 15px;
+    cursor: pointer;
+}
+
+.sub-collapsible i {
+    font-size: 16px;
+    margin-left: auto;
+}
+
+.content {
+    padding: 10px;
+    display: none;
+    overflow: visible;
+}
+
+.sub-content {
+    padding-left: 20px;
+    margin-top: 10px;
+    display: none;
+}
+
+
+/* Hide the mobile version by default */
+.mobile-only {
+    display: none;
+}
+
+/* Show the desktop layout by default */
+.desktop-only {
+    display: '';
+}
+
 /* Mobile-specific Styles */
 @media (max-width: 768px) {
+
+    .desktop-only {
+        display: none;
+    }
+
+    /* Show the mobile version (carousel) */
+    .mobile-only {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .carousel-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+
+    .carousel-nav {
+        cursor: pointer;
+        font-size: 24px;
+        background-color: rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        position: absolute;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .left-arrow {
+        left: 0;
+    }
+
+    .right-arrow {
+        right: 0;
+    }
+
+    .carousel-content {
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .savings-carousel {
+        display: flex;
+        transition: transform 0.3s ease-in-out;
+        width: 100%;
+    }
+
+    .pot-card {
+        flex: 0 0 100%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+        padding: 20px;
+        background-color: #f4f4f9;
+
+        border-radius: 8px;
+        min-width: 100%;
+    }
+
     .side-nav.collapsed {
         background-color: transparent;
     }
