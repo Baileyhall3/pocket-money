@@ -7,6 +7,11 @@ app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
+const path = require('path');
+
+// Set the views directory explicitly
+app.set('views', path.join(__dirname, 'views'));
+
 // Route modules
 const accountsRoutes = require('./routes/accounts');
 const usersRoutes = require('./routes/users');
