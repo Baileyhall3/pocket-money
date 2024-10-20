@@ -1,13 +1,11 @@
 const express = require('express');
 const engine = require('ejs-mate');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Use the environment port or default to 3000
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-
-const res = require('express/lib/response');
 
 // Route modules
 const accountsRoutes = require('./routes/accounts');
@@ -21,6 +19,11 @@ app.use(usersRoutes);
 app.use(dashboardRoutes);
 app.use(transactionsRoutes);
 
-app.listen(port, () => {
-  console.log(`App listening at port ${port}`)
-});
+// If the app is not running in a serverless environment (i.e., local dev), listen on a port
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+}
+
+module.exports = app;

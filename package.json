@@ -4,7 +4,8 @@
     "ejs-mate": "^4.0.0",
     "express": "^4.21.1"
   },
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon --inspect=0.0.0.0:9229 app.js"
+    "start": "node app.js"
   }
 }
