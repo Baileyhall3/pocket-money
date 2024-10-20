@@ -15,7 +15,20 @@ document.addEventListener("DOMContentLoaded", function () {
         collapseBtn.addEventListener('click', function () {
             sideNav.classList.toggle('collapsed');
         });
+
+        // Collapse the nav by default on mobile (screen width < 768px)
+        if (window.innerWidth < 768) {
+            sideNav.classList.add('collapsed');
+        }
     }
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth < 768) {
+            sideNav.classList.add('collapsed');
+        } else {
+            sideNav.classList.remove('collapsed'); // Remove collapse on wider screens if needed
+        }
+    });
 
     // Profile dropdown toggle
     const profileBtn = document.getElementById('profile-btn');

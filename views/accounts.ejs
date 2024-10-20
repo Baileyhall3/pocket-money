@@ -53,9 +53,13 @@
         </div>
         <% if (accounts.length > 0) { %>
             <% accounts.forEach((account) => { %>
+                <% 
+                    const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
+                    const limitedTransactions = accountTransactions.slice(0, 5);
+                %>
                 <div class="account-container container-rounded-pointer">
                     <div class="account-chart-container">
-                        <canvas id="account1-chart"></canvas>
+                        <canvas id="account-chart-<%= account.id %>"></canvas>
                     </div>
                     <div class="account-details">
                         <h5 class="account-title">
@@ -69,10 +73,6 @@
                                 <% } %>
                             <% } %>
                         </h5>
-                        <% 
-                            const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
-                            const limitedTransactions = accountTransactions.slice(0, 3);
-                        %>
                         <% if (limitedTransactions.length > 0) { %>
                             <% limitedTransactions.forEach(transaction => { %>
                                 <% if (transaction.accountId === account.id) { %>
@@ -109,13 +109,11 @@
                 No accounts created yet! <a onclick="openModal('newAccountModal')" href="#">Let's create one</a>
             </div>
         <% } %>
-        
-        
-        
-
         </div>
     </div>
 </div>
+
+<script src="/js/shared.js"></script>
 
 <script>
     document.getElementById('accountType').addEventListener('change', function() {
@@ -126,5 +124,59 @@
             joiningPartnerInput.disabled = true;
             joiningPartnerInput.value = '';
         }
+    });
+
+    // This function renders charts for each account
+    document.addEventListener('DOMContentLoaded', function() {
+        const accounts = <%- JSON.stringify(accounts) %>; // Get account data
+        const transactions = <%- JSON.stringify(transactions) %>; // Get transaction data
+
+        accounts.forEach(account => {
+            const accountId = account.id;
+
+            // Filter transactions for the specific account
+            const accountTransactions = transactions.filter(transaction => transaction.accountId === accountId);
+
+            if (accountTransactions.length > 0) {
+
+                // Get the last 7 days in DD/MM/YYYY format
+                const labels = getLast7Days();
+
+                // Prepare the data for the chart
+                const spendingData = labels.map(date => {
+                    // Sum up the transactions for each specific date
+                    const dailyTotal = accountTransactions
+                        .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
+                        .reduce((total, transaction) => total + transaction.amount, 0);
+                    return dailyTotal;
+                });
+
+                // Chart configuration
+                const ctx = document.getElementById(`account-chart-${accountId}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels, // Last 7 days
+                        datasets: [{
+                            label: 'Spending',
+                            data: spendingData, // Dynamic spending data
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: Math.max(...spendingData) + 50 // Add some buffer above the max value
+                            }
+                        }
+                    }
+                });
+            }
+        });
     });
 </script>

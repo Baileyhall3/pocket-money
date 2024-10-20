@@ -657,7 +657,8 @@ li {
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 400px; /* Fixed width for the container */
+    /* width: 400px;  */
+    width: 100%;
     box-sizing: border-box; /* Include padding in width */
 }
 
@@ -825,7 +826,7 @@ li {
 
 /* Friends list */
 .friends {
-    width: 800px;
+    width: 100%;
     margin-top: 40px;
 }
 
@@ -962,6 +963,18 @@ canvas {
     display: none;
 }
 
+.search-container {
+    margin-top: 30px; 
+    width: 30%;
+}
+
+.profile {
+    width: 40%;
+}
+
+.profile-search {
+    width: 50%;
+}
 
 /* Hide the mobile version by default */
 .mobile-only {
@@ -1076,5 +1089,19 @@ canvas {
 
     .transaction-amount {
         font-size: 16px; 
+    }
+
+    .search-container {
+        margin-top: 80px; 
+        width: 80%;
+    }
+
+    .profile {
+        width: 90%;
+        margin-top: 50px;
+    }
+
+    .profile-search {
+        width: 100%;
     }
 }
