@@ -6,6 +6,6 @@
   },
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon --inspect=0.0.0.0:9229 app.js"
   }
 }

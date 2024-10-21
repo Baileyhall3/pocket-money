@@ -1,0 +1,12 @@
+<% layout('layout') %>
+
+<div class="container-rounded alerts-container">
+    <% if (userAlerts.length > 0) { %>
+        <% userAlerts.forEach((alert, index) => { %>
+            <span> <%= alert.body %> </span>
+        <% }); %>
+    <% } else { %>
+        <div>No alerts.</div>
+    <% } %>
+
+</div>

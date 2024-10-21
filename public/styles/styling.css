@@ -976,6 +976,41 @@ canvas {
     width: 50%;
 }
 
+.alerts-container {
+    margin-top: 80px; 
+    width: 80%;
+}
+
+.alerts-dropdown {
+    max-width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+.icon-btn {
+    position: relative;
+}
+
+.icon-btn span {
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+}
+
 /* Hide the mobile version by default */
 .mobile-only {
     display: none;
@@ -1103,5 +1138,12 @@ canvas {
 
     .profile-search {
         width: 100%;
+    }
+
+    .transaction-section {
+        padding: 5px;
+        width: 100%;
+        margin-right: 0;
+        margin-left: 0; 
     }
 }

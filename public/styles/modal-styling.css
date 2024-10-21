@@ -6,9 +6,9 @@
     top: 0;
     width: 100%;
     height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
-    align-items: center; /* Center content vertically */
-    justify-content: center; /* Center content horizontally */
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
   }
   
   /* Modal content styling */
@@ -95,3 +95,11 @@
     flex-direction: column;
     flex: 1;
   }
+
+/* Mobile-specific Styles */
+@media (max-width: 768px) {
+
+  .modal-content {
+    width: 80%;
+  }
+}

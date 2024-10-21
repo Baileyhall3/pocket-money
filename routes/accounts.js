@@ -5,6 +5,7 @@ const accountsController = require('../controllers/accountsController');
 const budgetsController = require('../controllers/budgetsController');
 const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
+const alertsController = require('../controllers/alertsController');
 
 // Accounts Page Route
 router.get('/accounts', 
@@ -12,13 +13,15 @@ router.get('/accounts',
     accountsController.getAccountsForUser, 
     transactionsController.getAccountTransactionsForUser,
     userController.getFriends, 
+    alertsController.getAlertsForUser, 
     (req, res) => {
         res.render('accounts', { 
             title: "Accounts",
             accounts: req.userAccounts,
             user: req.user,
             friends: req.friendsList,
-            transactions: req.accountTransactions
+            transactions: req.accountTransactions,
+            userAlerts: req.userAlerts,
         });
     }
 );
@@ -29,6 +32,7 @@ router.get('/savings',
     budgetsController.getBudgetsForUser, 
     potsController.getPotsForUser, 
     transactionsController.getSavingsTransactionsForUser,
+    alertsController.getAlertsForUser, 
     (req, res) => {
         res.render('savings', {
             title: "Savings",
@@ -36,7 +40,8 @@ router.get('/savings',
             pots: req.userPots,
             user: req.user,
             potTransactions: req.potTransactions,
-            budgetTransactions: req.budgetTransactions 
+            budgetTransactions: req.budgetTransactions,
+            userAlerts: req.userAlerts,
         });
     }
 );

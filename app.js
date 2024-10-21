@@ -17,12 +17,14 @@ const accountsRoutes = require('./routes/accounts');
 const usersRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
 const transactionsRoutes = require('./routes/transactions');
+const alertsRoutes = require('./routes/alerts');
 
 // Routes
 app.use(accountsRoutes);
 app.use(usersRoutes);
 app.use(dashboardRoutes);
 app.use(transactionsRoutes);
+app.use(alertsRoutes);
 
 // If the app is not running in a serverless environment (i.e., local dev), listen on a port
 if (require.main === module) {

@@ -58,9 +58,12 @@
                     const limitedTransactions = accountTransactions.slice(0, 5);
                 %>
                 <div class="account-container container-rounded-pointer">
-                    <div class="account-chart-container">
-                        <canvas id="account-chart-<%= account.id %>"></canvas>
-                    </div>
+                    <% if (limitedTransactions.length > 0) { %>
+                        <div class="account-chart-container">
+                            <canvas id="account-chart-<%= account.id %>"></canvas>
+                        </div>
+                    <% } %>
+                    
                     <div class="account-details">
                         <h5 class="account-title">
                             <%= account.name %>

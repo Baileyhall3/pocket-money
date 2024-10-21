@@ -5,6 +5,7 @@ const accountsController = require('../controllers/accountsController');
 const budgetsController = require('../controllers/budgetsController');
 const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
+const alertsController = require('../controllers/alertsController');
 
 router.get('/transactions', 
     userController.getUser, 
@@ -12,6 +13,7 @@ router.get('/transactions',
     potsController.getPotsForUser,
     budgetsController.getBudgetsForUser, 
     transactionsController.getAllTransactionsForUser,
+    alertsController.getAlertsForUser, 
     (req, res) => {
         res.render('transactions', { 
             title: "Transactions",
@@ -20,7 +22,8 @@ router.get('/transactions',
             userBudgets: req.userBudgets,
             transactions: req.allTransactions,
             user: req.user,
-            friends: req.friends
+            friends: req.friends,
+            userAlerts: req.userAlerts
         });
     }
 );
