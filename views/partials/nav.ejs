@@ -34,12 +34,12 @@
 <!-- Right-aligned icon buttons -->
 <div class="icon-buttons">
     <button class="icon-btn" id="add-btn">
-        <a href="search"><i class="fa fa-search"></i></a> 
+        <a href="search"><i class="fa fa-search"></i></a>
     </button>
 
     <div class="dropdown">
         <button class="icon-btn" id="alerts-btn">
-            <i class="fa fa-bell"></i>
+            <a href="alerts"><i class="fa fa-bell"></i></a>
             <!-- Display unread count (handle undefined) -->
             <span><%= typeof unreadAlertsCount !== 'undefined' ? unreadAlertsCount : 0 %></span>
         </button>

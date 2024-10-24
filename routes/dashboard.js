@@ -11,13 +11,15 @@ router.get('/',
     accountsController.getAccountsForUser, 
     transactionsController.getRecentTransactionsForUser,
     alertsController.getAlertsForUser, 
+    transactionsController.getTotalSpendingByCategoryByUser,
     (req, res) => {
         res.render('index',
             { title: "Dashboard",
                 user: req.user,
                 accounts: req.userAccounts,
                 transactions: req.recentTransactions,
-                userAlerts: req.userAlerts
+                userAlerts: req.userAlerts,
+                categorySpending: req.spendingByCategory,
             }
         );
 });

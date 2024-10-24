@@ -422,13 +422,6 @@ li {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
 
-.money-bar-header {
-    justify-content: space-between; 
-    display: flex; 
-    align-items: center; 
-    /* margin-bottom: 5px; */
-}
-
 /* Styling for the dropdown container */
 .dropdown {
     position: relative;
@@ -990,6 +983,7 @@ canvas {
     max-width: 300px;
     max-height: 400px;
     overflow-y: auto;
+    width: 300px;
 }
 
 .alert-item {
@@ -1014,6 +1008,30 @@ canvas {
     position: absolute;
     top: -5px;
     right: -5px;
+}
+
+.alert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.filters {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.filters.visible {
+    max-height: 200px; /* Adjust according to how much space the filters take */
+    opacity: 1;
+}
+
+.side-container-group {
+    width: 30%;
+    margin-right: 20px;
 }
 
 /* Hide the mobile version by default */

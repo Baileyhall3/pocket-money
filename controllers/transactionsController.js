@@ -1,41 +1,43 @@
+const TransactionCategories = require('../enums/transactionCategories');
+
 const transactions = [
     // Account id 1 transactions (user 1)
-    { id: 1, name: "Subway", amount: 4.60, type: "expense", category: "Food", dateMade: "20/09/2024", accountId: 1, userId: 1 },
-    { id: 2, name: "Greggs", amount: 2.10, type: "expense", category: "Food", dateMade: "21/09/2024", accountId: 1, userId: 1 },
-    { id: 3, name: "JD Sports", amount: 100, type: "expense", category: "Clothing", dateMade: "21/09/2024", accountId: 1, userId: 1 },
-    { id: 4, name: "Netflix", amount: 10, type: "expense", category: "Subscription", dateMade: "23/09/2024", accountId: 1, userId: 1, recurrentId: 1 },
-    { id: 5, name: "Amazon", amount: 8.99, type: "expense", category: "Subscription", dateMade: "20/09/2024", accountId: 1, userId: 1, recurrentId: 2 },
-    { id: 6, name: "Pay Check", amount: 2400, type: "income", category: "Pay Check", dateMade: "15/10/2024", accountId: 1, userId: 1 },
+    { id: 1, name: "Subway", amount: 4.60, type: "expense", category: TransactionCategories.FOOD, dateMade: "20/09/2024", accountId: 1, userId: 1 },
+    { id: 2, name: "Greggs", amount: 2.10, type: "expense", category: TransactionCategories.FOOD, dateMade: "21/09/2024", accountId: 1, userId: 1 },
+    { id: 3, name: "JD Sports", amount: 100, type: "expense", category: TransactionCategories.CLOTHING, dateMade: "21/09/2024", accountId: 1, userId: 1 },
+    { id: 4, name: "Netflix", amount: 10, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "23/09/2024", accountId: 1, userId: 1, recurrentId: 1 },
+    { id: 5, name: "Amazon", amount: 8.99, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "20/09/2024", accountId: 1, userId: 1, recurrentId: 2 },
+    { id: 6, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 1, userId: 1 },
 
     // Account id 4 transactions (user 2)
-    { id: 7, name: "Gym Membership", amount: 17.99, type: "expense", category: "Direct Debit", dateMade: "1/09/2024", accountId: 4, userId: 2, recurrentId: 5 },
-    { id: 8, name: "Groceries", amount: 75, type: "expense", category: "Food", dateMade: "05/09/2024", accountId: 4, userId: 2 },
-    { id: 9, name: "Car Insurance", amount: 120, type: "expense", category: "Insurance", dateMade: "25/09/2024", accountId: 4, userId: 2 },
-    { id: 10, name: "Pay Check", amount: 2600, type: "income", category: "Pay Check", dateMade: "15/10/2024", accountId: 4, userId: 2 },
-    { id: 11, name: "Electricity Bill", amount: 90, type: "expense", category: "Utilities", dateMade: "28/09/2024", accountId: 4, userId: 2 },
+    { id: 7, name: "Gym Membership", amount: 17.99, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "1/09/2024", accountId: 4, userId: 2, recurrentId: 5 },
+    { id: 8, name: "Groceries", amount: 75, type: "expense", category: TransactionCategories.FOOD, dateMade: "05/09/2024", accountId: 4, userId: 2 },
+    { id: 9, name: "Car Insurance", amount: 120, type: "expense", category: TransactionCategories.INSURANCE, dateMade: "25/09/2024", accountId: 4, userId: 2 },
+    { id: 10, name: "Pay Check", amount: 2600, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 4, userId: 2 },
+    { id: 11, name: "Electricity Bill", amount: 90, type: "expense", category: TransactionCategories.UTILITIES, dateMade: "28/09/2024", accountId: 4, userId: 2 },
 
     // Account id 5 transactions (shared between user 1 and user 2)
-    { id: 12, name: "Mortgage Payment", amount: 1000, type: "expense", category: "Housing", dateMade: "01/10/2024", accountId: 5, userId: 1, recurrentId: 4 },
-    { id: 13, name: "Water Bill", amount: 30, type: "expense", category: "Utilities", dateMade: "15/09/2024", accountId: 5, userId: 1 },
-    { id: 14, name: "Pay Check", amount: 1200, type: "income", category: "Pay Check", dateMade: "15/09/2024", accountId: 5, userId: 1 },
-    { id: 15, name: "Home Maintenance", amount: 200, type: "expense", category: "Maintenance", dateMade: "10/10/2024", accountId: 5, userId: 2 },
-    { id: 16, name: "Internet Bill", amount: 40, type: "expense", category: "Utilities", dateMade: "20/10/2024", accountId: 5, userId: 1 },
+    { id: 12, name: "Mortgage Payment", amount: 1000, type: "expense", category: TransactionCategories.HOUSING, dateMade: "01/10/2024", accountId: 5, userId: 1, recurrentId: 4 },
+    { id: 13, name: "Water Bill", amount: 30, type: "expense", category: TransactionCategories.UTILITIES, dateMade: "15/09/2024", accountId: 5, userId: 1 },
+    { id: 14, name: "Pay Check", amount: 1200, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/09/2024", accountId: 5, userId: 1 },
+    { id: 15, name: "Home Maintenance", amount: 200, type: "expense", category: TransactionCategories.MAINTENANCE, dateMade: "10/10/2024", accountId: 5, userId: 2 },
+    { id: 16, name: "Internet Bill", amount: 40, type: "expense", category: TransactionCategories.UTILITIES, dateMade: "20/10/2024", accountId: 5, userId: 1 },
 
     // Budget id 1 transactions (user 1, linked to account id 1)
-    { id: 17, name: "Groceries", amount: 150, type: "expense", category: "Food", dateMade: "10/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 18, name: "Gas Station", amount: 50, type: "expense", category: "Transport", dateMade: "09/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 19, name: "Dining Out", amount: 60, type: "expense", category: "Food", dateMade: "06/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 20, name: "Streaming Service", amount: 15, type: "expense", category: "Subscription", dateMade: "02/10/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 17, name: "Groceries", amount: 150, type: "expense", category: TransactionCategories.FOOD, dateMade: "10/10/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 18, name: "Gas Station", amount: 50, type: "expense", category: TransactionCategories.TRANSPORT, dateMade: "09/10/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 19, name: "Dining Out", amount: 60, type: "expense", category: TransactionCategories.FOOD, dateMade: "06/10/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 20, name: "Streaming Service", amount: 15, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "02/10/2024", budgetId: 1, accountId: 1, userId: 1 },
 
     // Budget id 4 transactions (user 2)
-    { id: 21, name: "Groceries", amount: 200, type: "expense", category: "Food", dateMade: "15/10/2024", accountId: 4, userId: 2 },
-    { id: 22, name: "Utilities", amount: 70, type: "expense", category: "Utilities", dateMade: "18/10/2024", accountId: 4, userId: 2 },
-    { id: 23, name: "Travel Expenses", amount: 50, type: "expense", category: "Transport", dateMade: "19/10/2024", accountId: 4, userId: 2 },
+    { id: 21, name: "Groceries", amount: 200, type: "expense", category: TransactionCategories.FOOD, dateMade: "15/10/2024", accountId: 4, userId: 2 },
+    { id: 22, name: "Utilities", amount: 70, type: "expense", category: TransactionCategories.UTILITIES, dateMade: "18/10/2024", accountId: 4, userId: 2 },
+    { id: 23, name: "Travel Expenses", amount: 50, type: "expense", category: TransactionCategories.TRANSPORT, dateMade: "19/10/2024", accountId: 4, userId: 2 },
 
     // Pot id 1 transactions (user 1)
-    { id: 24, name: "Bonus", amount: 300, type: "income", category: "Bonus", dateMade: "10/10/2024", potId: 1, userId: 1 },
-    { id: 25, name: "Side Hustle", amount: 250, type: "income", category: "Freelancing", dateMade: "05/10/2024", potId: 1, userId: 1 },
-    { id: 26, name: "Gift", amount: 100, type: "income", category: "Gift", dateMade: "02/10/2024", potId: 1, userId: 1 }
+    { id: 24, name: "Bonus", amount: 300, type: "income", category: TransactionCategories.BONUS, dateMade: "10/10/2024", potId: 1, userId: 1 },
+    { id: 25, name: "Side Hustle", amount: 250, type: "income", category: TransactionCategories.FREELANCING, dateMade: "05/10/2024", potId: 1, userId: 1 },
+    { id: 26, name: "Gift", amount: 100, type: "income", category: TransactionCategories.GIFT, dateMade: "02/10/2024", potId: 1, userId: 1 }
 ];
 
 
@@ -168,8 +170,36 @@ const getAllTransactions = (userId, accountIds, potIds, budgetIds) => {
     return [...regularTransactions, ...recurrentTrans];
 };
 
+function getTotalSpendingByCategory(userId) {
+    const categoryTotals = {};
+    
+    // Initialize totals for each category
+    Object.values(TransactionCategories).forEach(category => {
+        categoryTotals[category] = 0;
+    });
+
+    // Iterate through transactions and add amounts to the corresponding category
+    transactions
+        .filter(transaction => transaction.userId === userId && transaction.type === 'expense')
+        .forEach(transaction => {
+            categoryTotals[transaction.category] += transaction.amount;
+        });
+
+    return categoryTotals;
+}
 
 // Exports
+
+// Index - spending by category
+exports.getTotalSpendingByCategoryByUser = (req, res, next) => {
+    const userId = req.user.id; 
+
+    const categorySpending = getTotalSpendingByCategory(userId);
+
+    req.spendingByCategory = categorySpending;
+
+    next();
+};
 
 // Profile page - Recurrent transactions
 exports.getRecurrentTransactionsForUser = (req, res, next) => {
