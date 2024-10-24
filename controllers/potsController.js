@@ -1,5 +1,5 @@
 const pots = [
-    { id: 1, name: "Christmas", targetAmount: 500, targetDate: '15/12/2024', userId: 1, },
+    { id: 1, name: "Christmas", targetAmount: 800, targetDate: '15/12/2024', userId: 1, },
     { id: 2, name: "Holiday", targetAmount: 700, targetDate: '10/3/2025', userId: 1, sharedWithId: 2 },
     { id: 3, name: "Pot 1", targetAmount: 200, targetDate: '27/10/2024', userId: 1 },
     { id: 4, name: "Pot 2", targetAmount: 200, targetDate: '18/8/2024', userId: 1 },

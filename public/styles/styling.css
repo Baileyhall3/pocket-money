@@ -879,11 +879,16 @@ li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%; /* Make the wrapper wider */
+    width: 100%; /* Make the wrapper wider */
     margin: 0 auto; /* Center the wrapper */
     margin-left: 200px;
     transition: margin-left 0.3s ease;
 }
+
+/* .content-wrapper {
+    margin-left: 20px;
+    width: 100%;
+} */
 
 .account-chart-container {
     width: 50%;
@@ -1035,53 +1040,28 @@ canvas {
         align-items: center;
     }
 
-    .carousel-container {
-        position: relative;
+    .savings-container {
         display: flex;
-        align-items: center;
-        width: 100%;
+        flex-wrap: nowrap; /* Make the containers sit in a single row */
+        overflow-x: auto;  /* Enable horizontal scrolling */
+        gap: 20px;
+        justify-content: flex-start;
+        scroll-snap-type: x mandatory; /* Snap scrolling effect */
     }
 
-    .carousel-nav {
-        cursor: pointer;
-        font-size: 24px;
-        background-color: rgba(0, 0, 0, 0.1);
-        padding: 10px;
-        position: absolute;
-        z-index: 10;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .side-container {
+        flex: 0 0 90%; /* Each item takes up 90% of the viewport width */
+        max-width: 70%; /* Ensures the max-width is responsive on small screens */
+        scroll-snap-align: center; /* The item aligns in the center when scrolling */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Smooth shadow transition */
+        margin-bottom: 10px;
+        /* height: 260px; */
     }
 
-    .left-arrow {
-        left: 0;
-    }
-
-    .right-arrow {
-        right: 0;
-    }
-
-    .carousel-content {
-        overflow: hidden;
-        width: 100%;
-    }
-
-    .savings-carousel {
-        display: flex;
-        transition: transform 0.3s ease-in-out;
-        width: 100%;
-    }
-
-    .pot-card {
-        flex: 0 0 100%;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 10px;
-        padding: 20px;
-        background-color: #f4f4f9;
-
-        border-radius: 8px;
-        min-width: 100%;
+    .side-container:focus, .side-container:hover {
+        transform: scale(1.05); /* Slightly larger when focused or hovered */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     }
 
     .side-nav.collapsed {
@@ -1089,7 +1069,7 @@ canvas {
     }
 
     .content-wrapper {
-        margin-left: 0px;
+        margin-left: 20px;
         width: 100%;
     }
 
@@ -1110,7 +1090,7 @@ canvas {
         height: 500px; /* Set height for the container */
     }
 
-    canvas{
+    canvas {
         height: 400px;
     }
 

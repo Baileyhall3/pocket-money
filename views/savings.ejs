@@ -1,59 +1,25 @@
 <% layout('layout') %>
 <div class="content-wrapper">
-    <div style="margin-left: 100px;">
-        <div class="chart-wrapper" style="width: 1360px;">
-            <!-- Savings History Chart -->
+    <!-- <div style="margin-left: 100px;"> -->
+        <!-- <div class="chart-wrapper" style="width: 1360px;">
             <div class="chart-container" style="width: 60%;">
                 <h3>Savings History</h3>
                 <canvas id="savings-chart"></canvas>
             </div>
 
-            <!-- Savings by Account Chart -->
             <div class="chart-container" style="width: 500px;">
                 <h3>Savings by Account</h3>
                 <canvas id="savingsByAccountChart" height="250"></canvas>
             </div>
-        </div>
+        </div> -->
 
-        <div style="max-width: 1360px;">
+        <div style="max-width: 1360px; width: 95%;">
             <div style="margin-bottom: 30px; align-self: self-start;">
                 <div class="container-header">
                     <h2>My Pots</h2>
                     <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
                 </div>
-            
-                <!-- This section will be visible on mobile (carousel) -->
-                <div class="carousel-container mobile-only">
-                    <div class="carousel-nav left-arrow" id="leftArrow" style="display: none;">&#9664;</div>
-                    <div class="carousel-wrapper">
-                        <div class="savings-carousel" id="savingsCarousel">
-                            <% if (pots.length > 0) { %>
-                                <% pots.forEach((pot, index) => { %>
-                                    <div class="pot-card" data-type="pot">
-                                        <h5 style="font-size: 16px">
-                                            <%= pot.name %>
-                                            <% if (pot.sharedWithId) { %>
-                                                - shared with <%= pot.sharedWithId %>
-                                            <% } %>
-                                        </h5>
-                                        <h5 style="font-size: 18px; color: #45a049;">
-                                            £550 out of £<%= pot.targetAmount %>
-                                        </h5>
-                                        <canvas id="pot<%= index + 1 %>-chart"></canvas>
-                                    </div>
-                                <% }); %>
-                            <% } else { %>
-                                <div>
-                                    No pots created. Let's create one!
-                                </div>
-                            <% } %>
-                        </div>
-                    </div>
-                    <div class="carousel-nav right-arrow" id="rightArrow">&#9654;</div>
-                </div>
-            
-                <!-- Desktop version of the pot layout (same as before) -->
-                <div class="savings-container desktop-only">
+                <div class="savings-container">
                     <% if (pots.length > 0) { %>
                         <% pots.forEach((pot)=> { %>
                             <div class="side-container" data-type="pot">
@@ -64,9 +30,9 @@
                                     <% } %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
-                                    £550 out of £<%= pot.targetAmount %>
+                                    £<span id="current-amount-<%= pot.id %>">0</span> out of £<%= pot.targetAmount %>
                                 </h5>
-                                <canvas id="pot1-chart"></canvas>
+                                <canvas id="pot-chart-<%= pot.id %>"></canvas>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -105,47 +71,79 @@
                 </div>
             </div>
         </div>
-    </div>
+    <!-- </div> -->
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const carousel = document.getElementById('savingsCarousel');
-        const leftArrow = document.getElementById('leftArrow');
-        const rightArrow = document.getElementById('rightArrow');
 
-        let currentIndex = 0;
-        const potCards = document.querySelectorAll('.pot-card');
-        const totalPots = potCards.length;
+    function createDoughnutChart(chartId, actual, total) {
+        const ctx = document.getElementById(chartId).getContext('2d');
+        const percentage = (actual / total) * 100;
+        let actualColor;
 
-        // Set arrow visibility based on the current index
-        const updateArrowVisibility = () => {
-            console.log(currentIndex)
-            leftArrow.style.display = currentIndex === 0 ? 'none' : 'flex';
-            rightArrow.style.display = currentIndex === totalPots - 1 ? 'none' : 'flex';
-        };
+        // Determine the color of the "actual" section based on the percentage
+        if (percentage > 75) {
+            actualColor = '#45a049'; // green
+        } else if (percentage > 25 && percentage <= 75) {
+            actualColor = '#FFA500'; // amber
+        } else {
+            actualColor = '#FF0000'; // red
+        }
 
-        // Scroll carousel to the left
-        leftArrow.addEventListener('click', () => {
-            if (currentIndex > 0) {
-                currentIndex--;
-                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-                updateArrowVisibility();
+        // Create the doughnut chart
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: [actual, total - actual], // actual vs remaining
+                    backgroundColor: [actualColor, '#C0C0C0'], // actual and remaining colors
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '70%', // Control the size of the doughnut hole
+                plugins: {
+                    legend: {
+                        display: false // Hide the legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const label = tooltipItem.dataIndex === 0 ? 'Actual' : 'Remaining';
+                                return `${label}: £${tooltipItem.raw}`;
+                            }
+                        }
+                    }
+                }
             }
         });
+    }
 
-        // Scroll carousel to the right
-        rightArrow.addEventListener('click', () => {
-            if (currentIndex < totalPots - 1) {
-                currentIndex++;
-                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-                updateArrowVisibility();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const pots = <%- JSON.stringify(pots) %>;
+        const potTransactions = <%- JSON.stringify(potTransactions) %>; 
+
+        pots.forEach(pot => {
+            const potId = pot.id;
+
+            // Filter transactions for the specific account
+            const filteredTransactions = potTransactions.filter(transaction => transaction.potId === potId);
+
+            // Calculate the total actual amount from the filtered transactions
+            let actualAmount = filteredTransactions.reduce((total, transaction) => {
+                return total + transaction.amount;
+            }, 0);
+
+            const currentAmountElement = document.getElementById(`current-amount-${potId}`);
+            if (currentAmountElement) {
+                currentAmountElement.textContent = actualAmount.toFixed(0);
             }
-        });
 
-        // Initial arrow visibility update
-        updateArrowVisibility();
+            createDoughnutChart(`pot-chart-${pot.id}`, actualAmount, pot.targetAmount); 
+
+        });
     });
-
 
 </script>
