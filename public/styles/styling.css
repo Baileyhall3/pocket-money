@@ -38,7 +38,7 @@ p {
     background-color: #f4f4f9;
     padding: 10px;
     transition: width 0.3s ease;
-    z-index: 100;
+    z-index: 1000;
 }
 
 /* Hiding the content (logo, links) when collapsed */
@@ -502,10 +502,11 @@ li {
 
 .flex-container {
     display: flex;
+    flex-wrap: wrap; /* Allow elements to wrap */
     justify-content: space-between;
-    width: calc(100% - 40px);
-    margin-top: 70px;
-    gap: 20px;
+    width: calc(100% - 5vw); /* vw adjusts based on viewport width */
+    margin-top: 2vh; /* vh for consistent vertical spacing */
+    gap: 2vw; /* vw keeps consistent spacing relative to screen width */
     transition: margin-left 0.3s ease;
 }
 
@@ -516,6 +517,7 @@ li {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
     position: relative;
+    flex: 1; /* Make it take available space */
 }
 
 .charts-wrapper {
@@ -878,11 +880,6 @@ li {
     transition: margin-left 0.3s ease;
 }
 
-/* .content-wrapper {
-    margin-left: 20px;
-    width: 100%;
-} */
-
 .account-chart-container {
     width: 50%;
     height: auto;
@@ -1022,6 +1019,7 @@ canvas {
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+    display: none;
 }
 
 .filters.visible {
@@ -1032,6 +1030,35 @@ canvas {
 .side-container-group {
     width: 30%;
     margin-right: 20px;
+}
+
+.overlay {
+    position: fixed; /* Cover the entire screen */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 999; /* Place it above other elements */
+    opacity: 0; /* Start hidden */
+    transition: opacity 0.3s ease; /* Smooth transition */
+    pointer-events: none; /* Prevent interactions when hidden */
+}
+
+.overlay.visible {
+    opacity: 1; /* Fully opaque */
+    pointer-events: auto; /* Allow interactions when visible */
+}
+
+.transactions {
+    justify-content: center !important; 
+    align-items: stretch; 
+    display: flex;
+}
+
+.dashboard {
+    width: 80%; 
+    padding: 0 20px;
 }
 
 /* Hide the mobile version by default */
@@ -1058,23 +1085,54 @@ canvas {
         align-items: center;
     }
 
+    .flex-container {
+        flex-direction: column; /* Stack elements vertically */
+        margin-top: 8vh;
+    }
+
+    .content-wrapper {
+        margin: 0 auto; /* Center it properly */
+        padding-left: 0; /* No padding on left */
+        padding-right: 0; /* No padding on right */
+        width: 95%; /* Full width on mobile */
+        max-width: 95%; /* Ensures the max width is responsive */
+    }
+
+    .charts-wrapper {
+        flex-direction: column; /* Stack charts vertically */
+        width: 100%; /* Full width for charts */
+        gap: 20px; /* Adjust gap as necessary */
+    }
+
+    .chart-container {
+        width: 90%; /* Full width for each chart */
+        margin-bottom: 30px; /* Space between charts */
+    }
+
+    .side-container-group {
+        width: 100%; /* Full width for side containers */
+        margin-right: 0; /* No right margin */
+    }
+
     .savings-container {
         display: flex;
-        flex-wrap: nowrap; /* Make the containers sit in a single row */
-        overflow-x: auto;  /* Enable horizontal scrolling */
+        flex-direction: row; /* Explicitly setting row direction */
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden; /* Prevent vertical scroll if not needed */
         gap: 20px;
         justify-content: flex-start;
-        scroll-snap-type: x mandatory; /* Snap scrolling effect */
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px; /* Prevent content clipping by scrollbar */
     }
 
     .side-container {
-        flex: 0 0 90%; /* Each item takes up 90% of the viewport width */
-        max-width: 70%; /* Ensures the max-width is responsive on small screens */
-        scroll-snap-align: center; /* The item aligns in the center when scrolling */
+        flex: 0 0 80%; /* Reduced to ensure it fits well */
+        max-width: 100%; /* Use 100% of its parent width on mobile */
+        scroll-snap-align: center;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Smooth shadow transition */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 10px;
-        /* height: 260px; */
     }
 
     .side-container:focus, .side-container:hover {
@@ -1084,11 +1142,6 @@ canvas {
 
     .side-nav.collapsed {
         background-color: transparent;
-    }
-
-    .content-wrapper {
-        margin-left: 20px;
-        width: 100%;
     }
 
     .charts {
@@ -1143,5 +1196,13 @@ canvas {
         width: 100%;
         margin-right: 0;
         margin-left: 0; 
+    }
+
+    .transactions {
+        justify-content: normal !important; 
+    }
+
+    .dashboard {
+        width: 100%; 
     }
 }

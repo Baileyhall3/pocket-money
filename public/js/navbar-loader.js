@@ -11,24 +11,58 @@ document.addEventListener("DOMContentLoaded", function () {
     // Collapse navigation functionality
     const collapseBtn = document.getElementById('collapse-btn');
     const sideNav = document.getElementById('side-nav');
-    if (collapseBtn && sideNav) {
-        collapseBtn.addEventListener('click', function () {
-            sideNav.classList.toggle('collapsed');
-        });
+    const overlay = document.getElementById('overlay');
 
-        // Collapse the nav by default on mobile (screen width < 768px)
-        if (window.innerWidth < 768) {
-            sideNav.classList.add('collapsed');
-        }
+    function isOnMobile() {
+        return window.innerWidth < 768;
     }
 
-    window.addEventListener('resize', function () {
-        if (window.innerWidth < 768) {
-            sideNav.classList.add('collapsed');
-        } else {
-            sideNav.classList.remove('collapsed'); // Remove collapse on wider screens if needed
+    if (collapseBtn && sideNav && overlay) {
+        // Toggle sideNav on button click
+        collapseBtn.addEventListener('click', function (event) {
+            event.stopPropagation(); // Prevent click from propagating to document
+            sideNav.classList.toggle('collapsed');
+
+            // Show or hide overlay based on nav state
+            if (isOnMobile()) {
+                if (sideNav.classList.contains('collapsed')) {
+                    overlay.classList.remove('visible'); // Hide overlay
+                } else {
+                    overlay.classList.add('visible'); // Show overlay
+                }
+            }
+            
+        });
+
+        // Function to handle outside click only on mobile
+        function handleOutsideClick(event) {
+            if (isOnMobile() && 
+                !sideNav.contains(event.target) && 
+                !collapseBtn.contains(event.target)) {
+                sideNav.classList.add('collapsed');
+                overlay.classList.remove('visible'); // Hide overlay
+            }
         }
-    });
+
+        // Only add the listener for outside clicks on mobile
+        function enableMobileNavCollapse() {
+            if (isOnMobile()) {
+                sideNav.classList.add('collapsed'); // Collapse by default on mobile
+                document.addEventListener('click', handleOutsideClick);
+                overlay.classList.remove('visible'); // Ensure overlay is hidden
+            } else {
+                document.removeEventListener('click', handleOutsideClick);
+                sideNav.classList.remove('collapsed'); // Ensure nav is shown on desktop
+                overlay.classList.remove('visible'); // Ensure overlay is hidden
+            }
+        }
+
+        // Initial check
+        enableMobileNavCollapse();
+
+        // Re-check on window resize
+        window.addEventListener('resize', enableMobileNavCollapse);
+    }
 
     // Profile dropdown toggle
     const profileBtn = document.getElementById('profile-btn');
