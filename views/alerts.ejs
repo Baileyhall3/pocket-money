@@ -1,12 +1,88 @@
 <% layout('layout') %>
 
-<div class="container-rounded alerts-container">
-    <% if (userAlerts.length > 0) { %>
-        <% userAlerts.forEach((alert, index) => { %>
-            <span> <%= alert.body %> </span>
-        <% }); %>
-    <% } else { %>
-        <div>No alerts.</div>
-    <% } %>
+<div class="container-rounded search-container">
+    <div class="container-header">
+        <h3>My Alerts</h3>
 
+        <button class="icon-btn" id="filter-btn">
+            <a href="#"><i class="fa fa-sliders"></i></a>
+        </button>
+    </div>
+
+    <div class="filters" id="filters-section">
+        <div class="input-row">
+            <div class="transaction-filter input-col">
+                <i class="fa fa-filter"></i>
+                <select id="filter-category">
+                    <option value="all">All</option>
+                    <option value="read">Read</option>
+                    <option value="unread">Unread</option>
+                    <option value="unread">Archived</option>
+                </select>
+            </div>
+    
+            <div class="transaction-sort input-col">
+                <i class="fa fa-sort"></i>
+                <select id="sort-transaction">
+                    <option value="date">Date</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Make this a slider? -->
+        <div class="input-row">
+            <div class="input-col">
+                <label for="start-date">From</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="input-col">
+                <label for="end-date">To</label>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+    </div>
+
+    <div class="friends-list" id="users-list">
+        <% if (userAlerts.length > 0) { %>
+            <% userAlerts.forEach((alert, index) => { %>
+                <div class="friend-row">
+                    <!-- <% if (alert.unread) { %>
+                        <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                        icons for each alert type?
+                    <% } %> -->
+                    <div style="padding: 10px;">
+                        <strong><%= alert.title %></strong>
+                        <p><%= alert.body %></p>
+                        <p style="font-size: 12px; color: #666;"><%= alert.date %></p>
+                    </div>
+                    <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                        <div class="dropdown-content">
+                            <a href="#">View</a>
+                            <a href="#">Mark As Unread</a>
+                            <a href="#">Archive</a>
+                            <a href="#">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div>No alerts found.</div>
+        <% } %>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterBtn = document.getElementById('filter-btn');
+        const filtersSection = document.getElementById('filters-section');
+
+        filterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            filtersSection.classList.toggle('visible');
+            filtersSection.style.display = 'block'
+        });
+    });
+
+</script>

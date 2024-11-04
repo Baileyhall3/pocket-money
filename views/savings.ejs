@@ -1,5 +1,5 @@
 <% layout('layout') %>
-<div class="content-wrapper">
+<div class="content-wrapper" style="margin-top: 8vh;">
     <!-- <div style="margin-left: 100px;"> -->
         <!-- <div class="chart-wrapper" style="width: 1360px;">
             <div class="chart-container" style="width: 60%;">
@@ -30,7 +30,7 @@
                                     <% } %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
-                                    £<span id="current-amount-<%= pot.id %>">0</span> out of £<%= pot.targetAmount %>
+                                    £<span id="pot-current-amount-<%= pot.id %>">0</span> out of £<%= pot.targetAmount %>
                                 </h5>
                                 <canvas id="pot-chart-<%= pot.id %>"></canvas>
                             </div>
@@ -59,8 +59,9 @@
                                         - shared with <%= budget.sharedWithId %>
                                     <% } %>
                                 </h5>
-                                <h5 style="font-size: 18px; color: #45a049;">£550 out of £<%= budget.amount %></h5>
-                                <canvas id="budget1-chart"></canvas>
+                                <h5 style="font-size: 18px; color: #45a049;">
+                                    £<span id="budget-current-amount-<%= budget.id %>">0</span> out of £<%= budget.amount %></h5>
+                                <canvas id="budget-chart-<%= budget.id %>"></canvas>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -122,6 +123,11 @@
 
 
     document.addEventListener('DOMContentLoaded', function() {
+        initPotCharts();
+        initBudgetCharts();
+    });
+
+    function initPotCharts() {
         const pots = <%- JSON.stringify(pots) %>;
         const potTransactions = <%- JSON.stringify(potTransactions) %>; 
 
@@ -136,7 +142,7 @@
                 return total + transaction.amount;
             }, 0);
 
-            const currentAmountElement = document.getElementById(`current-amount-${potId}`);
+            const currentAmountElement = document.getElementById(`pot-current-amount-${potId}`);
             if (currentAmountElement) {
                 currentAmountElement.textContent = actualAmount.toFixed(0);
             }
@@ -144,6 +150,31 @@
             createDoughnutChart(`pot-chart-${pot.id}`, actualAmount, pot.targetAmount); 
 
         });
-    });
+    }
+
+    function initBudgetCharts() {
+        const budgets = <%- JSON.stringify(budgets) %>;
+        const budgetTransactions = <%- JSON.stringify(budgetTransactions) %>; 
+
+        budgets.forEach(budget => {
+            const budgetId = budget.id;
+
+            // Filter transactions for the specific account
+            const filteredTransactions = budgetTransactions.filter(transaction => transaction.budgetId === budgetId);
+
+            // Calculate the total actual amount from the filtered transactions
+            let actualAmount = filteredTransactions.reduce((total, transaction) => {
+                return total + transaction.amount;
+            }, 0);
+
+            const currentAmountElement = document.getElementById(`budget-current-amount-${budgetId}`);
+            if (currentAmountElement) {
+                currentAmountElement.textContent = actualAmount.toFixed(0);
+            }
+
+            createDoughnutChart(`budget-chart-${budget.id}`, actualAmount, budget.amount); 
+
+        });
+    }
 
 </script>

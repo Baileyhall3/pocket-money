@@ -2,27 +2,9 @@
 
 <div class="flex-container">
     <div class="content-wrapper" style="align-self: start;">
-        <div style="width: 80%;">
+        <div class="dashboard">
             <div class="container-header">
                 <h2>Hey, <%= user.firstName  %>!</h2>
-            </div>
-            <div class="chart-container">
-                <h3 id="title-display">Current Budget - £1500 / £2000</h3>
-                <div id="money-bar">
-                    <div class="money-pot green" style="width: 75%;">
-                        <div class="actual-value">75%</div>
-                    </div>
-                    <div class="money-pot remaining" style="width: 25%;">
-                        <div class="actual-value">25%</div>
-                    </div>
-                </div>
-            
-                <!-- Separate container for today-marker -->
-                <div class="marker-container">
-                    <div id="today-marker" class="today-marker">
-                        <div class="today-label">Today</div>
-                    </div>
-                </div>            
             </div>
             <div class="charts-wrapper">
                 <div class="spending-categories-container chart-container">
@@ -31,79 +13,171 @@
                     
                     <div class="account-summary">
                         <p>Total Spent Last 30 Days: £2,800</p>
-                        <p>Largest Transaction: £400 (Rent)</p>
+                        <p>Largest Transaction: <span id="largest-transaction">0</span></p>
                         <p>Most Spent Category: Housing</p>
                     </div>
                 </div>
-            
-                <div class="chart-container" style="width: 60%;">
+                
+                <div class="chart-container">
                     <h3>Savings by Account</h3>
-                    <canvas id="savingsByAccountChart" height="250"></canvas>
+                    <canvas id="savingsByAccountChart"></canvas>
+
+                    <h5 class="account-title">Recent Transactions</h5>
+                    <% if (transactions.length > 0) { %>
+                        <% transactions.slice(0, 3).forEach(transaction => { %>
+                            <div class="transaction">
+                                <div class="money-bar-header">
+                                    <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                        <%= transaction.name %>
+                                    </h5>
+                                    <p style="font-size: 20px; margin: 0;">
+                                        £<%= transaction.amount %>
+                                    </p>
+                                </div>
+                                <div class="money-bar-header" style="margin-bottom: 20px;">
+                                    <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                        <%= transaction.category %>
+                                    </h5>
+                                    <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                        <%= transaction.dateMade %>
+                                    </p>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="">
+                            No transactions yet! Let's log one
+                        </div>
+                    <% } %>
                 </div>
             </div>            
-        </div>
-    </div>
-
-    <div class="side-container-group">
-        <div class="container-rounded container-rounded-pointer" id="alerts-container">
-            <div class="money-bar-header" style="margin-bottom: 0px;">
-                <h5 style="font-size: 24px; margin: 0;">Alerts</h5>
-                <button class="alerts-btn" style="font-size:20px; margin: 0;">2 <i class="fa fa-bell"></i></button>
-            </div>
-            <p class="truncate" style="font-size: 16px; margin: 0;">First new alert states you should stop spending all your money.</p>
-            <ul id="alerts-list" >
-                <li>Alert 1: Spend wisely!</li>
-                <li>Alert 2: You’re almost out of budget!</li>
-            </ul>
-        </div>
-
-        <div class="container-rounded container-rounded-pointer" data-type="transaction">
-            <h5 class="account-title">Recent Transactions</h5>
-            <% if (transactions.length > 0) { %>
-                <% transactions.slice(0, 3).forEach(transaction => { %>
-                        <div class="transaction">
-                            <div class="money-bar-header">
-                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                    <%= transaction.name %>
-                                </h5>
-                                <p style="font-size: 20px; margin: 0;">
-                                    £<%= transaction.amount %>
-                                </p>
+            <!-- <div class="side-container-group">    
+                <div class="container-rounded container-rounded-pointer" data-type="account">
+                    <h5 class="account-title">My Accounts</h5>
+                    <% if (accounts.length > 0) { %>
+                        <% accounts.slice(0, 3).forEach((account)=> { %>
+                            <div class="transaction">
+                                <div class="money-bar-header" style="margin-top: 10px;">
+                                    <h5 style="font-size: 18px; margin: 0;">
+                                        <%= account.name %>
+                                        <% if (account.sharedWithId) { %>
+                                            - shared with <%= account.sharedWithId %>
+                                        <% } %>
+                                    </h5>
+                                    <p style="font-size: 20px; margin: 0; color: #45a049">£<%= account.balance %></p>
+                                </div>
                             </div>
-                            <div class="money-bar-header" style="margin-bottom: 20px;">
-                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                    <%= transaction.category %>
-                                </h5>
-                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                    <%= transaction.dateMade %>
-                                </p>
-                            </div>
-                        </div>
-                <% }); %>
-            <% } else { %>
-                <div class="">
-                    No transactions yet! Let's log one
+                        <% }); %>
+                    <% } %>              
                 </div>
-            <% } %>
-        </div>
-
-        <div class="container-rounded container-rounded-pointer" data-type="account">
-            <h5 class="account-title">My Accounts</h5>
-            <% if (accounts.length > 0) { %>
-                <% accounts.slice(0, 3).forEach((account)=> { %>
-                    <div class="transaction">
-                        <div class="money-bar-header" style="margin-top: 20px;">
-                            <h5 style="font-size: 18px; margin: 0;">
-                                <%= account.name %>
-                                <% if (account.sharedWithId) { %>
-                                    - shared with <%= account.sharedWithId %>
-                                <% } %>
-                            </h5>
-                            <p style="font-size: 20px; margin: 0; color: #45a049">£<%= account.balance %></p>
-                        </div>
-                    </div>
-                <% }); %>
-            <% } %>              
+            </div> -->
         </div>
     </div>
+
+    
 </div>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const accounts = <%- JSON.stringify(accounts) %>; 
+    const transactions = <%- JSON.stringify(transactions) %>; 
+    const categorySpending = <%- JSON.stringify(categorySpending) %>; 
+
+    if (transactions.length > 0) {
+
+        const largestAmountElement = document.getElementById('largest-transaction');
+        if (largestAmountElement) {
+            // Find the transaction with the highest value
+            let maxTransaction = transactions.reduce((max, transaction) => {
+                return transaction.amount > max.amount ? transaction : max;
+            }, transactions[0]);
+
+            // Get the amount and name of the transaction
+            let maxTransactionValue = maxTransaction.amount;
+            let maxTransactionName = maxTransaction.name;
+
+            // Display the value and name
+            largestAmountElement.textContent = `£${maxTransactionValue} - ${maxTransactionName}`;
+        }
+
+        const filteredCategorySpending = Object.entries(categorySpending).filter(([category, value]) => value > 0);
+
+        const chartLabels = filteredCategorySpending.map(([category]) => category);
+        const chartValues = filteredCategorySpending.map(([, value]) => value);
+        
+        const pieData = {
+            labels: chartLabels,
+            datasets: [{
+                data: chartValues,
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'], // Add colour for each category (12)
+                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+            }]
+        };
+
+        // pie chart for recent spending
+        const spendingCategoriesCtx = document.getElementById('spending-chart').getContext('2d');
+        new Chart(spendingCategoriesCtx, {
+            type: 'pie',
+            data: pieData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    if (accounts.length > 0) {
+        const labels = accounts.map(x => x.name);
+        const data = accounts.map(x => x.balance);
+        const ctxAccount = document.getElementById('savingsByAccountChart').getContext('2d');
+
+        const savingsByAccountChart = new Chart(ctxAccount, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Savings',
+                    data: data, 
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (£)' // Y-axis title
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Accounts' // X-axis title
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+});
+
+</script>

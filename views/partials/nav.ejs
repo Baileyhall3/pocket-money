@@ -22,10 +22,15 @@
     </div>
 
     <ul class="nav-menu">
+        <li><a id="home-link" href="/" class="link"><i class="fa fa-home"></i> Dashboard</a></li>
+        <li><a id="savings-link" href="savings" class="link"><i class="fa fa-bank"></i> Savings</a></li>
+        <li><a id="accounts-link" href="accounts" class="link"><i class="fa fa-credit-card"></i> Accounts</a></li>
+        <!-- <li><a id="reports-link" href="#" class="link"><i class="fa fa-bar-chart"></i> Reports</a></li> -->
+        <li><a id="transactions-link" href="transactions" class="link"><i class="fa fa-exchange"></i> Transactions</a></li>
         <li><a id="home-link" href="/index" class="link"><i class="fa fa-home"></i> Dashboard</a></li>
         <li><a id="savings-link" href="/savings" class="link"><i class="fa fa-bank"></i> Savings</a></li>
         <li><a id="accounts-link" href="/accounts" class="link"><i class="fa fa-credit-card"></i> Accounts</a></li>
-        <li><a id="reports-link" href="#" class="link"><i class="fa fa-bar-chart"></i> Reports</a></li>
+        <!-- <li><a id="reports-link" href="#" class="link"><i class="fa fa-bar-chart"></i> Reports</a></li> -->
         <li><a id="transactions-link" href="/transactions" class="link"><i class="fa fa-exchange"></i> Transactions</a></li>
         <li><a id="settings-link" href="#" class="link"><i class="fa fa-cog"></i> Settings</a></li>
     </ul>
@@ -35,11 +40,12 @@
 <div class="icon-buttons">
     <button class="icon-btn" id="add-btn">
         <a href="/search"><i class="fa fa-search"></i></a> 
+        <a href="search"><i class="fa fa-search"></i></a>
     </button>
 
     <div class="dropdown">
         <button class="icon-btn" id="alerts-btn">
-            <i class="fa fa-bell"></i>
+            <a href="/alerts"><i class="fa fa-bell"></i></a>
             <!-- Display unread count (handle undefined) -->
             <span><%= typeof unreadAlertsCount !== 'undefined' ? unreadAlertsCount : 0 %></span>
         </button>

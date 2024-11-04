@@ -1,44 +1,52 @@
 <% layout('layout') %>    
-    <div class="flex-container" style="justify-content: center !important; align-items: stretch; display: flex;">
+    <div class="flex-container transactions">
         <div class="transaction-section" style="overflow-y: auto;">
-            <h3>All Transactions</h3>
-
-            <div class="search input-row">
-                <i class="fa fa-search"></i>
-                <input type="text" id="search-transaction" placeholder="Search transactions...">
+            <div class="container-header">
+                <h3>All Transactions</h3>
+        
+                <button class="icon-btn" id="filter-btn">
+                    <a href="#"><i class="fa fa-sliders"></i></a>
+                </button>
             </div>
 
-            <div class="input-row">
-                <div class="transaction-filter input-col">
-                    <i class="fa fa-filter"></i>
-                    <select id="filter-category">
-                        <option value="all">All Categories</option>
-                        <option value="Food">Food & Dining</option>
-                        <option value="entertainment">Entertainment</option>
-                        <option value="shopping">Shopping</option>
-                        <option value="bills">Bills & Utilities</option>
-                    </select>
+            <div class="filters" id="filters-section">
+                <div class="search input-row">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="search-transaction" placeholder="Search transactions...">
                 </div>
 
-                <div class="transaction-sort input-col">
-                    <i class="fa fa-sort"></i>
-                    <select id="sort-transaction">
-                        <option value="date">Date</option>
-                        <option value="amount">Amount</option>
-                        <option value="name">Name</option>
-                    </select>
+                <div class="input-row">
+                    <div class="transaction-filter input-col">
+                        <i class="fa fa-filter"></i>
+                        <select id="filter-category">
+                            <option value="all">All Categories</option>
+                            <option value="Food">Food & Dining</option>
+                            <option value="entertainment">Entertainment</option>
+                            <option value="shopping">Shopping</option>
+                            <option value="bills">Bills & Utilities</option>
+                        </select>
+                    </div>
+
+                    <div class="transaction-sort input-col">
+                        <i class="fa fa-sort"></i>
+                        <select id="sort-transaction">
+                            <option value="date">Date</option>
+                            <option value="amount">Amount</option>
+                            <option value="name">Name</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Make this a slider? -->
-            <div class="input-row">
-                <div class="input-col">
-                    <label for="start-date">From</label>
-                    <input type="date" id="start-date">
-                </div>
-                <div class="input-col">
-                    <label for="end-date">To</label>
-                    <input type="date" id="end-date">
+                
+                <!-- Make this a slider? -->
+                <div class="input-row">
+                    <div class="input-col">
+                        <label for="start-date">From</label>
+                        <input type="date" id="start-date">
+                    </div>
+                    <div class="input-col">
+                        <label for="end-date">To</label>
+                        <input type="date" id="end-date">
+                    </div>
                 </div>
             </div>
 
@@ -179,6 +187,16 @@
             'start-date',
             'end-date'
         );
+
+        const filterBtn = document.getElementById('filter-btn');
+        const filtersSection = document.getElementById('filters-section');
+
+        filterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            filtersSection.classList.toggle('visible');
+            filtersSection.style.display = 'block'
+        });
     });
 
     
