@@ -17,3 +17,13 @@ exports.getBudgetsForUser = (req, res, next) => {
 
     next();
 };
+
+exports.getBudgetById = (req, res, next) => {
+    const budgetId = parseInt(req.params.id);
+    const budget = budgets.find(b => b.id === budgetId);
+    if (!budget) {
+        return res.status(404).send('Budget not found');
+    }
+    req.budget = budget;
+    next();
+};

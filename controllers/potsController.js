@@ -20,3 +20,13 @@ exports.getPotsForUser = (req, res, next) => {
 
     next();
 };
+
+exports.getPotById = (req, res, next) => {
+    const potId = parseInt(req.params.id);
+    const pot = pots.find(p => p.id === potId);
+    if (!pot) {
+        return res.status(404).send('Pot not found');
+    }
+    req.pot = pot;
+    next();
+};

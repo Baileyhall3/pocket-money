@@ -1,7 +1,7 @@
 const express = require('express');
 const engine = require('ejs-mate');
 const app = express();
-const port = process.env.PORT || 3000; // Use the environment port or default to 3000
+const port = process.env.PORT || 3001; // Use the environment port or default to 3000
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
@@ -25,6 +25,10 @@ app.use(usersRoutes);
 app.use(dashboardRoutes);
 app.use(transactionsRoutes);
 app.use(alertsRoutes);
+
+app.use((req, res, next) => {
+  res.status(404).render('404', { title: "404 - Not Found" });
+});
 
 // If the app is not running in a serverless environment (i.e., local dev), listen on a port
 if (require.main === module) {

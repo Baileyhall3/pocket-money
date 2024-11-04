@@ -46,4 +46,18 @@ router.get('/savings',
     }
 );
 
+router.get('/accounts/:id', 
+    userController.getUser, 
+    accountsController.getAccountById, 
+    alertsController.getAlertsForUser, 
+    (req, res) => {
+        res.render('accountDetails', {
+            title: "Account Details",
+            user: req.user,
+            account: req.account,
+            userAlerts: req.userAlerts,
+        });
+    }
+);
+
 module.exports = router;

@@ -6,7 +6,7 @@ const transactionsController = require('../controllers/transactionsController');
 const alertsController = require('../controllers/alertsController');
 
 
-router.get('/', 
+router.get('/index', 
     userController.getUser, 
     accountsController.getAccountsForUser, 
     transactionsController.getRecentTransactionsForUser,

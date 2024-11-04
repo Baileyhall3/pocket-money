@@ -19,3 +19,13 @@ exports.getAccountsForUser = (req, res, next) => {
 
     next();
 };
+
+exports.getAccountById = (req, res, next) => {
+    const accountId = parseInt(req.params.id);
+    const account = accounts.find(acc => acc.id === accountId);
+    if (!account) {
+        return res.status(404).send('Account not found');
+    }
+    req.account = account;
+    next();
+};

@@ -57,55 +57,57 @@
                     const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
                     const limitedTransactions = accountTransactions.slice(0, 5);
                 %>
-                <div class="account-container container-rounded-pointer">
-                    <% if (limitedTransactions.length > 0) { %>
-                        <div class="account-chart-container">
-                            <canvas id="account-chart-<%= account.id %>"></canvas>
-                        </div>
-                    <% } %>
-                    
-                    <div class="account-details">
-                        <h5 class="account-title">
-                            <%= account.name %>
-                            <% if (account.sharedWithId) { %>
-                                - shared with 
-                                <% if (account.sharedWithId === user.id) { %>
-                                    me
-                                <% } else { %>
-                                    <%= account.sharedWithId %>
-                                <% } %>
-                            <% } %>
-                        </h5>
+                <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;  ">
+                    <div class="account-container container-rounded-pointer">
                         <% if (limitedTransactions.length > 0) { %>
-                            <% limitedTransactions.forEach(transaction => { %>
-                                <% if (transaction.accountId === account.id) { %>
-                                    <div class="transaction">
-                                        <div class="money-bar-header">
-                                            <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
-                                            </h5>
-                                            <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
-                                                <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
-                                            </p>
-                                        </div>
-                                        <div class="money-bar-header" style="margin-bottom: 20px;">
-                                            <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                <%= transaction.category %>
-                                            </h5>
-                                            <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                                <%= transaction.dateMade %>
-                                            </p>
-                                        </div>
-                                    </div>
-                                <% } %>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="">
-                                No transactions for this account yet! Let's log one
+                            <div class="account-chart-container">
+                                <canvas id="account-chart-<%= account.id %>"></canvas>
                             </div>
                         <% } %>
+                        
+                        <div class="account-details">
+                            <h5 class="account-title">
+                                <%= account.name %>
+                                <% if (account.sharedWithId) { %>
+                                    - shared with 
+                                    <% if (account.sharedWithId === user.id) { %>
+                                        me
+                                    <% } else { %>
+                                        <%= account.sharedWithId %>
+                                    <% } %>
+                                <% } %>
+                            </h5>
+                            <% if (limitedTransactions.length > 0) { %>
+                                <% limitedTransactions.forEach(transaction => { %>
+                                    <% if (transaction.accountId === account.id) { %>
+                                        <div class="transaction">
+                                            <div class="money-bar-header">
+                                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                </h5>
+                                                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                                </p>
+                                            </div>
+                                            <div class="money-bar-header" style="margin-bottom: 20px;">
+                                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= transaction.category %>
+                                                </h5>
+                                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                                    <%= transaction.dateMade %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="">
+                                    No transactions for this account yet! Let's log one
+                                </div>
+                            <% } %>
+                        </div>
                     </div>
-                </div>
+                </a>
             <% }); %>
         <% } else { %>
             <div class="account-container container-rounded-pointer">

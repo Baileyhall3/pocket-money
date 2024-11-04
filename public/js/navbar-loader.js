@@ -1,10 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
     // Highlight active link
-    const currentPath = window.location.pathname.split('/').pop();
-    const navLinks = document.querySelectorAll('.nav-menu a'); // Select all nav links
+    const currentPath = window.location.pathname.replace(/^\//, "");
+
+    // Select all nav links
+    const navLinks = document.querySelectorAll('.nav-menu a');
+
+    // Loop through each link to check if its href matches any part of the current path
     navLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active'); // Add active class to the current page's link
+        // Remove leading "/" from link href to match against currentPath
+        const linkPath = link.getAttribute('href').replace(/^\//, "");
+
+        // Check if the current path includes the link path (for nested routes)
+        if (currentPath.includes(linkPath)) {
+            link.classList.add('active'); // Add active class to the matching link
+        } else {
+            link.classList.remove('active'); // Remove active class from non-matching links
         }
     });
 
