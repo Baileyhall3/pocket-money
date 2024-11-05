@@ -124,3 +124,15 @@ exports.searchUsers = (req, res, next) => {
     next();
 };
 
+exports.getSharedWithUser = (req, res, next) => {
+    const sharedWithId = req.sharedWithId;
+
+    if (!sharedWithId) {
+        req.sharedWithUser = null;
+        return next();
+    }
+
+    const sharedWithUser = getUserById(sharedWithId);
+    req.sharedWithUser = sharedWithUser;
+    next();
+};

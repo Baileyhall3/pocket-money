@@ -1073,7 +1073,6 @@ canvas {
     margin-bottom: 30px;
     display: flex;
     flex-direction: column; 
-    width: 50%; 
     padding: 20px; 
     box-sizing: border-box;
 }
@@ -1088,6 +1087,14 @@ canvas {
 .balance-container {
     flex-basis: 50%;
     box-sizing: border-box;
+}
+
+.variable-width-50 {
+    flex-basis: 50%;
+}
+
+.variable-width-80 {
+    width: 80%;
 }
 
 /* Hide the mobile version by default */
@@ -1238,7 +1245,11 @@ canvas {
         width: 100%;
     }
 
-    .transaction-section-detail {
+    .variable-width-50 {
+        width: 100%; 
+    }
+    
+    .variable-width-80 {
         width: 100%; 
     }
 }

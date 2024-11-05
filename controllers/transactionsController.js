@@ -133,6 +133,7 @@ const getAccountTransactions = (userId, userAccounts) => {
 // Fetch pot transactions for a user (including shared pots)
 const getPotTransactions = (userId, potIds) => {
     return transactions.filter(transaction => {
+        debugger;
         return transaction.potId && potIds.includes(transaction.potId) && transaction.userId === userId;
     });
 };
@@ -241,9 +242,9 @@ exports.getTransactionsForAccount = (req, res, next) => {
 // Pot detail page - All pot transactions for a given pot
 exports.getTransactionsForPot = (req, res, next) => {
     const userId = req.user.id;
-    const userPot = req.pot;
+    const userPotId = req.pot.id;
 
-    const potTrans = getPotTransactions(userId, [userPot]);
+    const potTrans = getPotTransactions(userId, [userPotId]);
 
     req.potTransactions = potTrans;
 

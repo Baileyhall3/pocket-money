@@ -9,6 +9,10 @@ app.use(express.static(__dirname + '/public'));
 
 const path = require('path');
 
+app.get('/', (req, res) => {
+  res.redirect('/index');
+});
+
 // Set the views directory explicitly
 app.set('views', path.join(__dirname, 'views'));
 

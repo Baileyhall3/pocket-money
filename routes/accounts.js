@@ -52,7 +52,6 @@ router.get('/accounts/:id',
     alertsController.getAlertsForUser, 
     transactionsController.getTransactionsForAccount,
     (req, res) => {
-        // const accountId = parseInt(req.params.account.id);
         const page = parseInt(req.query.page) || 1;
         const itemsPerPage = 10;
         const start = (page - 1) * itemsPerPage;
@@ -79,20 +78,23 @@ router.get('/accounts/:id',
 
 router.get('/savings/pot/:id', 
     userController.getUser, 
-    potsController.getPotById, 
+    potsController.getPotById,
+    (req, res, next) => {
+        req.sharedWithId = req.pot.sharedWithId;
+        next();
+    },
+    userController.getSharedWithUser,
     alertsController.getAlertsForUser, 
     transactionsController.getTransactionsForPot,
     (req, res) => {
-        // const accountId = parseInt(req.params.account.id);
         const page = parseInt(req.query.page) || 1;
         const itemsPerPage = 10;
         const start = (page - 1) * itemsPerPage;
         const end = start + itemsPerPage;
 
-        // Filter transactions for this account only
-        const potTransactions = req.potTransactions
+        const potTransactions = req.potTransactions || [];
 
-        // Get transactions for the current page
+        // Paginate transactions for the current page
         const paginatedTransactions = potTransactions.slice(start, end);
         const totalPages = Math.ceil(potTransactions.length / itemsPerPage);
 
@@ -101,7 +103,8 @@ router.get('/savings/pot/:id',
             user: req.user,
             pot: req.pot,
             userAlerts: req.userAlerts,
-            transactions: paginatedTransactions,
+            sharedWithUser: req.sharedWithUser,
+            transactions: paginatedTransactions, // Render the paginated transactions only
             currentPage: page,
             totalPages
         });

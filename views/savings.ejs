@@ -1,66 +1,70 @@
 <% layout('layout') %>
 <div class="flex-container">
-<div class="content-wrapper">
-    <div style=" width: 90%;">
-        <div style="margin-bottom: 30px; align-self: self-start;">
-            <div class="container-header">
-                <h2>My Pots</h2>
-                <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
-            </div>
-            <div class="savings-container">
-                <% if (pots.length > 0) { %>
-                    <% pots.forEach((pot)=> { %>
-                        <a href="/savings/pot/<%= pot.id %>" class="side-container" style="text-decoration: none; color: inherit;">
+    <div class="content-wrapper">
+        <div style=" width: 90%;">
+            <div style="margin-bottom: 30px; align-self: self-start;">
+                <div class="container-header">
+                    <h2>My Pots</h2>
+                    <!-- <button class="icon-btn" id="add-btn">
+                        <a href="/search"><i class="fa fa-plus"></i></a> 
+                    </button> -->
+                    <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
+                </div>
+                <div class="savings-container">
+                    <% if (pots.length > 0) { %>
+                        <% pots.forEach((pot)=> { %>
+                            <a href="/savings/pot/<%= pot.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
                                     <%= pot.name %>
+                                    <!--Use an icon instead of displaying 'shared with.. etc'?-->
                                     <% if (pot.sharedWithId) { %>
                                         - shared with <%= pot.sharedWithId %>
                                     <% } %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
-                                    £<span id="pot-current-amount-<%= pot.id %>">0</span> out of £<%= pot.targetAmount %>
+                                    £<%= pot.actualAmount %> out of £<%= pot.targetAmount %>
                                 </h5>
                                 <canvas id="pot-chart-<%= pot.id %>"></canvas>
-                        </a>
-                    <% }); %>
-                <% } else { %>
-                    <div>
-                        No pots created. Let's create one!
-                    </div>
-                <% } %>
-            </div>
-        </div>
-        
-        
-        <div style="margin-bottom: 30px; align-self: self-start;">
-            <div class="container-header">
-                <h2>My Budgets</h2>
-                <h3><a id="addBudget" onclick="openModal('newBudgetModal')" class="link" href="#">Add New</a></h3>
-            </div>
-            <div class="savings-container">
-                <% if (budgets.length > 0) { %>
-                    <% budgets.forEach((budget)=> { %>
-                        <div class="side-container" data-type="budget">
-                            <h5 style="font-size: 16px">
-                                <%= budget.name %>
-                                <% if (budget.sharedWithId) { %>
-                                    - shared with <%= budget.sharedWithId %>
-                                <% } %>
-                            </h5>
-                            <h5 style="font-size: 18px; color: #45a049;">
-                                £<span id="budget-current-amount-<%= budget.id %>">0</span> out of £<%= budget.amount %></h5>
-                            <canvas id="budget-chart-<%= budget.id %>"></canvas>
+                            </a>
+                        <% }); %>
+                    <% } else { %>
+                        <div>
+                            No pots created. Let's create one!
                         </div>
-                    <% }); %>
-                <% } else { %>
-                    <div>
-                        No budgets created. Let's create one!
-                    </div>
-                <% } %>
+                    <% } %>
+                </div>
+            </div>
+            
+            
+            <div style="margin-bottom: 30px; align-self: self-start;">
+                <div class="container-header">
+                    <h2>My Budgets</h2>
+                    <h3><a id="addBudget" onclick="openModal('newBudgetModal')" class="link" href="#">Add New</a></h3>
+                </div>
+                <div class="savings-container">
+                    <% if (budgets.length > 0) { %>
+                        <% budgets.forEach((budget)=> { %>
+                            <div class="side-container" data-type="budget">
+                                <h5 style="font-size: 16px">
+                                    <%= budget.name %>
+                                    <% if (budget.sharedWithId) { %>
+                                        - shared with <%= budget.sharedWithId %>
+                                    <% } %>
+                                </h5>
+                                <h5 style="font-size: 18px; color: #45a049;">
+                                    £<span id="budget-current-amount-<%= budget.id %>">0</span> out of £<%= budget.amount %></h5>
+                                <canvas id="budget-chart-<%= budget.id %>"></canvas>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div>
+                            No budgets created. Let's create one!
+                        </div>
+                    <% } %>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script>
@@ -134,7 +138,7 @@
                 currentAmountElement.textContent = actualAmount.toFixed(0);
             }
 
-            createDoughnutChart(`pot-chart-${pot.id}`, actualAmount, pot.targetAmount); 
+            createDoughnutChart(`pot-chart-${pot.id}`, pot.actualAmount, pot.targetAmount); 
 
         });
     }

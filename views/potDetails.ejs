@@ -2,7 +2,7 @@
 
 <div class="flex-container">
     <div class="content-wrapper" style="align-self: start;">
-        <div class="container-header" style="width: 80%;">
+        <div class="container-header variable-width-80">
             <h2><%= pot.name %></h2>
             
             <div class="dropdown">
@@ -18,17 +18,17 @@
             <div class="charts-wrapper">
                 <div class="balance-container">
                     <div class="chart-container">
-                        <h3 id="title-display">Savings Goal - £1500 / £2000</h3>
+                        <h3 id="title-display">Savings Goal - £<%= pot.actualAmount + " / £" + pot.targetAmount %></h3>
                         <div id="money-bar">
                             <div class="money-pot green" style="width: 75%;">
-                                <div class="actual-value">75%</div>
+                                <!-- <div class="actual-value">75%</div> -->
                             </div>
                             <div class="money-pot remaining" style="width: 25%;">
-                                <div class="actual-value">25%</div>
+                                <!-- <div class="actual-value">25%</div> -->
                             </div>
                         </div>
                     
-                        <h3 id="budget-period">End Date: <span class="time-period-dates">15/10/2024</span></h3>
+                        <h3 id="budget-period">Target Date: <span class="time-period-dates"><%= pot.targetDate %></span></h3>
                     </div>
                     <div class="chart-container">
                         <h3>Savings Over the Last 7 Days</h3>
@@ -37,16 +37,31 @@
                 </div>
 
                 <div class="chart-container">
-                    <h3>Spending Breakdown by Category</h3>
+                    <h3>Savings Doughnut</h3>
                     <canvas id="spendingCategoriesChart"></canvas>
                 </div>
             </div>            
             
             <div class="charts-wrapper">
-                <div class="chart-container">
-                    <h3>Pot Participants</h3>
-                </div>
-                <div class="transaction-section-detail">
+                <% if (pot.sharedWithId) { %>
+                    <div class="container-rounded variable-width-50">
+                        <h3>Pot Participants</h3>
+                        <div class="friend-row">
+                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                            <span class="friend-name">
+                                <%= sharedWithUser.firstName + " " + sharedWithUser.lastName %>
+                            </span>
+            
+                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                                <div class="dropdown-content">
+                                    <a href="#">Profile</a>
+                                    <a href="#">Remove from Pot</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                <div class="transaction-section-detail variable-width-50">
                     <div class="container-header">
                         <h3>Pot Activity</h3>
                 
