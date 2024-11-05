@@ -3,25 +3,35 @@
 <div class="flex-container">
     <div class="content-wrapper" style="align-self: start;">
         <div class="container-header" style="width: 80%;">
-            <h2><%= account.name %></h2>
+            <h2><%= pot.name %></h2>
             
             <div class="dropdown">
-                <h3><a class="link" href="#">Actions</a></h3>
-                <div class="dropdown-content" id="add-dropdown">
-                    <a onclick="openModal('logTransactionModal')" href="#">Log Transaction</a>
-                    <a href="#">Account Details</a>
-                    <a href="#">Remove Account</a>
+                <h3><a class="link" id="pot-actions-btn" href="#">Pot Actions</a></h3>
+                <div class="dropdown-content" id="pot-actions-dropdown">
+                    <a href="#">Log Transaction</a>
+                    <a href="#">Pot Details</a>
+                    <a href="#">Delete Pot</a>
                 </div>
             </div>
         </div>
         <div class="charts">
             <div class="charts-wrapper">
                 <div class="balance-container">
-                    <div class="container-rounded">
-                        <h2>Balance: £<%= account.balance %></h2>
+                    <div class="chart-container">
+                        <h3 id="title-display">Savings Goal - £1500 / £2000</h3>
+                        <div id="money-bar">
+                            <div class="money-pot green" style="width: 75%;">
+                                <div class="actual-value">75%</div>
+                            </div>
+                            <div class="money-pot remaining" style="width: 25%;">
+                                <div class="actual-value">25%</div>
+                            </div>
+                        </div>
+                    
+                        <h3 id="budget-period">End Date: <span class="time-period-dates">15/10/2024</span></h3>
                     </div>
                     <div class="chart-container">
-                        <h3>Spending Over the Last 7 Days</h3>
+                        <h3>Savings Over the Last 7 Days</h3>
                         <canvas id="spendingBarChart" height="200"></canvas>
                     </div>
                 </div>
@@ -34,12 +44,11 @@
             
             <div class="charts-wrapper">
                 <div class="chart-container">
-                    <h3>Balance History</h3>
-                    <canvas id="balanceHistoryChart"></canvas>
+                    <h3>Pot Participants</h3>
                 </div>
                 <div class="transaction-section-detail">
                     <div class="container-header">
-                        <h3>Recent Transactions</h3>
+                        <h3>Pot Activity</h3>
                 
                         <button class="icon-btn" id="filter-btn">
                             <a href="#"><i class="fa fa-sliders"></i></a>
@@ -124,18 +133,12 @@
                         </div>
                     <% } else { %>
                         <div class="">
-                            No transactions for this account yet! Let's log one.
+                            No transactions for this pot yet! Let's log one.
                         </div>
-                    <% } %>
-                    
+                    <% } %>  
                 </div>
             </div>
-
         </div>
     </div>
-</div>
 
-<script src="/js/shared.js"></script>
-<script>
-    toggleFilterList('filter-btn', 'filters-section')
-</script>
+</div>

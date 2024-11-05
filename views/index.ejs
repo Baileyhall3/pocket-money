@@ -24,7 +24,7 @@
 
                     <h5 class="account-title">Recent Transactions</h5>
                     <% if (transactions.length > 0) { %>
-                        <% transactions.slice(0, 3).forEach(transaction => { %>
+                        <% transactions.slice(0, 5).forEach(transaction => { %>
                             <div class="transaction">
                                 <div class="money-bar-header">
                                     <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">

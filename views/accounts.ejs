@@ -57,7 +57,7 @@
                     const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
                     const limitedTransactions = accountTransactions.slice(0, 5);
                 %>
-                <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;  ">
+                <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;">
                     <div class="account-container container-rounded-pointer">
                         <% if (limitedTransactions.length > 0) { %>
                             <div class="account-chart-container">

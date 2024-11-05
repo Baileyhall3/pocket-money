@@ -1,28 +1,16 @@
 <% layout('layout') %>
-<div class="content-wrapper" style="margin-top: 8vh;">
-    <!-- <div style="margin-left: 100px;"> -->
-        <!-- <div class="chart-wrapper" style="width: 1360px;">
-            <div class="chart-container" style="width: 60%;">
-                <h3>Savings History</h3>
-                <canvas id="savings-chart"></canvas>
+<div class="flex-container">
+<div class="content-wrapper">
+    <div style=" width: 90%;">
+        <div style="margin-bottom: 30px; align-self: self-start;">
+            <div class="container-header">
+                <h2>My Pots</h2>
+                <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
             </div>
-
-            <div class="chart-container" style="width: 500px;">
-                <h3>Savings by Account</h3>
-                <canvas id="savingsByAccountChart" height="250"></canvas>
-            </div>
-        </div> -->
-
-        <div style="max-width: 1360px; width: 95%;">
-            <div style="margin-bottom: 30px; align-self: self-start;">
-                <div class="container-header">
-                    <h2>My Pots</h2>
-                    <h3><a id="addPot" onclick="openModal('newPotModal')" class="link" href="#">Add New</a></h3>
-                </div>
-                <div class="savings-container">
-                    <% if (pots.length > 0) { %>
-                        <% pots.forEach((pot)=> { %>
-                            <div class="side-container" data-type="pot">
+            <div class="savings-container">
+                <% if (pots.length > 0) { %>
+                    <% pots.forEach((pot)=> { %>
+                        <a href="/savings/pot/<%= pot.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
                                     <%= pot.name %>
                                     <% if (pot.sharedWithId) { %>
@@ -33,46 +21,46 @@
                                     £<span id="pot-current-amount-<%= pot.id %>">0</span> out of £<%= pot.targetAmount %>
                                 </h5>
                                 <canvas id="pot-chart-<%= pot.id %>"></canvas>
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div>
-                            No pots created. Let's create one!
-                        </div>
-                    <% } %>
-                </div>
-            </div>
-            
-            
-            <div style="margin-bottom: 30px; align-self: self-start;">
-                <div class="container-header">
-                    <h2>My Budgets</h2>
-                    <h3><a id="addBudget" onclick="openModal('newBudgetModal')" class="link" href="#">Add New</a></h3>
-                </div>
-                <div class="savings-container">
-                    <% if (budgets.length > 0) { %>
-                        <% budgets.forEach((budget)=> { %>
-                            <div class="side-container" data-type="budget">
-                                <h5 style="font-size: 16px">
-                                    <%= budget.name %>
-                                    <% if (budget.sharedWithId) { %>
-                                        - shared with <%= budget.sharedWithId %>
-                                    <% } %>
-                                </h5>
-                                <h5 style="font-size: 18px; color: #45a049;">
-                                    £<span id="budget-current-amount-<%= budget.id %>">0</span> out of £<%= budget.amount %></h5>
-                                <canvas id="budget-chart-<%= budget.id %>"></canvas>
-                            </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div>
-                            No budgets created. Let's create one!
-                        </div>
-                    <% } %>
-                </div>
+                        </a>
+                    <% }); %>
+                <% } else { %>
+                    <div>
+                        No pots created. Let's create one!
+                    </div>
+                <% } %>
             </div>
         </div>
-    <!-- </div> -->
+        
+        
+        <div style="margin-bottom: 30px; align-self: self-start;">
+            <div class="container-header">
+                <h2>My Budgets</h2>
+                <h3><a id="addBudget" onclick="openModal('newBudgetModal')" class="link" href="#">Add New</a></h3>
+            </div>
+            <div class="savings-container">
+                <% if (budgets.length > 0) { %>
+                    <% budgets.forEach((budget)=> { %>
+                        <div class="side-container" data-type="budget">
+                            <h5 style="font-size: 16px">
+                                <%= budget.name %>
+                                <% if (budget.sharedWithId) { %>
+                                    - shared with <%= budget.sharedWithId %>
+                                <% } %>
+                            </h5>
+                            <h5 style="font-size: 18px; color: #45a049;">
+                                £<span id="budget-current-amount-<%= budget.id %>">0</span> out of £<%= budget.amount %></h5>
+                            <canvas id="budget-chart-<%= budget.id %>"></canvas>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div>
+                        No budgets created. Let's create one!
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 
 <script>
@@ -134,7 +122,6 @@
         pots.forEach(pot => {
             const potId = pot.id;
 
-            // Filter transactions for the specific account
             const filteredTransactions = potTransactions.filter(transaction => transaction.potId === potId);
 
             // Calculate the total actual amount from the filtered transactions
@@ -159,7 +146,6 @@
         budgets.forEach(budget => {
             const budgetId = budget.id;
 
-            // Filter transactions for the specific account
             const filteredTransactions = budgetTransactions.filter(transaction => transaction.budgetId === budgetId);
 
             // Calculate the total actual amount from the filtered transactions

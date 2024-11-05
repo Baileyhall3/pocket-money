@@ -8,6 +8,8 @@ const transactions = [
     { id: 4, name: "Netflix", amount: 10, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "23/10/2024", accountId: 1, userId: 1, recurrentId: 1 },
     { id: 5, name: "Amazon", amount: 8.99, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "20/10/2024", accountId: 1, userId: 1, recurrentId: 2 },
     { id: 6, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 1, userId: 1 },
+    { id: 95, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 1, userId: 1 },
+
 
     // Account id 4 transactions (user 2)
     { id: 7, name: "Gym Membership", amount: 17.99, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "1/09/2024", accountId: 4, userId: 2, recurrentId: 5 },
@@ -220,6 +222,30 @@ exports.getAccountTransactionsForUser = (req, res, next) => {
     const accountTrans = getAccountTransactions(userId, userAccounts);
 
     req.accountTransactions = accountTrans;
+
+    next();
+};
+
+// Accounts detail page - All account transactions for a given account
+exports.getTransactionsForAccount = (req, res, next) => {
+    const userId = req.user.id;
+    const userAccount = req.account;
+
+    const accountTrans = getAccountTransactions(userId, [userAccount]);
+
+    req.accountTransactions = accountTrans;
+
+    next();
+};
+
+// Pot detail page - All pot transactions for a given pot
+exports.getTransactionsForPot = (req, res, next) => {
+    const userId = req.user.id;
+    const userPot = req.pot;
+
+    const potTrans = getPotTransactions(userId, [userPot]);
+
+    req.potTransactions = potTrans;
 
     next();
 };

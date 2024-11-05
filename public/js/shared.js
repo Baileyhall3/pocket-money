@@ -101,3 +101,18 @@ function getLast7Days() {
 
     return last7Days;
 }
+
+
+function toggleFilterList(filterBtnElem, filterSectionElem) {
+    const filterBtn = document.getElementById(filterBtnElem);
+    const filtersSection = document.getElementById(filterSectionElem); 
+
+    if (!filterBtn || !filtersSection) { return; }
+
+    filterBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        filtersSection.classList.toggle('visible');
+        filtersSection.style.display = 'block'
+    });
+}
