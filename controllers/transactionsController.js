@@ -251,6 +251,18 @@ exports.getTransactionsForPot = (req, res, next) => {
     next();
 };
 
+// Budget detail page - All pot transactions for a given budget
+exports.getTransactionsForBudget = (req, res, next) => {
+    const userId = req.user.id;
+    const userBudgetId = req.budget.id;
+
+    const budgetTrans = getBudgetTransactions(userId, [userBudgetId]);
+
+    req.budgetTransactions = budgetTrans;
+
+    next();
+};
+
 // Savings page - All pot and budget transactions (including shared)
 exports.getSavingsTransactionsForUser = (req, res, next) => {
     const userId = req.user.id;
