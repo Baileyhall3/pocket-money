@@ -1,0 +1,159 @@
+<% layout('layout') %>
+
+<div class="flex-container">
+    <div class="content-wrapper" style="align-self: start;">
+        <div class="container-header variable-width-80">
+            <h2><%= budget.name %></h2>
+            
+            <div class="dropdown">
+                <h3><a class="link" id="budget-actions-btn" href="#">budget Actions</a></h3>
+                <div class="dropdown-content" id="budget-actions-dropdown">
+                    <a href="#">Log Transaction</a>
+                    <a href="#">budget Details</a>
+                    <a href="#">Delete budget</a>
+                </div>
+            </div>
+        </div>
+        <div class="charts">
+            <div class="charts-wrapper">
+                <div class="balance-container">
+                    <div class="chart-container">
+                        <h3 id="title-display">Savings Goal - £<%= budget.actualAmount + " / £" + budget.targetAmount %></h3>
+                        <div id="money-bar">
+                            <div class="money-pot green" style="width: 75%;">
+                                <!-- <div class="actual-value">75%</div> -->
+                            </div>
+                            <div class="money-pot remaining" style="width: 25%;">
+                                <!-- <div class="actual-value">25%</div> -->
+                            </div>
+                        </div>
+                    
+                        <h3 id="budget-period">Target Date: <span class="time-period-dates"><%= budget.targetDate %></span></h3>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Savings Over the Last 7 Days</h3>
+                        <canvas id="spendingBarChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Savings Doughnut</h3>
+                    <canvas id="spendingCategoriesChart"></canvas>
+                </div>
+            </div>            
+            
+            <div class="charts-wrapper">
+                <% if (budget.sharedWithId) { %>
+                    <div class="container-rounded variable-width-50">
+                        <h3>budget Participants</h3>
+                        <div class="friend-row">
+                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                            <span class="friend-name">
+                                <%= sharedWithUser.firstName + " " + sharedWithUser.lastName %>
+                            </span>
+            
+                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                                <div class="dropdown-content">
+                                    <a href="#">Profile</a>
+                                    <a href="#">Remove from budget</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                <div class="transaction-section-detail variable-width-50">
+                    <div class="container-header">
+                        <h3>budget Activity</h3>
+                
+                        <button class="icon-btn" id="filter-btn">
+                            <a href="#"><i class="fa fa-sliders"></i></a>
+                        </button>
+                    </div>
+        
+                    <div class="filters" id="filters-section">
+                        <!-- Search by Transaction Name -->
+                        <div class="search input-row">
+                            <i class="fa fa-search"></i>
+                            <input type="text" id="search-transaction" placeholder="Search transactions...">
+                        </div>
+                        
+                        <div class="input-row">
+                            <!-- Filter by Category -->
+                            <div class="transaction-filter input-col">
+                                <i class="fa fa-filter"></i>
+                                <select id="filter-category">
+                                    <option value="all">All Categories</option>
+                                    <option value="food">Food & Dining</option>
+                                    <option value="entertainment">Entertainment</option>
+                                    <option value="shopping">Shopping</option>
+                                    <option value="bills">Bills & Utilities</option>
+                                </select>
+                            </div>
+        
+                            <!-- Sort Transactions -->
+                            <div class="transaction-sort input-col">
+                                <i class="fa fa-sort"></i>
+                                <select id="sort-transaction">
+                                    <option value="date">Date</option>
+                                    <option value="amount">Amount</option>
+                                    <option value="name">Name</option>
+                                </select>
+                            </div>   
+                        </div>
+        
+                        <!-- Filter by Date Range (use a slider instead?)-->
+                        <div class="input-row">
+                            <div class="input-col">
+                                <i class="fa fa-calendar"></i>
+                                <input type="date" id="start-date">
+                            </div>
+                            <div class="input-col">
+                                <i class="fa fa-calendar"></i>
+                                <input type="date" id="end-date">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <% if (transactions.length > 0) { %>
+                        <% transactions.forEach(transaction => { %>
+                            <div class="transaction">
+                                <div class="money-bar-header">
+                                    <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                        <%= transaction.name %>
+                                    </h5>
+                                    <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                        <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                    </p>
+                                </div>
+                                <div class="money-bar-header" style="margin-bottom: 20px;">
+                                    <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                        <%= transaction.category %>
+                                    </h5>
+                                    <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                        <%= transaction.dateMade %>
+                                    </p>
+                                </div>
+                            </div>
+                        <% }); %>
+                
+                        <!-- Pagination Controls -->
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %>" class="pagination-btn fa fa-arrow-left"></a>
+                            <% } %>
+                            <span>Page <%= currentPage %> of <%= totalPages %></span>
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %>"class="pagination-btn fa fa-arrow-right"></a>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="">
+                            No transactions for this budget yet! Let's log one.
+                        </div>
+                    <% } %>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

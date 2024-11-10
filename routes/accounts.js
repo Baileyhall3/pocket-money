@@ -31,7 +31,6 @@ router.get('/savings',
     userController.getUser, 
     budgetsController.getBudgetsForUser, 
     potsController.getPotsForUser, 
-    transactionsController.getSavingsTransactionsForUser,
     alertsController.getAlertsForUser, 
     (req, res) => {
         res.render('savings', {
@@ -39,8 +38,6 @@ router.get('/savings',
             budgets: req.userBudgets,
             pots: req.userPots,
             user: req.user,
-            potTransactions: req.potTransactions,
-            budgetTransactions: req.budgetTransactions,
             userAlerts: req.userAlerts,
         });
     }
@@ -104,7 +101,42 @@ router.get('/savings/pot/:id',
             pot: req.pot,
             userAlerts: req.userAlerts,
             sharedWithUser: req.sharedWithUser,
-            transactions: paginatedTransactions, // Render the paginated transactions only
+            transactions: paginatedTransactions,
+            currentPage: page,
+            totalPages
+        });
+    }
+);
+
+router.get('/savings/budget/:id', 
+    userController.getUser, 
+    budgetsController.getBudgetById,
+    (req, res, next) => {
+        req.sharedWithId = req.budget.sharedWithId;
+        next();
+    },
+    userController.getSharedWithUser,
+    alertsController.getAlertsForUser, 
+    transactionsController.getTransactionsForBudget,
+    (req, res) => {
+        const page = parseInt(req.query.page) || 1;
+        const itemsPerPage = 10;
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        const budgetTransactions = req.budgetTransactions || [];
+
+        // Paginate transactions for the current page
+        const paginatedTransactions = budgetTransactions.slice(start, end);
+        const totalPages = Math.ceil(budgetTransactions.length / itemsPerPage);
+
+        res.render('budgetDetails', {
+            title: "Budget Details",
+            user: req.user,
+            budget: req.budget,
+            userAlerts: req.userAlerts,
+            sharedWithUser: req.sharedWithUser,
+            transactions: paginatedTransactions,
             currentPage: page,
             totalPages
         });
