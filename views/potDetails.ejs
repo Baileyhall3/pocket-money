@@ -4,11 +4,10 @@
     <div class="content-wrapper" style="align-self: start;">
         <div class="container-header variable-width-80">
             <h2><%= pot.name %></h2>
-            
             <div class="dropdown">
                 <h3><a class="link" id="pot-actions-btn" href="#">Pot Actions</a></h3>
                 <div class="dropdown-content" id="pot-actions-dropdown">
-                    <a href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot' })" href="#">Log Transaction</a>
                     <a href="#">Pot Details</a>
                     <a href="#">Delete Pot</a>
                 </div>
@@ -16,7 +15,7 @@
         </div>
         <div class="charts">
             <div class="charts-wrapper">
-                <div class="balance-container">
+                <div class="balance-container variable-width-50">
                     <div class="chart-container">
                         <h3 id="title-display">Savings Goal - £<%= pot.actualAmount + " / £" + pot.targetAmount %></h3>
                         <div id="money-bar">
@@ -36,7 +35,7 @@
                     </div>
                 </div>
 
-                <div class="chart-container">
+                <div class="chart-container variable-width-50">
                     <h3>Savings Doughnut</h3>
                     <canvas id="spendingCategoriesChart"></canvas>
                 </div>
@@ -104,11 +103,9 @@
                         <!-- Filter by Date Range (use a slider instead?)-->
                         <div class="input-row">
                             <div class="input-col">
-                                <i class="fa fa-calendar"></i>
                                 <input type="date" id="start-date">
                             </div>
                             <div class="input-col">
-                                <i class="fa fa-calendar"></i>
                                 <input type="date" id="end-date">
                             </div>
                         </div>

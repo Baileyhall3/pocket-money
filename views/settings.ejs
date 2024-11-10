@@ -1,0 +1,77 @@
+<% layout('layout') %>
+
+<div class="flex-container">
+    <div class="settings-container variable-width-25">
+        <h2>SETTINGS</h2>
+        
+        <div style="border-bottom: 1px solid rgb(131 131 131);">
+            <!-- Default Currency -->
+            <div class="settings-section">
+                <h3>Default Currency</h3>
+                <select id="currency-selector" class="dropdown-select">
+                    <option value="GBP">British Pound (£)</option>
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                </select>
+            </div>
+    
+            <!-- Default Account -->
+            <div class="settings-section">
+                <h3>Default Account</h3>
+                <select id="default-account" class="dropdown-select">
+                    <option value="barclays">Barclays</option>
+                    <option value="savings">Savings</option>
+                    <option value="monzo">Monzo</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Notification Preferences -->
+        <div class="notifications-section">
+            <h3>Notifications</h3>
+            <label><input type="checkbox" id="transaction-alerts" checked> Transaction Alerts</label><br>
+            <label><input type="checkbox" id="weekly-summary"> Weekly Summary</label><br>
+            <label><input type="checkbox" id="budget-alerts" checked> Budget Alerts</label>
+        </div>
+    
+        <!-- Dark Mode -->
+        <div class="notifications-section">
+            <h3>Theme</h3>
+            <div>
+                <label><input type="radio" name="theme" value="light"> Light Mode</label><br>
+                <label><input type="radio" name="theme" value="dark"> Dark Mode</label><br>
+                <label><input type="radio" name="theme" value="auto" checked> Auto (System Default)</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sample code to save settings (placeholder)
+    document.getElementById('currency-selector').addEventListener('change', function() {
+        const selectedCurrency = this.value;
+        console.log('Default currency changed to:', selectedCurrency);
+        // Save this value to localStorage or backend
+    });
+
+    document.getElementById('transaction-alerts').addEventListener('change', function() {
+        const alertsEnabled = this.checked;
+        console.log('Transaction alerts:', alertsEnabled);
+        // Save this value to localStorage or backend
+    });
+
+    document.querySelectorAll('input[name="theme"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            const selectedTheme = this.value;
+            console.log('Theme changed to:', selectedTheme);
+            // Apply theme and save preference to localStorage or backend
+        });
+    });
+
+    document.getElementById('default-account').addEventListener('change', function() {
+        const selectedAccount = this.value;
+        console.log('Default account set to:', selectedAccount);
+        // Save this value to localStorage or backend
+    });
+
+</script>

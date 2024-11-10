@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <span class="close">&times;</span>
-            <h2>New Transaction</h2>
+            <h2>New Transaction for</h2>
         </div>
         
         <form id="logTransactionForm">
@@ -29,23 +29,21 @@
                     <label for="transactionCategory">Category:</label>
                     <select id="transactionCategory" name="transactionCategory" required>
                         <option value="" selected>-- Select Category --</option>
-                        <option value="paycheck">Pay Check</option>
-                        <option value="deposit">Deposit</option>
-                        <option value="onlineShopping">Online Shopping</option>
-                        <option value="groceries">Groceries</option>
-                        <option value="transfer">Transferring Money</option>
+                        <% Object.keys(transactionCategories).forEach(key => { %>
+                            <option value="<%= key %>"><%= transactionCategories[key] %></option>
+                        <% }) %>
                     </select>
                 </div>
             </div>
             
 
-            <label for="transactionAccount">Account:</label>
+            <!-- <label for="transactionAccount">Account:</label>
             <select id="transactionAccount" name="transactionAccount" required>
                 <option value="" selected>-- Select Account --</option>
                 <option value="barclays">Barclays</option>
                 <option value="monzo">Monzo</option>
                 <option value="joint">Joint</option>
-            </select>
+            </select> -->
         
             <label for="recurring">
                 <input type="checkbox" id="recurring" name="recurring">
@@ -56,3 +54,22 @@
         </form>
     </div>
 </div>
+
+<script>
+
+app.post('/log-transaction', (req, res) => {
+    const { transactionName, transactionAmount, transactionType, transactionCategory, id, type } = req.body;
+
+    // Determine the type of item based on which ID is present
+    if (potId) {
+        // Handle transaction for pot
+    } else if (accountId) {
+        // Handle transaction for account
+    } else if (budgetId) {
+        // Handle transaction for budget
+    }
+
+    // Save transaction and redirect or respond
+    res.redirect('/somewhere');
+});
+</script>

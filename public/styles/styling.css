@@ -1089,12 +1089,54 @@ canvas {
     box-sizing: border-box;
 }
 
+.settings-container {
+    padding: 20px;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f4f4f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: auto;
+}
+.settings-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.settings-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.settings-section h3 {
+    margin: 0;
+    flex: 1;
+}
+/* Rounded and styled dropdowns */
+.dropdown-select {
+    width: 200px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    appearance: none; /* Removes default arrow in most browsers */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+
 .variable-width-50 {
     flex-basis: 50%;
 }
 
 .variable-width-80 {
     width: 80%;
+}
+
+.variable-width-25 {
+    flex-basis: 25%;
 }
 
 /* Hide the mobile version by default */
@@ -1251,5 +1293,9 @@ canvas {
     
     .variable-width-80 {
         width: 100%; 
+    }
+
+    .variable-width-25 {
+        flex-basis: 100%;
     }
 }

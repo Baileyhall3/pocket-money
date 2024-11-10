@@ -271,7 +271,7 @@ exports.getRecentTransactionsForUser = (req, res, next) => {
     const userId = req.user.id;
     const accountIds = req.userAccounts.map(account => account.id);
     const today = new Date()
-    const recentDate = new Date().setDate(today.getDate() - 30)
+    const recentDate = new Date().setDate(today.getDate() - 60)
 
     const recentTrans = getRecentTransactions(userId, accountIds, recentDate);
 
