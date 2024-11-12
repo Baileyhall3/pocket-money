@@ -26,10 +26,10 @@ const transactions = [
     { id: 16, name: "Internet Bill", amount: 40, type: "expense", category: TransactionCategories.UTILITIES, dateMade: "20/10/2024", accountId: 5, userId: 1 },
 
     // Budget id 1 transactions (user 1, linked to account id 1)
-    { id: 17, name: "Groceries", amount: 150, type: "expense", category: TransactionCategories.FOOD, dateMade: "10/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 18, name: "Gas Station", amount: 50, type: "expense", category: TransactionCategories.TRANSPORT, dateMade: "09/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 19, name: "Dining Out", amount: 60, type: "expense", category: TransactionCategories.FOOD, dateMade: "06/10/2024", budgetId: 1, accountId: 1, userId: 1 },
-    { id: 20, name: "Streaming Service", amount: 15, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "02/10/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 17, name: "Groceries", amount: 150, type: "expense", category: TransactionCategories.FOOD, dateMade: "10/11/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 18, name: "Gas Station", amount: 50, type: "expense", category: TransactionCategories.TRANSPORT, dateMade: "09/11/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 19, name: "Dining Out", amount: 60, type: "expense", category: TransactionCategories.FOOD, dateMade: "06/11/2024", budgetId: 1, accountId: 1, userId: 1 },
+    { id: 20, name: "Streaming Service", amount: 15, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "02/11/2024", budgetId: 1, accountId: 1, userId: 1 },
 
     // Budget id 4 transactions (user 2)
     { id: 21, name: "Groceries", amount: 200, type: "expense", category: TransactionCategories.FOOD, dateMade: "15/10/2024", accountId: 4, userId: 2 },
@@ -37,9 +37,9 @@ const transactions = [
     { id: 23, name: "Travel Expenses", amount: 50, type: "expense", category: TransactionCategories.TRANSPORT, dateMade: "19/10/2024", accountId: 4, userId: 2 },
 
     // Pot id 1 transactions (user 1)
-    { id: 24, name: "Bonus", amount: 300, type: "income", category: TransactionCategories.BONUS, dateMade: "10/10/2024", potId: 1, userId: 1 },
-    { id: 25, name: "Side Hustle", amount: 250, type: "income", category: TransactionCategories.FREELANCING, dateMade: "05/10/2024", potId: 1, userId: 1 },
-    { id: 26, name: "Gift", amount: 100, type: "income", category: TransactionCategories.GIFT, dateMade: "02/10/2024", potId: 1, userId: 1 }
+    { id: 24, name: "Bonus", amount: 300, type: "income", category: TransactionCategories.BONUS, dateMade: "10/11/2024", potId: 1, userId: 1 },
+    { id: 25, name: "Side Hustle", amount: 250, type: "income", category: TransactionCategories.FREELANCING, dateMade: "09/11/2024", potId: 1, userId: 1 },
+    { id: 26, name: "Gift", amount: 100, type: "income", category: TransactionCategories.GIFT, dateMade: "06/11/2024", potId: 1, userId: 1 }
 ];
 
 
@@ -191,16 +191,50 @@ function getTotalSpendingByCategory(userId) {
     return categoryTotals;
 }
 
+function getTotalSpendingByCategory(userId, type = null, id = null) {
+    const categoryTotals = {};
+
+    // Initialize totals for each category
+    Object.values(TransactionCategories).forEach(category => {
+        categoryTotals[category] = 0;
+    });
+
+    let objectIdField = null;
+    let objectType = '';
+
+    if (type) {
+        objectIdField = type + 'Id';
+        objectType = type;
+    }
+
+    // Iterate through transactions and filter by userId, type, and id if specified
+    transactions
+        .filter(transaction => {
+            return (
+                transaction.userId === userId &&
+                transaction.type === 'expense' &&
+                (type ? (type === objectType && transaction[objectIdField] === id) :
+                transaction.id != -1)
+            );
+        })
+        .forEach(transaction => {
+            categoryTotals[transaction.category] += transaction.amount;
+        });
+
+    return categoryTotals;
+}
+
 // Exports
 
-// Index - spending by category
 exports.getTotalSpendingByCategoryByUser = (req, res, next) => {
     const userId = req.user.id; 
+    const type = req.type; // Use type set by the route
+    const id = req.id;
 
-    const categorySpending = getTotalSpendingByCategory(userId);
+    // Pass userId, type, and id to getTotalSpendingByCategory
+    const categorySpending = getTotalSpendingByCategory(userId, type, id);
 
     req.spendingByCategory = categorySpending;
-
     next();
 };
 

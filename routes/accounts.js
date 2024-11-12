@@ -46,8 +46,16 @@ router.get('/savings',
 router.get('/accounts/:id', 
     userController.getUser, 
     accountsController.getAccountById, 
+    (req, res, next) => {
+        req.sharedWithId = req.account.sharedWithId;
+        req.type = 'account';
+        req.id = req.account.id;
+        next();
+    },
+    userController.getSharedWithUser,
     alertsController.getAlertsForUser, 
     transactionsController.getTransactionsForAccount,
+    transactionsController.getTotalSpendingByCategoryByUser,
     (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const itemsPerPage = 10;
@@ -66,6 +74,8 @@ router.get('/accounts/:id',
             user: req.user,
             account: req.account,
             userAlerts: req.userAlerts,
+            sharedWithUser: req.sharedWithUser,
+            categorySpending: req.spendingByCategory,
             transactions: paginatedTransactions,
             currentPage: page,
             totalPages
@@ -113,11 +123,14 @@ router.get('/savings/budget/:id',
     budgetsController.getBudgetById,
     (req, res, next) => {
         req.sharedWithId = req.budget.sharedWithId;
+        req.type = 'budget';
+        req.id = req.budget.id;
         next();
     },
     userController.getSharedWithUser,
     alertsController.getAlertsForUser, 
     transactionsController.getTransactionsForBudget,
+    transactionsController.getTotalSpendingByCategoryByUser,
     (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const itemsPerPage = 10;
@@ -136,6 +149,7 @@ router.get('/savings/budget/:id',
             budget: req.budget,
             userAlerts: req.userAlerts,
             sharedWithUser: req.sharedWithUser,
+            categorySpending: req.spendingByCategory,
             transactions: paginatedTransactions,
             currentPage: page,
             totalPages

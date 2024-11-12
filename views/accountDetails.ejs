@@ -20,23 +20,45 @@
                     <div class="container-rounded">
                         <h2>Balance: £<%= account.balance %></h2>
                     </div>
-                    <div class="chart-container">
-                        <h3>Spending Over the Last 7 Days</h3>
-                        <canvas id="spendingBarChart" height="200"></canvas>
-                    </div>
+                    <% if (transactions.length > 0) { %>
+                        <div class="chart-container" style="max-height: 500px; padding-bottom: 10vh;">
+                            <h3>Spending Over the Last 7 Days</h3>
+                            <canvas id="recentSpendingChart"></canvas>
+                        </div>
+                    <% } %>
                 </div>
 
-                <div class="chart-container">
-                    <h3>Spending Breakdown by Category</h3>
-                    <canvas id="spendingCategoriesChart"></canvas>
-                </div>
+                <% if (transactions.length > 0) { %>
+                    <div class="spending-categories-container chart-container">
+                        <h3>Spending Breakdown by Category</h3>
+                        <canvas id="spendingCategoriesChart"></canvas>
+                    </div>
+                <% } %>
             </div>            
             
             <div class="charts-wrapper">
-                <div class="chart-container">
+                <!-- <div class="chart-container">
                     <h3>Balance History</h3>
                     <canvas id="balanceHistoryChart"></canvas>
-                </div>
+                </div> -->
+                <% if (account.sharedWithId) { %>
+                    <div class="container-rounded variable-width-50">
+                        <h3>Account Partner</h3>
+                        <div class="friend-row">
+                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                            <span class="friend-name">
+                                <%= sharedWithUser.firstName + " " + sharedWithUser.lastName %>
+                            </span>
+            
+                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                                <div class="dropdown-content">
+                                    <a href="#">Profile</a>
+                                    <a href="#">Remove from account</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
                 <div class="transaction-section-detail variable-width-50">
                     <div class="container-header">
                         <h3>Recent Transactions</h3>
@@ -137,5 +159,81 @@
 
 <script src="/js/shared.js"></script>
 <script>
-    toggleFilterList('filter-btn', 'filters-section')
+    toggleFilterList('filter-btn', 'filters-section');
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const transactions = <%- JSON.stringify(transactions) %>; // Get transaction data
+        
+        if (transactions.length > 0) {
+
+            // Get the last 7 days in DD/MM/YYYY format
+            const labels = getLast7Days();
+
+            // Prepare the data for the chart
+            const spendingData = labels.map(date => {
+                // Sum up the transactions for each specific date
+                const dailyTotal = transactions
+                    .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
+                    .reduce((total, transaction) => total + transaction.amount, 0);
+                return dailyTotal;
+            });
+
+            // Chart configuration
+            const ctx = document.getElementById('recentSpendingChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels, // Last 7 days
+                    datasets: [{
+                        label: 'Spending',
+                        data: spendingData, // Dynamic spending data
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        }
+                    }
+                }
+            });
+
+            const categorySpending = <%- JSON.stringify(categorySpending) %>; 
+
+            const filteredCategorySpending = Object.entries(categorySpending).filter(([category, value]) => value > 0);
+            const chartLabels = filteredCategorySpending.map(([category]) => category);
+            const chartValues = filteredCategorySpending.map(([, value]) => value);
+
+            const pieData = {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartValues,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'], // Add colour for each category (12)
+                    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+                }]
+            };
+
+            // pie chart for recent spending
+            const spendingCategoriesCtx = document.getElementById('spendingCategoriesChart').getContext('2d');
+            new Chart(spendingCategoriesCtx, {
+                type: 'pie',
+                data: pieData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+        }
+    });
 </script>
