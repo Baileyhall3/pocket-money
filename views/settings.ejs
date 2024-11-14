@@ -1,32 +1,50 @@
 <% layout('layout') %>
 
 <div class="flex-container">
-    <div class="settings-container variable-width-25">
+    <div class="settings-container variable-width-35">
         <h2>SETTINGS</h2>
         
         <div style="border-bottom: 1px solid rgb(131 131 131);">
-            <!-- Default Currency -->
             <div class="settings-section">
                 <h3>Default Currency</h3>
-                <select id="currency-selector" class="dropdown-select">
+                <select id="currency-selector" class="input-box">
                     <option value="GBP">British Pound (£)</option>
                     <option value="USD">US Dollar ($)</option>
                     <option value="EUR">Euro (€)</option>
                 </select>
             </div>
     
-            <!-- Default Account -->
             <div class="settings-section">
                 <h3>Default Account</h3>
-                <select id="default-account" class="dropdown-select">
-                    <option value="barclays">Barclays</option>
-                    <option value="savings">Savings</option>
-                    <option value="monzo">Monzo</option>
+                <div class="tooltip">
+                    <select id="default-account" class="input-box">
+                        <option value="" selected>-- Select Account --</option>
+                            <% accounts.forEach(account => { %>
+                                <option value="<%= account.id %>"><%= account.name %></option>
+                            <% }) %>
+                    </select>
+                    <!-- <span class="tooltiptext">Tooltip text</span> -->
+                </div>
+                
+
+            </div>
+
+            <div class="settings-section">
+                <h3>Active Budget</h3>
+                <select id="active-budget" class="input-box">
+                    <option value="" selected>-- Select Budget --</option>
+                        <% budgets.forEach(budget => { %>
+                            <option value="<%= budget.id %>"><%= budget.name %></option>
+                        <% }) %>
                 </select>
+            </div>
+
+            <div class="settings-section">
+                <h3>Low Balance Threshold</h3>
+                <input id="low-balance-threshold" type="number" class="input-box" placeholder="£" />
             </div>
         </div>
         
-        <!-- Notification Preferences -->
         <div class="notifications-section">
             <h3>Notifications</h3>
             <label><input type="checkbox" id="transaction-alerts" checked> Transaction Alerts</label><br>
@@ -34,7 +52,6 @@
             <label><input type="checkbox" id="budget-alerts" checked> Budget Alerts</label>
         </div>
     
-        <!-- Dark Mode -->
         <div class="notifications-section">
             <h3>Theme</h3>
             <div>

@@ -58,28 +58,40 @@
                 <div class="sub-content">
                     <% if (userAccounts && userAccounts.length > 0) { %>
                         <% userAccounts.forEach((account, index) => { %>
-                            <!-- Sub-collapsible for each account -->
                             <button class="collapsible">
                                 <span><%= account.name %></span>
                                 <i class="fa fa-chevron-down"></i>
                             </button>
                             <div class="content">
-                                <ul class="transaction-list">
-                                    <!-- Transactions for the specific account -->
-                                    <% transactions.forEach(transaction => { %>
-                                        <% if (transaction.accountId === account.id) { %>
-                                            <li class="transaction <%= transaction.type %>" 
-                                                data-category="<%= transaction.category %>" 
-                                                data-date="<%= transaction.dateMade %>">
-                                                <span><strong><%= transaction.name %></strong></span>
-                                                <span>Amount: <%= transaction.amount %></span>
-                                                <span>Date: <%= transaction.dateMade %></span>
-                                                <span data-category="<%= transaction.category %>">Category: <%= transaction.category %></span>
-                                                <span>Type: <%= transaction.type %></span>
-                                            </li>
-                                        <% } %>
+                                <% 
+                                    const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
+                                %>
+                                <% if (accountTransactions.length > 0) { %>
+                                    <% accountTransactions.forEach(transaction => { %>
+                                        <div class="transaction">
+                                            <div class="money-bar-header">
+                                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                </h5>
+                                                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                                </p>
+                                            </div>
+                                            <div class="money-bar-header" style="margin-bottom: 20px;">
+                                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= transaction.category %>
+                                                </h5>
+                                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                                    <%= transaction.dateMade %>
+                                                </p>
+                                            </div>
+                                        </div>
                                     <% }); %>
-                                </ul>
+                                <% } else { %>
+                                    <div class="">
+                                        No transactions for this account yet! Let's log one
+                                    </div>
+                                <% } %>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -99,19 +111,35 @@
                                 <i class="fa fa-chevron-down"></i>
                             </button>
                             <div class="content">
-                                <ul class="transaction-list">
-                                    <% transactions.forEach(transaction => { %>
-                                        <% if (transaction.potId === pot.id) { %>
-                                            <li class="transaction <%= transaction.type %>" data-date="<%= transaction.dateMade %>">
-                                                <span><strong><%= transaction.name %></strong></span>
-                                                <span>Amount: <%= transaction.amount %></span>
-                                                <span>Date: <%= transaction.dateMade %></span>
-                                                <span data-category="<%= transaction.category %>">Category: <%= transaction.category %></span>
-                                                <span>Type: <%= transaction.type %></span>
-                                            </li>
-                                        <% } %>
+                                <% 
+                                    const potTransactions = transactions.filter(transaction => transaction.potId === pot.id);
+                                %>
+                                <% if (potTransactions.length > 0) { %>
+                                    <% potTransactions.forEach(transaction => { %>
+                                        <div class="transaction">
+                                            <div class="money-bar-header">
+                                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= pot.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                </h5>
+                                                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                                </p>
+                                            </div>
+                                            <div class="money-bar-header" style="margin-bottom: 20px;">
+                                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= transaction.category %>
+                                                </h5>
+                                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                                    <%= transaction.dateMade %>
+                                                </p>
+                                            </div>
+                                        </div>
                                     <% }); %>
-                                </ul>
+                                <% } else { %>
+                                    <div class="">
+                                        No transactions for this pot yet! Let's log one
+                                    </div>
+                                <% } %>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -131,19 +159,35 @@
                                 <i class="fa fa-chevron-down"></i>
                             </button>
                             <div class="content">
-                                <ul class="transaction-list">
-                                    <% transactions.forEach(transaction => { %>
-                                        <% if (transaction.budgetId === budget.id) { %>
-                                            <li class="transaction <%= transaction.type %>" data-category="<%= transaction.category %>" data-date="<%= transaction.dateMade %>">
-                                                <span><strong><%= transaction.name %></strong></span>
-                                                <span>Amount: <%= transaction.amount %></span>
-                                                <span>Date: <%= transaction.dateMade %></span>
-                                                <span>Category: <%= transaction.category %></span>
-                                                <span>Type: <%= transaction.type %></span>
-                                            </li>
-                                        <% } %>
+                                <% 
+                                    const budgetTransactions = transactions.filter(transaction => transaction.budgetId === budget.id);
+                                %>
+                                <% if (budgetTransactions.length > 0) { %>
+                                    <% budgetTransactions.forEach(transaction => { %>
+                                        <div class="transaction">
+                                            <div class="money-bar-header">
+                                                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= budget.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                </h5>
+                                                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                                </p>
+                                            </div>
+                                            <div class="money-bar-header" style="margin-bottom: 20px;">
+                                                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                                                    <%= transaction.category %>
+                                                </h5>
+                                                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                                                    <%= transaction.dateMade %>
+                                                </p>
+                                            </div>
+                                        </div>
                                     <% }); %>
-                                </ul>
+                                <% } else { %>
+                                    <div class="">
+                                        No transactions for this budget yet! Let's log one
+                                    </div>
+                                <% } %>
                             </div>
                         <% }); %>
                     <% } else { %>

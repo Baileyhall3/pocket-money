@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 });
 
 // Route modules
+const loginRoutes = require('./routes/login');
 const accountsRoutes = require('./routes/accounts');
 const usersRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
@@ -31,7 +32,9 @@ const transactionsRoutes = require('./routes/transactions');
 const alertsRoutes = require('./routes/alerts');
 const settingsRoutes = require('./routes/settings');
 
+
 // Routes
+app.use(loginRoutes);
 app.use(accountsRoutes);
 app.use(usersRoutes);
 app.use(dashboardRoutes);

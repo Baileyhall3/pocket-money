@@ -618,13 +618,10 @@ li {
 }
 
 .login {
-    background-color: #f4f4f9;
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
-    /* width: 400px;  */
-    width: 100%;
+    width: 400px; /* Fixed width for the container */
     box-sizing: border-box; /* Include padding in width */
 }
 
@@ -736,14 +733,16 @@ li {
 
 /* login / register forms */
 .login h2 {
-    margin-bottom: 30px; 
-    font-size: 28px; 
+    font-size: 2em;
+    color: black;
 }
 
 .login form {
     display: flex;
     flex-direction: column;
-    width: 100%; 
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
 }
 
 .login input {
@@ -757,18 +756,21 @@ li {
     box-sizing: border-box;
 }
 
+.login input, .login button {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
 .login button {
-    padding: 15px;
-    background-color: #45a049;
+    background-color: black;
     color: white;
-    font-size: 18px;
-    border: none;
-    border-radius: 30px;
     cursor: pointer;
 }
 
 .login button:hover {
-    background-color: #39963d;
+    background-color: #333;
 }
 
 .login a {
@@ -1065,22 +1067,25 @@ canvas {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: auto;
 }
+
 .settings-container h2 {
     text-align: center;
     margin-bottom: 20px;
 }
+
 .settings-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
+
 .settings-section h3 {
     margin: 0;
     flex: 1;
 }
 /* Rounded and styled dropdowns */
-.dropdown-select {
+.input-box {
     width: 200px;
     padding: 8px;
     border-radius: 8px;
@@ -1093,6 +1098,157 @@ canvas {
     transition: border-color 0.3s ease;
 }
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+}
+  
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    right: 100%; /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+  }
+
+.home-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 90%;
+    max-width: 1200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    /* overflow: hidden; */
+}
+
+/* Carousel section on the left */
+.home-carousel {
+    position: relative;
+    background: #e3e3e3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.home-carousel-content {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 40px;
+    text-align: center;
+}
+
+.slide h3 {
+    font-size: 2em;
+    margin-bottom: 15px;
+    color: black;
+}
+
+.slide p {
+    font-size: 1.1em;
+    color: #666;
+}
+
+/* Navigation dots for carousel */
+.home-carousel-dots {
+    position: absolute;
+    bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: #888;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dot.active {
+    background: #333;
+}
+
+.login-section {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-logo h2 {
+    font-weight: 100;
+    font-family: "Playball", cursive;
+    font-size: 64px;
+    color: black;
+    margin-bottom: 20px;
+}
+
+.link-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 300px;
+    color: black;
+}
+
+/* Toggle password visibility icon styling */
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 40px; /* Space for the eye icon */
+}
+
+.password-wrapper .toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 35%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 18px;
+}
+
+.home-page {
+    align-self: center;
+}
+
 .variable-width-50 {
     flex-basis: 50%;
 }
@@ -1103,6 +1259,10 @@ canvas {
 
 .variable-width-25 {
     flex-basis: 25%;
+}
+
+.variable-width-35 {
+    flex-basis: 35%;
 }
 
 /* Hide the mobile version by default */
@@ -1244,8 +1404,48 @@ canvas {
         justify-content: normal !important; 
     }
 
+    .home-container {
+        grid-template-columns: 1fr;
+        width: 100%;
+        /* height: 100vh; */
+        justify-content: center;
+        padding: 0;
+    }
+
+    .home-carousel {
+        height: 50vh; /* Adjust height for carousel */
+    }
+
+    .login-section {
+        padding: 20px;
+    }
+
+    .home-page {
+        align-self: flex-start;
+    }
+
+    .slide h3 {
+        font-size: 1.5em; /* Smaller font for mobile */
+    }
+
+    .slide p {
+        font-size: 1em;
+    }
+
+    .login h2 {
+        font-size: 1.8em;
+    }
+
+    .login-section {
+        padding: 0;
+    }
+
     .dashboard {
         width: 100%; 
+    }
+
+    .settings-container {
+        margin: 0;
     }
 
     .balance-container {
@@ -1261,6 +1461,10 @@ canvas {
     }
 
     .variable-width-25 {
-        flex-basis: 100%;
+        width: 100%;
+    }
+
+    .variable-width-35 {
+        width: 100%;
     }
 }
