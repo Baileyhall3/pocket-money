@@ -30,21 +30,44 @@
             <div class="nav-logo">
                 <h2>Pocket Money</h2>
             </div>
-            <div class="login">
-                <h2>LOGIN</h2>
-                <form id="loginForm">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <div class="password-wrapper">
-                        <input type="password" id="password" placeholder="Password" required>
-                        <i class="fa fa-eye toggle-password" id="toggle-password" onclick="togglePassword()"></i>
+            <div class="forms-container">
+                <div class="login" id="loginContent">
+                    <h2>LOGIN</h2>
+                    <form id="loginForm">
+                        <input type="email" id="login-email" placeholder="Email" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="login-password" placeholder="Password" required>
+                            <i class="fa fa-eye toggle-password" id="toggle-password" onclick="togglePassword()"></i>
+                        </div>
+                        <button type="submit">Log In</button>
+                    </form>
+                    <div class="link-group">
+                        <div>
+                            <p>No account?</p> <a href="#" onclick="toggleForms()">Sign Up!</a>
+                        </div>
+                        <a href="#">Forgot Password?</a>
                     </div>
-                    <button type="submit">Log In</button>
-                </form>
-                <div class="link-group">
-                    <div>
-                        <p>No account?</p> <a href="register.html">Sign Up!</a>
+                </div>
+
+                <div class="login" id="registerContent">
+                    <h2>REGISTER</h2>
+                    <form id="registerForm">
+                        <div class="input-row" style="margin-bottom: 0;">
+                            <input type="text" id="register-first-name" placeholder="First Name" required>
+                            <input type="text" id="register-last-name" placeholder="Last Name" required>
+                        </div>
+                        <input type="email" id="register-email" placeholder="Email" required>
+                        <input type="password" id="register-password" placeholder="Password" required>
+                        <input type="password" id="register-repeat-password" placeholder="Repeat Password" required>
+                        <div class="error" id="error-message"></div>
+                        <button type="submit">Sign Up</button>
+                    </form>
+                    <div class="link-group">
+                        <div>
+                            <p>Already have an account?</p>
+                            <a href="#" onclick="toggleForms()">Log In</a>
+                        </div>
                     </div>
-                    <a href="#">Forgot Password?</a>
                 </div>
             </div>
         </div>
@@ -74,17 +97,49 @@
         showSlide((currentSlide + 1) % 3);
     }, 5000);
 
-    const passwordInput = document.getElementById('password');
+    const regiseterForm = document.getElementById('registerForm');
+    const loginPasswordInput = document.getElementById('login-password');
     const togglePassword = document.getElementById('toggle-password');
+    const registerPasswordInput = document.getElementById('register-password');
+    const repeatPasswordInput = document.getElementById('register-repeat-password');
 
     togglePassword.addEventListener('click', function () {
         // Toggle the input type between password and text
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
+        const type = loginPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        loginPasswordInput.setAttribute('type', type);
         
         // Toggle the eye icon
         this.classList.toggle('fa-eye');
         this.classList.toggle('fa-eye-slash');
+    });
+
+    function toggleForms() {
+        const formContainer = document.querySelector('.forms-container');
+        formContainer.classList.toggle('show-register'); // Slide the container
+
+        // Show/hide the appropriate form
+        document.getElementById('loginContent').style.display = 
+            formContainer.classList.contains('show-register') ? 'none' : 'block';
+        document.getElementById('registerContent').style.display = 
+            formContainer.classList.contains('show-register') ? 'block' : 'none';
+    }
+
+    regiseterForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = '';
+        if (registerPasswordInput.value !== repeatPasswordInput.value) {
+            errorMessage.textContent = 'Passwords do not match!';
+        }
+
+        const firstName = document.getElementById('register-first-name').value;
+        const lastName = document.getElementById('register-last-name').value;
+        const email = document.getElementById('register-email').value;
+        const password = document.getElementById('register-password').value;
+
+        console.log('New user: ', firstName, lastName, email);
+        return;
+
     });
 
 </script>

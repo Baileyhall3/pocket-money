@@ -1140,12 +1140,13 @@ canvas {
 .home-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background: white;
     border-radius: 8px;
     padding: 20px;
+    min-height: 70vh;
     /* overflow: hidden; */
 }
 
@@ -1243,6 +1244,14 @@ canvas {
     cursor: pointer;
     color: #888;
     font-size: 18px;
+}
+
+.forms-container {
+    transition: transform 0.5s ease; /* Smooth transition */
+}
+
+#registerContent {
+    display: none; /* Start with the register form hidden */
 }
 
 .home-page {
@@ -1416,9 +1425,9 @@ canvas {
         height: 50vh; /* Adjust height for carousel */
     }
 
-    .login-section {
+    /* .login-section {
         padding: 20px;
-    }
+    } */
 
     .home-page {
         align-self: flex-start;
