@@ -1,9 +1,11 @@
 <% layout('layout') %>
 <div class="content-wrapper">
     <div style="width: 80%; margin-top: 40px;">
-        <div class="container-header">
+        <div class="container-header" style="justify-content: normal;">
             <h2>My Accounts</h2>
-            <h3><a class="link" onclick="openModal('newAccountModal')" href="#" id="addAccount">Add New</a></h3>
+            <button class="icon-btn" style="margin-left: 2em;" id="add-btn" title="Create a new account" onclick="openModal('newAccountModal')">
+                <i class="fa fa-plus"></i>
+            </button>
 
             <!-- Modal for new account -->
             <div id="newAccountModal" class="modal">
@@ -15,24 +17,25 @@
                     
                     <form id="newAccountForm">
                         <label for="accountName">Name:</label>
-                        <input type="text" id="accountName" name="accountName" required>
+                        <input type="text" class="modal-input" id="accountName" name="accountName" required>
                     
                         <label for="defaultCurrency">Default Currency:</label>
-                        <select id="defaultCurrency" name="defaultCurrency" required>
+                        <select id="defaultCurrency" class="modal-input" name="defaultCurrency" required>
                             <option value="£">£ - British Pound</option>
                             <option value="€">€ - Euro</option>
                         </select>
                     
                         <label for="accountType">Type:</label>
-                        <select id="accountType" name="accountType" required>
-                            <option value="personal">Personal</option>
-                            <option value="savings">Savings</option>
-                            <option value="joint">Joint</option>
+                        <select id="accountType" class="modal-input" name="accountType" required>
+                            <option value="" selected>-- Select Type --</option>
+                            <% Object.keys(accountTypes).forEach(key => { %>
+                                <option value="<%= key %>"><%= accountTypes[key] %></option>
+                            <% }) %>
                         </select>
                     
                         <!-- Joining Partner Field (Disabled unless 'Joint' is selected) -->
                         <label for="joiningPartner">Joining Partner:</label>
-                        <select id="joiningPartner" name="joiningPartner" disabled>
+                        <select id="joiningPartner" class="modal-input" name="joiningPartner" disabled>
                             <option value="">--- Select a joining partner ---</option>
                             <% if (friends.length > 0) { %>
                                 <% friends.forEach((friend, index) => { %>
@@ -121,15 +124,15 @@
 <script src="/js/shared.js"></script>
 
 <script>
-    document.getElementById('accountType').addEventListener('change', function() {
-        const joiningPartnerInput = document.getElementById('joiningPartner');
-        if (this.value === 'joint') {
-            joiningPartnerInput.disabled = false;
-        } else {
-            joiningPartnerInput.disabled = true;
-            joiningPartnerInput.value = '';
-        }
-    });
+    // document.getElementById('accountType').addEventListener('change', function() {
+    //     const joiningPartnerInput = document.getElementById('joiningPartner');
+    //     if (this.value === 'JOINT') {
+    //         joiningPartnerInput.disabled = false;
+    //     } else {
+    //         joiningPartnerInput.disabled = true;
+    //         joiningPartnerInput.value = '';
+    //     }
+    // });
 
     // This function renders charts for each account
     document.addEventListener('DOMContentLoaded', function() {

@@ -7,25 +7,25 @@
         
         <form id="newBudgetForm">
             <label for="budgetName">Name:</label>
-            <input type="text" id="budgetName" name="budgetName" required>
+            <input type="text" class="modal-input" id="budgetName" name="budgetName" required>
         
             <label for="budgetAmount">Budget Amount (£):</label>
-            <input type="number" id="budgetAmount" name="budgetAmount" required>
+            <input type="number" class="modal-input" id="budgetAmount" name="budgetAmount" required>
             
             <div class="modal-row">
                 <div class="modal-item">
                     <label for="budgetStartDate">Start Date (optional):</label>
-                    <input type="date" id="budgetStartDate" name="budgetStartDate">
+                    <input type="date" class="modal-input" id="budgetStartDate" name="budgetStartDate">
                 </div>
 
                 <div class="modal-item">
                     <label for="budgetEndDate">End Date (optional):</label>
-                    <input type="date" id="budgetEndDate" name="budgetEndDate">
+                    <input type="date" class="modal-input" id="budgetEndDate" name="budgetEndDate">
                 </div>
             </div>
 
             <label for="sharedWith">Share With:</label>
-            <select id="sharedWith" name="sharedWith">
+            <select id="sharedWith" class="modal-input" name="sharedWith">
                 <option value="" selected>-- Select Budget Buddy (optional) --</option>
                 <option value="lottie">Lottie</option>
                 <option value="mam">Gayle</option>

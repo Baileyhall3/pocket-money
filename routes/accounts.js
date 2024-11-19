@@ -6,6 +6,7 @@ const budgetsController = require('../controllers/budgetsController');
 const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
 const alertsController = require('../controllers/alertsController');
+const AccountTypes = require('../enums/accountTypes');
 
 // Accounts Page Route
 router.get('/accounts', 
@@ -22,6 +23,7 @@ router.get('/accounts',
             friends: req.friendsList,
             transactions: req.accountTransactions,
             userAlerts: req.userAlerts,
+            accountTypes: AccountTypes
         });
     }
 );
@@ -32,6 +34,7 @@ router.get('/savings',
     budgetsController.getBudgetsForUser, 
     potsController.getPotsForUser, 
     alertsController.getAlertsForUser, 
+    userController.getFriends, 
     (req, res) => {
         res.render('savings', {
             title: "Savings",
@@ -39,6 +42,7 @@ router.get('/savings',
             pots: req.userPots,
             user: req.user,
             userAlerts: req.userAlerts,
+            friends: req.friendsList,
         });
     }
 );

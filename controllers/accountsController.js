@@ -1,9 +1,11 @@
+const AccountTypes = require('../enums/accountTypes');
+
 const accounts = [
-    { id: 1, name: "Barclays", balance: 2300, isActive: true, userId: 1, },
-    { id: 2, name: "Monzo", balance: 400, userId: 1 },
-    { id: 3, name: "Account 1", balance: 800, userId: 1, sharedWithId: 2 },
-    { id: 4, name: "User 2 account", balance: 250, userId: 2 },
-    { id: 5, name: "Shared User 2 account", balance: 670, userId: 2, sharedWithId: 1 }
+    { id: 1, name: "Barclays", balance: 2300, type: AccountTypes.GENERAL, isActive: true, userId: 1, },
+    { id: 2, name: "Monzo", balance: 400, type: AccountTypes.SAVINGS, userId: 1 },
+    { id: 3, name: "Account 1", balance: 800, type: AccountTypes.SAVINGS, userId: 1, sharedWithId: 2 },
+    { id: 4, name: "User 2 account", type: AccountTypes.GENERAL, balance: 250, userId: 2 },
+    { id: 5, name: "Shared User 2 account", balance: 670, type: AccountTypes.SAVINGS, userId: 2, sharedWithId: 1 }
 ];
 
 exports.getAccountsForUser = (req, res, next) => {

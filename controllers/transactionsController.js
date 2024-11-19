@@ -2,13 +2,13 @@ const TransactionCategories = require('../enums/transactionCategories');
 
 const transactions = [
     // Account id 1 transactions (user 1)
-    { id: 1, name: "Subway", amount: 4.60, type: "expense", category: TransactionCategories.FOOD, dateMade: "20/09/2024", accountId: 1, userId: 1 },
-    { id: 2, name: "Greggs", amount: 2.10, type: "expense", category: TransactionCategories.FOOD, dateMade: "10/10/2024", accountId: 1, userId: 1 },
-    { id: 3, name: "JD Sports", amount: 100, type: "expense", category: TransactionCategories.CLOTHING, dateMade: "10/10/2024", accountId: 1, userId: 1 },
-    { id: 4, name: "Netflix", amount: 10, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "23/10/2024", accountId: 1, userId: 1, recurrentId: 1 },
-    { id: 5, name: "Amazon", amount: 8.99, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "20/10/2024", accountId: 1, userId: 1, recurrentId: 2 },
-    { id: 6, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 1, userId: 1 },
-    { id: 95, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/10/2024", accountId: 1, userId: 1 },
+    { id: 1, name: "Subway", amount: 4.60, type: "expense", category: TransactionCategories.FOOD, dateMade: "18/11/2024", accountId: 1, userId: 1 },
+    { id: 2, name: "Greggs", amount: 2.10, type: "expense", category: TransactionCategories.FOOD, dateMade: "15/11/2024", accountId: 1, userId: 1 },
+    { id: 3, name: "JD Sports", amount: 100, type: "expense", category: TransactionCategories.CLOTHING, dateMade: "18/11/2024", accountId: 1, userId: 1 },
+    { id: 4, name: "Netflix", amount: 10, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "17/11/2024", accountId: 1, userId: 1, recurrentId: 1 },
+    { id: 5, name: "Amazon", amount: 8.99, type: "expense", category: TransactionCategories.SUBSCRIPTION, dateMade: "15/11/2024", accountId: 1, userId: 1, recurrentId: 2 },
+    { id: 6, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/11/2024", accountId: 1, userId: 1 },
+    { id: 95, name: "Pay Check", amount: 2400, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/11/2024", accountId: 1, userId: 1 },
 
 
     // Account id 4 transactions (user 2)

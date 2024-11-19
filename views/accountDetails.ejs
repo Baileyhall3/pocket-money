@@ -19,11 +19,13 @@
                 <div class="balance-container">
                     <div class="container-rounded">
                         <h2>Balance: £<%= account.balance %></h2>
+                        <h3>Account Type: <span><%= account.type %></span></h3>
                     </div>
                     <% if (transactions.length > 0) { %>
+                        <!-- Make this show savings if account is savings account -->
                         <div class="chart-container" style="max-height: 500px; padding-bottom: 10vh;">
-                            <h3>Spending Over the Last 7 Days</h3>
-                            <canvas id="recentSpendingChart"></canvas>
+                            <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
+                            <canvas id="accountTransactionsChart"></canvas>
                         </div>
                     <% } %>
                 </div>
@@ -164,30 +166,33 @@
     document.addEventListener('DOMContentLoaded', function() {
 
         const transactions = <%- JSON.stringify(transactions) %>; // Get transaction data
+        const account = <%- JSON.stringify(account) %>; // Get transaction data
         
         if (transactions.length > 0) {
+
+            console.log(account)
 
             // Get the last 7 days in DD/MM/YYYY format
             const labels = getLast7Days();
 
             // Prepare the data for the chart
-            const spendingData = labels.map(date => {
+            const accountTransactionData = labels.map(date => {
                 // Sum up the transactions for each specific date
                 const dailyTotal = transactions
-                    .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
+                    .filter(transaction => transaction.dateMade === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
                     .reduce((total, transaction) => total + transaction.amount, 0);
                 return dailyTotal;
             });
 
             // Chart configuration
-            const ctx = document.getElementById('recentSpendingChart').getContext('2d');
+            const ctx = document.getElementById('accountTransactionsChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels, // Last 7 days
                     datasets: [{
-                        label: 'Spending',
-                        data: spendingData, // Dynamic spending data
+                        label: account.type == 'Savings' ? 'Savings' : 'Spending',
+                        data: accountTransactionData, // Dynamic spending data
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
