@@ -1,4 +1,5 @@
 const TransactionCategories = require('../enums/transactionCategories');
+const RecTransactionEnums = require('../enums/recurrentTransactions');
 
 const transactions = [
     // Account id 1 transactions (user 1)
@@ -44,60 +45,78 @@ const transactions = [
 
 
 const recurrentTransactions = [
-    { 
-        id: 1, 
-        name: "Netflix", 
-        amount: 10, 
-        type: "expense", 
-        category: "Subscription", 
-        frequency: "monthly", 
-        startDate: "23/09/2024", 
-        nextDate: "23/10/2024", 
-        userId: 1
+    // Monthly Transaction Example
+    {
+        id: 1,
+        category: RecTransactionEnums.RecTransactionCategories.RENT,
+        description: "Monthly rent payment",
+        amount: 1200,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.MONTHLY,
+        startDate: "2024-01-01",
+        endDate: null, // Null indicates no defined end date
+        type: "expense",
+        userId: 1,
     },
-    { 
-        id: 2, 
-        name: "Amazon", 
-        amount: 8.99, 
-        type: "expense", 
-        category: "Subscription", 
-        frequency: "monthly", 
-        startDate: "20/09/2024", 
-        nextDate: "20/10/2024", 
-        userId: 1 
+    // Bi-Weekly Transaction Example
+    {
+        id: 2,
+        category: RecTransactionEnums.RecTransactionCategories.SALARY,
+        description: "Bi-weekly paycheck from employer",
+        amount: 1500,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.BI_WEEKLY,
+        startDate: "2024-01-05",
+        endDate: null,
+        type: "income",
+        userId: 1,
     },
-    { 
-        id: 3, 
-        name: "Car", 
-        amount: 170.99, 
-        type: "expense", 
-        category: "Direct Debit", 
-        frequency: "monthly", 
-        startDate: "1/10/2024", 
-        nextDate: "1/11/2024", 
-        userId: 1 
+    // Weekly Transaction Example
+    {
+        id: 3,
+        category: RecTransactionEnums.RecTransactionCategories.UTILITIES,
+        description: "Weekly cleaning service",
+        amount: 75,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.WEEKLY,
+        startDate: "2024-01-07",
+        endDate: "2024-06-30",
+        type: "expense",
+        userId: 1,
     },
-    { 
-        id: 4, 
-        name: "Mortgage", 
-        amount: 1000, 
-        type: "expense", 
-        category: "Direct Debit", 
-        frequency: "monthly", 
-        startDate: "1/10/2024", 
-        nextDate: "1/11/2024", 
-        userId: 2 
+    // Daily Transaction Example
+    {
+        id: 4,
+        category: RecTransactionEnums.RecTransactionCategories.SAVINGS,
+        description: "Daily transfer to savings account",
+        amount: 10,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.DAILY,
+        startDate: "2024-01-01",
+        endDate: null,
+        type: "expense",
+        userId: 1,
     },
-    { 
-        id: 5, 
-        name: "Gym Membership", 
-        amount: 17.99, 
-        type: "expense", 
-        category: "Direct Debit", 
-        frequency: "monthly", 
-        startDate: "1/10/2024", 
-        nextDate: "1/11/2024", 
-        userId: 1
+    // Random Transaction Example
+    {
+        id: 5,
+        category: RecTransactionEnums.RecTransactionCategories.DONATION,
+        description: "Occasional charity donations",
+        amount: 50,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.RANDOM,
+        startDate: "2024-01-01",
+        endDate: null,
+        type: "expense",
+        userId: 1,
+    },
+    // Custom Frequency Transaction Example
+    {
+        id: 6,
+        category: RecTransactionEnums.RecTransactionCategories.INSURANCE,
+        description: "Insurance payment every 45 days",
+        amount: 200,
+        frequency: RecTransactionEnums.RecTransactionFrequencies.CUSTOM,
+        customFrequency: "45 days",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
+        type: "expense",
+        userId: 1,
     },
 ];
 

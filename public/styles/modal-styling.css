@@ -6,7 +6,9 @@
     top: 0;
     width: 100%;
     height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5);
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
     align-items: center;
     justify-content: center;
   }
@@ -92,6 +94,58 @@
     flex-direction: column;
     flex: 1;
   }
+
+
+/* Modal open animation */
+.modal-open-animation {
+  animation: fadeInSlideUp 0.5s ease forwards;
+}
+
+/* Modal close animation (optional) */
+.modal-close-animation {
+  animation: fadeOutSlideDown 0.5s ease forwards;
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; 
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px); /* Adds a blur effect */
+  z-index: 999;
+  display: none;
+}
+
+/* Show backdrop when modal is open */
+.backdrop.active {
+  display: block;
+}
+
+/* Keyframes for opening animation */
+@keyframes fadeInSlideUp {
+from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+/* Keyframes for closing animation */
+@keyframes fadeOutSlideDown {
+from {
+    opacity: 1;
+    transform: translateY(0);
+}
+to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+}
 
 /* Mobile-specific Styles */
 @media (max-width: 768px) {

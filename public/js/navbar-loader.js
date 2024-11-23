@@ -101,35 +101,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Mobile nav drawer functionality
-    // const mobileCollapseBtn = document.getElementById('mobile-collapse-btn');
-    // const mobileNavDrawer = document.getElementById('mobile-nav-drawer');
-    // if (mobileCollapseBtn && mobileNavDrawer) {
-    //     mobileCollapseBtn.addEventListener('click', function () {
-    //         mobileNavDrawer.classList.toggle('open');
-    //     });
-
-    //     // Close mobile nav drawer if clicked outside
-    //     window.addEventListener('click', function (event) {
-    //         if (!mobileNavDrawer.contains(event.target) && !mobileCollapseBtn.contains(event.target)) {
-    //             mobileNavDrawer.classList.remove('open');
-    //         }
-    //     });
-    // }
-
-    // const userName = localStorage.getItem('userName');
-
-    // if (userName) {
-    //     document.getElementById('user-name').textContent = userName;
-    // }
-
-    // Log out functionality
-    const logoutBtn = document.getElementById('logout');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userName');
-            window.location.href = '/login.html'; // Redirect to login page after logout
-        });
-    }
 });
+
+function toggleDropdown(event) {
+    event.preventDefault(); // Prevent navigating to "#"
+
+    const dropdown = event.target.closest(".nav-dropdown");
+    const subLinks = document.getElementById('subLinks');
+    dropdown.classList.toggle("open");
+    subLinks.classList.toggle("open");
+}

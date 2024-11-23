@@ -1,0 +1,104 @@
+<% layout('layout') %>    
+    <div class="flex-container transactions">
+        <div class="transaction-section" style="overflow-y: auto;">
+            <div class="container-header">
+                <h3>Recurrent Transactions</h3>
+            </div>
+
+            <div class="transactions-container">
+                <% 
+                    const frequencies = Object.values(RecTransactionEnums.RecTransactionFrequencies);
+                %>
+            
+                <% frequencies.forEach(frequency => { %>
+                    <% 
+                        const transactionsForFrequency = transactions.filter(transaction => transaction.frequency === frequency);
+                    %>
+                    <button class="collapsible">
+                        <%= frequency + " (" + transactionsForFrequency.length + ")" %>
+                        <i class="fa fa-chevron-down"></i>
+                    </button>
+                    <div class="content">
+                        
+                        <% if (transactionsForFrequency.length > 0) { %>
+                            <% transactionsForFrequency.forEach(transaction => { %>
+                                <div class="transaction">
+                                    <div class="money-bar-header">
+                                        <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type === 'expense' ? 'expense' : '' %>">
+                                            <%= transaction.description %>
+                                        </h5>
+                                        <p style="font-size: 20px; margin: 0;" class="<%= transaction.type === 'expense' ? 'expense' : 'income' %>">
+                                            <%= transaction.type === 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                        </p>
+                                    </div>
+                                    <div class="money-bar-header" style="margin-bottom: 20px;">
+                                        <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type === 'expense' ? 'expense' : '' %>">
+                                            <%= transaction.category %>
+                                        </h5>
+                                        <p style="font-size: 14px; margin: 0;" class="<%= transaction.type === 'expense' ? 'expense' : 'normal' %>">
+                                            <%= transaction.startDate %>
+                                        </p>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="">
+                                No recurrent transactions for <%= frequency %> yet!
+                            </div>
+                        <% } %>
+                    </div>
+                <% }); %>
+            </div>
+            
+        </div>
+    </div>
+            
+<script src="/js/shared.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const collapsibles = document.querySelectorAll(".collapsible");
+        collapsibles.forEach(collapsible => {
+            collapsible.addEventListener("click", function() {
+                this.classList.toggle("active");
+                const content = this.nextElementSibling;
+                content.style.display = content.style.display === "block" ? "none" : "block";
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+
+        const subCollapsibles = document.querySelectorAll(".sub-collapsible");
+        subCollapsibles.forEach(subCollapsible => {
+            subCollapsible.addEventListener("click", function() {
+                this.classList.toggle("active");
+                const subContent = this.nextElementSibling;
+                subContent.style.display = subContent.style.display === "block" ? "none" : "block";
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+
+        searchTransactions(
+            'search-transaction',
+            'transaction',
+            'filter-category',
+            'start-date',
+            'end-date'
+        );
+
+        const filterBtn = document.getElementById('filter-btn');
+        const filtersSection = document.getElementById('filters-section');
+
+        filterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            filtersSection.classList.toggle('visible');
+            filtersSection.style.display = 'block'
+        });
+    });
+
+    
+</script>
