@@ -3,7 +3,8 @@ const budgets = [
     { id: 2, name: "Thailand", targetAmount: 1600, actualAmount: 1600, startDate: '13/1/2025', endDate: '10/2/2025', userId: 1, sharedWithId: 2 },
     { id: 3, name: "Budget 1", targetAmount: 200, actualAmount: 50, startDate: '11/10/2024', userId: 1 },
     { id: 4, name: "User 2 Budget", targetAmount: 400, actualAmount: 100, startDate: '10/9/2024', endDate: '20/12/2024', userId: 2 },
-    { id: 5, name: "Shared User 2 budget", targetAmount: 800, actualAmount: 230, startDate: '1/12/2024', endDate: '24/12/2024', userId: 2, sharedWithId: 1 }
+    { id: 5, name: "Shared User 2 budget", targetAmount: 800, actualAmount: 230, startDate: '1/12/2024', endDate: '24/12/2024', userId: 2, sharedWithId: 1 },
+    { id: 6, name: "Bailey & Lottie's House Budget", targetAmount: 4400, actualAmount: 1855, startDate: '15/12/2024', endDate: '15/01/2025', userId: 1, sharedWithId: 2 },
 ];
 
 exports.getBudgetsForUser = (req, res, next) => {

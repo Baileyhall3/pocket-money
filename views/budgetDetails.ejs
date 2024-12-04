@@ -120,10 +120,10 @@
                     
                     <% if (transactions.length > 0) { %>
                         <% transactions.forEach(transaction => { %>
-                            <div class="transaction">
+                            <div class="transaction" id="transactions">
                                 <div class="money-bar-header">
                                     <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                        <%= transaction.name %>
+                                        <%= transaction.name + (transaction.userId != user.id && budget.sharedWithId ? ' made by ' + sharedWithUser.firstName : '') %>
                                     </h5>
                                     <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                         <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -143,13 +143,19 @@
                         <!-- Pagination Controls -->
                         <div class="pagination">
                             <% if (currentPage > 1) { %>
-                                <a href="?page=<%= currentPage - 1 %>" class="pagination-btn fa fa-arrow-left"></a>
+                                <a href="javascript:void(0)" 
+                                   data-page="<%= currentPage - 1 %>" 
+                                   data-id="<%= id %>" 
+                                   class="pagination-btn fa fa-arrow-left"></a>
                             <% } %>
                             <span>Page <%= currentPage %> of <%= totalPages %></span>
                             <% if (currentPage < totalPages) { %>
-                                <a href="?page=<%= currentPage + 1 %>"class="pagination-btn fa fa-arrow-right"></a>
+                                <a href="javascript:void(0)" 
+                                   data-page="<%= currentPage + 1 %>" 
+                                   data-id="<%= id %>" 
+                                   class="pagination-btn fa fa-arrow-right"></a>
                             <% } %>
-                        </div>
+                        </div>                        
                     <% } else { %>
                         <div class="">
                             No transactions for this budget yet! Let's log one.
