@@ -26,6 +26,19 @@ function openModal(modalId, itemData = {}) {
                 form.appendChild(hiddenInput);
             }
         }
+
+        const categories = document.querySelectorAll('.category');
+
+        categories.forEach(category => {
+            category.addEventListener('click', () => {
+                console.log('working')
+                // Remove active class from all categories
+                categories.forEach(cat => cat.classList.remove('active'));
+
+                // Add active class to the clicked category
+                category.classList.add('active');
+            });
+        });
     }
 }
 

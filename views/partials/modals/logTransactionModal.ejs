@@ -6,7 +6,32 @@
         </div>
         
         <form id="logTransactionForm">
-            <label for="transactionName">Name:</label>
+            
+            <div>
+                <h3 style="margin-bottom: 5px;">Expenses</h3>
+                <div class="categories">
+                    <% transactionCategories.filter(x => x.type == 'expense').forEach(category => { %>
+                        <div class="category" data-id="<%= category.id %>">
+                            <i class="<%= category.icon %> category-icon"></i>
+                            <span><%= category.name %></span>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 5px;">Income</h3>
+                <div class="categories">
+                    <% transactionCategories.filter(x => x.type == 'income').forEach(category => { %>
+                        <div class="category" data-id="<%= category.id %>">
+                            <i class="<%= category.icon %> category-icon"></i>
+                            <span><%= category.name %></span>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <label for="transactionName">Description:</label>
             <input class="modal-input" type="text" id="transactionName" name="transactionName" required>
         
             <label for="transactionAmount">Amount (£):</label>
@@ -14,31 +39,10 @@
 
             <label for="transactionDate">Date (optional):</label>
             <input class="modal-input" type="date" id="transactionDate" name="transactionDate">
-
-            <div class="modal-row">
-                <div class="modal-item">
-                    <label for="transactionType">Type:</label>
-                    <select class="modal-input" id="transactionType" name="transactionType" required>
-                        <option value="" selected>-- Select Type --</option>
-                        <option value="income">Income</option>
-                        <option value="expense">Expense</option>
-                    </select>
-                </div>
-                
-                <div class="modal-item">
-                    <label for="transactionCategory">Category:</label>
-                    <select class="modal-input" id="transactionCategory" name="transactionCategory" required>
-                        <option value="" selected>-- Select Category --</option>
-                        <% Object.keys(transactionCategories).forEach(key => { %>
-                            <option value="<%= key %>"><%= transactionCategories[key] %></option>
-                        <% }) %>
-                    </select>
-                </div>
-            </div>
         
             <label for="recurring">
                 <input type="checkbox" id="recurring" name="recurring">
-                This transaction is recurring (will use date of transaction as recurring date)
+                This transaction is recurring
             </label>
         
             <button type="submit" class="btn">Log Transaction</button>
@@ -63,4 +67,5 @@ app.post('/log-transaction', (req, res) => {
     // Save transaction and redirect or respond
     res.redirect('/somewhere');
 });
+
 </script>

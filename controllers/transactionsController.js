@@ -69,7 +69,7 @@ const recurrentTransactions = [
     // Monthly Transaction Example
     {
         id: 1,
-        category: RecTransactionEnums.RecTransactionCategories.RENT,
+        category: TransactionCategories.HOUSING,
         description: "Monthly rent payment",
         amount: 1200,
         frequency: RecTransactionEnums.RecTransactionFrequencies.MONTHLY,
@@ -81,7 +81,7 @@ const recurrentTransactions = [
     // Bi-Weekly Transaction Example
     {
         id: 2,
-        category: RecTransactionEnums.RecTransactionCategories.SALARY,
+        category: TransactionCategories.PAY_CHECK,
         description: "Bi-weekly paycheck from employer",
         amount: 1500,
         frequency: RecTransactionEnums.RecTransactionFrequencies.BI_WEEKLY,
@@ -93,7 +93,7 @@ const recurrentTransactions = [
     // Weekly Transaction Example
     {
         id: 3,
-        category: RecTransactionEnums.RecTransactionCategories.UTILITIES,
+        category: TransactionCategories.UTILITIES,
         description: "Weekly cleaning service",
         amount: 75,
         frequency: RecTransactionEnums.RecTransactionFrequencies.WEEKLY,
@@ -105,7 +105,7 @@ const recurrentTransactions = [
     // Daily Transaction Example
     {
         id: 4,
-        category: RecTransactionEnums.RecTransactionCategories.SAVINGS,
+        category: TransactionCategories.SAVINGS,
         description: "Daily transfer to savings account",
         amount: 10,
         frequency: RecTransactionEnums.RecTransactionFrequencies.DAILY,
@@ -117,7 +117,7 @@ const recurrentTransactions = [
     // Random Transaction Example
     {
         id: 5,
-        category: RecTransactionEnums.RecTransactionCategories.DONATION,
+        category: TransactionCategories.DONATION,
         description: "Occasional charity donations",
         amount: 50,
         frequency: RecTransactionEnums.RecTransactionFrequencies.RANDOM,
@@ -129,7 +129,7 @@ const recurrentTransactions = [
     // Custom Frequency Transaction Example
     {
         id: 6,
-        category: RecTransactionEnums.RecTransactionCategories.INSURANCE,
+        category: TransactionCategories.INSURANCE,
         description: "Insurance payment every 45 days",
         amount: 200,
         frequency: RecTransactionEnums.RecTransactionFrequencies.CUSTOM,
