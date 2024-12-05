@@ -33,12 +33,13 @@
             <div class="forms-container">
                 <div class="login" id="loginContent">
                     <h2>LOGIN</h2>
-                    <form id="loginForm">
+                    <form id="loginForm" novalidate>
                         <input type="email" id="login-email" placeholder="Email" required>
                         <div class="password-wrapper">
                             <input type="password" id="login-password" placeholder="Password" required>
                             <i class="fa fa-eye toggle-password" id="toggle-password" onclick="togglePassword()"></i>
                         </div>
+                        <div class="error" id="login-error-message"></div>
                         <button type="submit">Log In</button>
                     </form>
                     <div class="link-group">
@@ -51,7 +52,7 @@
 
                 <div class="login" id="registerContent">
                     <h2>REGISTER</h2>
-                    <form id="registerForm">
+                    <form id="registerForm" novalidate>
                         <div class="input-row" style="margin-bottom: 0;">
                             <input type="text" id="register-first-name" placeholder="First Name" required>
                             <input type="text" id="register-last-name" placeholder="Last Name" required>
@@ -59,7 +60,7 @@
                         <input type="email" id="register-email" placeholder="Email" required>
                         <input type="password" id="register-password" placeholder="Password" required>
                         <input type="password" id="register-repeat-password" placeholder="Repeat Password" required>
-                        <div class="error" id="error-message"></div>
+                        <div class="error" id="register-error-message"></div>
                         <button type="submit">Sign Up</button>
                     </form>
                     <div class="link-group">
@@ -97,11 +98,25 @@
         showSlide((currentSlide + 1) % 3);
     }, 5000);
 
-    const regiseterForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
     const loginPasswordInput = document.getElementById('login-password');
     const togglePassword = document.getElementById('toggle-password');
-    const registerPasswordInput = document.getElementById('register-password');
-    const repeatPasswordInput = document.getElementById('register-repeat-password');
+    
+    loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const errorMessage = document.getElementById('login-error-message');
+        errorMessage.textContent = '';
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        if (!email || !password) {
+            errorMessage.textContent = 'All fields must be filled in.';
+            return;
+        }
+
+        window.location.href = '/index'
+    });
 
     togglePassword.addEventListener('click', function () {
         // Toggle the input type between password and text
@@ -124,23 +139,69 @@
             formContainer.classList.contains('show-register') ? 'block' : 'none';
     }
 
-    regiseterForm.addEventListener('submit', async function(event) {
+
+    const registerForm = document.getElementById('registerForm');
+    const registerPasswordInput = document.getElementById('register-password');
+    const repeatPasswordInput = document.getElementById('register-repeat-password');
+
+    registerForm.addEventListener('submit', async function(event) {
         event.preventDefault();
-        const errorMessage = document.getElementById('error-message');
+        const errorMessage = document.getElementById('register-error-message');
         errorMessage.textContent = '';
-        if (registerPasswordInput.value !== repeatPasswordInput.value) {
-            errorMessage.textContent = 'Passwords do not match!';
-        }
 
         const firstName = document.getElementById('register-first-name').value;
         const lastName = document.getElementById('register-last-name').value;
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
+        
+        if (!firstName || !lastName || !email || !password || !repeatPasswordInput.value) {
+            errorMessage.textContent = 'All fields must be filled in.';
+            return;
+        }
+
+        // Check if passwords match
+        if (registerPasswordInput.value !== repeatPasswordInput.value) {
+            errorMessage.textContent = 'Passwords do not match!';
+            return;
+        }
+
+        // Check password length
+        if (password.length < 8) {
+            errorMessage.textContent = 'Password must be at least 8 characters long!';
+            return;
+        }
+
+        // Check if password contains at least one number
+        if (!/[0-9]/.test(password)) {
+            errorMessage.textContent = 'Password must contain at least one number!';
+            return;
+        }
+
+        // Check if password contains at least one uppercase letter
+        if (!/[A-Z]/.test(password)) {
+            errorMessage.textContent = 'Password must contain at least one uppercase letter!';
+            return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            errorMessage.textContent = 'Please enter a valid email address!';
+            return;
+        }
 
         console.log('New user: ', firstName, lastName, email);
-        return;
 
+        // Add check to see if email already exists in DB (pseudo-code)
+        // const emailExists = await checkEmailInDatabase(email);
+        // if (emailExists) {
+        //     errorMessage.textContent = 'Email already exists!';
+        //     return;
+        // }
+
+        console.log('Registration successful!');
     });
+
 
 </script>
 
