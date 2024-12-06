@@ -528,11 +528,9 @@ li {
 }
 
 .pagination button {
-    padding: 10px 15px;
+    padding: 5px 10px;
     border-radius: 30px;
-    border: 1px solid #36A2EB;
-    background-color: #36A2EB;
-    color: white;
+    color: black;
     margin: 0 10px;
     cursor: pointer;
 }
@@ -728,7 +726,7 @@ li {
     flex-direction: column;
     gap: 15px;
     width: 100%;
-    max-width: 300px;
+    max-width: 350px;
 }
 
 .login input {
@@ -983,11 +981,17 @@ canvas {
     justify-content: center !important; 
     align-items: stretch; 
     display: flex;
+    margin-top: 10vh;
 }
 
 .dashboard {
     width: 80%; 
-    padding: 0 20px;
+    /* padding: 0 20px; */
+}
+
+.accounts {
+    width: 80%; 
+    margin-top: 8vh;
 }
 
 .transaction-section-detail {
@@ -1344,8 +1348,8 @@ canvas {
     }
  
     .search-container {
-        margin-top: 80px;
-        width: 80%;
+        margin-top: 10vh;
+        width: 90%;
     }
  
     .profile {
@@ -1366,6 +1370,7 @@ canvas {
  
     .transactions {
         justify-content: normal !important;
+        margin-top: 10vh;
     }
  
     .home-container {
@@ -1386,6 +1391,10 @@ canvas {
  
     .home-page {
         align-self: flex-start;
+    }
+
+    .accounts {
+        width: 95%; 
     }
  
     .slide h3 {

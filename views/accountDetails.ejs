@@ -1,5 +1,7 @@
 <% layout('layout') %>
 
+<meta name="account-id" content="<%= account.id %>">
+
 <div class="flex-container">
     <div class="content-wrapper" style="align-self: start;">
         <div class="container-header variable-width-80">
@@ -62,96 +64,11 @@
                     </div>
                 <% } %>
                 <div class="transaction-section-detail variable-width-50">
-                    <div class="container-header">
-                        <h3>Recent Transactions</h3>
-                
-                        <button class="icon-btn" id="filter-btn">
-                            <a href="#"><i class="fa fa-sliders"></i></a>
-                        </button>
-                    </div>
-        
-                    <div class="filters" id="filters-section">
-                        <!-- Search by Transaction Name -->
-                        <div class="search input-row">
-                            <i class="fa fa-search"></i>
-                            <input type="text" id="search-transaction" placeholder="Search transactions...">
-                        </div>
-                        
-                        <div class="input-row">
-                            <!-- Filter by Category -->
-                            <div class="transaction-filter input-col">
-                                <i class="fa fa-filter"></i>
-                                <select id="filter-category">
-                                    <option value="all">All Categories</option>
-                                    <option value="food">Food & Dining</option>
-                                    <option value="entertainment">Entertainment</option>
-                                    <option value="shopping">Shopping</option>
-                                    <option value="bills">Bills & Utilities</option>
-                                </select>
-                            </div>
-        
-                            <!-- Sort Transactions -->
-                            <div class="transaction-sort input-col">
-                                <i class="fa fa-sort"></i>
-                                <select id="sort-transaction">
-                                    <option value="date">Date</option>
-                                    <option value="amount">Amount</option>
-                                    <option value="name">Name</option>
-                                </select>
-                            </div>   
-                        </div>
-        
-                        <!-- Filter by Date Range (use a slider instead?)-->
-                        <div class="input-row">
-                            <div class="input-col">
-                                <i class="fa fa-calendar"></i>
-                                <input type="date" id="start-date">
-                            </div>
-                            <div class="input-col">
-                                <i class="fa fa-calendar"></i>
-                                <input type="date" id="end-date">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <% if (transactions.length > 0) { %>
-                        <% transactions.forEach(transaction => { %>
-                            <div class="transaction">
-                                <div class="money-bar-header">
-                                    <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                        <%= transaction.name %>
-                                    </h5>
-                                    <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
-                                        <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
-                                    </p>
-                                </div>
-                                <div class="money-bar-header" style="margin-bottom: 20px;">
-                                    <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                        <%= transaction.category %>
-                                    </h5>
-                                    <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                        <%= transaction.dateMade %>
-                                    </p>
-                                </div>
-                            </div>
-                        <% }); %>
-                
-                        <!-- Pagination Controls -->
-                        <div class="pagination">
-                            <% if (currentPage > 1) { %>
-                                <a href="?page=<%= currentPage - 1 %>" class="pagination-btn fa fa-arrow-left"></a>
-                            <% } %>
-                            <span>Page <%= currentPage %> of <%= totalPages %></span>
-                            <% if (currentPage < totalPages) { %>
-                                <a href="?page=<%= currentPage + 1 %>"class="pagination-btn fa fa-arrow-right"></a>
-                            <% } %>
-                        </div>
-                    <% } else { %>
-                        <div class="">
-                            No transactions for this account yet! Let's log one.
-                        </div>
-                    <% } %>
-                    
+                    <%- include('partials/transactions', { 
+                        transactions: transactions, 
+                        currentPage: currentPage, 
+                        totalPages: totalPages 
+                    }) %>
                 </div>
             </div>
 
@@ -161,7 +78,6 @@
 
 <script src="/js/shared.js"></script>
 <script>
-    toggleFilterList('filter-btn', 'filters-section');
 
     document.addEventListener('DOMContentLoaded', function() {
 

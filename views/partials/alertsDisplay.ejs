@@ -1,0 +1,133 @@
+<% const alert = userAlerts[0] %>
+
+<div class="alert friend_request" id="alert">
+    <div class="alert-icon">
+        <i class="fa fa-user-plus"></i>
+    </div>
+
+    <div class="alert-content">
+        <span class="close">&times;</span>
+        <h3><%= alert.title %></h3>
+        <p><%= alert.body %></p>
+    </div>
+</div>
+
+<script>
+    // Function to display the alert
+    function showAlert(alertId) {
+        const alertElement = document.getElementById(alertId);
+        if (alertElement) {
+            alertElement.style.display = "flex";
+
+            // Automatically fade out and hide the alert after 3 seconds
+            setTimeout(() => {
+                fadeOutAlert(alertId);
+            }, 3000);
+
+            attachAlertCloseEvent(alertId);
+        }
+    }
+
+    // Function to fade out the alert
+    function fadeOutAlert(alertId) {
+        const alertElement = document.getElementById(alertId);
+        if (alertElement) {
+            // Add the fade-out class
+            alertElement.classList.add("fade-out");
+
+            // Fully hide the alert after the fade-out animation completes
+            setTimeout(() => {
+                alertElement.style.display = "none";
+                alertElement.classList.remove("fade-out"); 
+            }, 500);
+        }
+    }
+
+    // Function to close the alert immediately
+    function closeAlert(alertId) {
+        const alertElement = document.getElementById(alertId);
+        if (alertElement) {
+            alertElement.style.display = "none";
+        }
+    }
+
+    // Attach close button functionality to the alert
+    function attachAlertCloseEvent(alertId) {
+        const alertElement = document.getElementById(alertId);
+        if (alertElement) {
+            const closeButton = alertElement.querySelector(".close");
+            if (closeButton) {
+                closeButton.onclick = () => fadeOutAlert(alertId);
+            }
+        }
+    }
+
+    // Initialize the alert display
+    // showAlert("alert");
+</script>
+
+<style>
+    .alert {
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        position: absolute;
+        z-index: 1;
+        margin-top: 10px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        opacity: 1;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .alert.fade-out {
+        opacity: 0;
+    }
+
+    .alert-icon {
+        font-size: 24px;
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* Example color coding for different alert types */
+    .friend_request {
+        background-color: #D0E9F2; /* Light blue */
+        border-left: 5px solid #1E90FF; /* Blue */
+    }
+
+    .spending_activity {
+        background-color: #FFF8DC; /* Light Yellow */
+        border-left: 5px solid #FFD700; /* Gold */
+    }
+
+    .warning {
+        background-color: #FFDDC1; /* Light Red */
+        border-left: 5px solid #FF6347; /* Tomato Red */
+    }
+
+    .milestone {
+        background-color: #D3FFD3; /* Light Green */
+        border-left: 5px solid #32CD32; /* Lime Green */
+    }
+
+    .nudge {
+        background-color: #FFEB99; /* Light Orange */
+        border-left: 5px solid #FFA500; /* Orange */
+    }
+</style>

@@ -1,0 +1,132 @@
+<div class="container-header">
+    <h3>Recent Transactions</h3>
+
+    <button class="icon-btn" id="filter-btn" onclick="toggleFilters()">
+        <i class="fa fa-sliders"></i>
+    </button>
+</div>
+
+<div class="filters" id="filters-section">
+    <!-- Search by Transaction Name -->
+    <div class="search input-row">
+        <i class="fa fa-search"></i>
+        <input type="text" id="search-transaction" placeholder="Search transactions...">
+    </div>
+    
+    <div class="input-row">
+        <!-- Filter by Category -->
+        <div class="transaction-filter input-col">
+            <i class="fa fa-filter"></i>
+            <select id="filter-category">
+                <option value="all">All Categories</option>
+                <option value="food">Food & Dining</option>
+                <option value="entertainment">Entertainment</option>
+                <option value="shopping">Shopping</option>
+                <option value="bills">Bills & Utilities</option>
+            </select>
+        </div>
+
+        <!-- Sort Transactions -->
+        <div class="transaction-sort input-col">
+            <i class="fa fa-sort"></i>
+            <select id="sort-transaction">
+                <option value="date">Date</option>
+                <option value="amount">Amount</option>
+                <option value="name">Name</option>
+            </select>
+        </div>   
+    </div>
+
+    <!-- Filter by Date Range -->
+    <div class="input-row">
+        <div class="input-col">
+            <i class="fa fa-calendar"></i>
+            <input type="date" id="start-date">
+        </div>
+        <div class="input-col">
+            <i class="fa fa-calendar"></i>
+            <input type="date" id="end-date">
+        </div>
+    </div>
+</div>
+
+<% if (transactions.length > 0) { %>
+    <% transactions.forEach(transaction => { %>
+        <div class="transaction">
+            <div class="money-bar-header">
+                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                    <%= transaction.name %>
+                </h5>
+                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                </p>
+            </div>
+            <div class="money-bar-header" style="margin-bottom: 20px;">
+                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                    <%= transaction.category %>
+                </h5>
+                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                    <%= transaction.dateMade %>
+                </p>
+            </div>
+        </div>
+    <% }); %>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <button class="pagination-btn fa fa-arrow-left" onclick="loadTransactions('<%= currentPage - 1 %>')"></button>
+        <% } %>
+        <span>Page <%= currentPage %> of <%= totalPages %></span>
+        <% if (currentPage < totalPages) { %>
+            <button class="pagination-btn fa fa-arrow-right" onclick="loadTransactions('<%= currentPage + 1 %>')"></button>
+        <% } %>
+    </div>
+<% } else { %>
+    <div class="">
+        No transactions logged yet!
+    </div>
+<% } %>
+
+<script>
+
+    function toggleFilters() {
+        const filtersSection = document.getElementById('filters-section'); 
+        if (!filtersSection) { return; }
+        
+        filtersSection.classList.toggle('visible');
+        filtersSection.style.display = 'block'
+    }
+
+    function loadTransactions(page) {
+        // Get the type and ID from meta tags
+        const accountId = document.querySelector('meta[name="account-id"]')?.getAttribute('content');
+        const budgetId = document.querySelector('meta[name="budget-id"]')?.getAttribute('content');
+        const potId = document.querySelector('meta[name="pot-id"]')?.getAttribute('content');
+        
+        let url;
+        if (accountId) {
+            url = `/accounts/${accountId}/transactions?page=${page}`;
+        } else if (budgetId) {
+            url = `/savings/budget/${budgetId}/transactions?page=${page}`;
+        } else if (potId) {
+            url = `/savings/pot/${potId}/transactions?page=${page}`;
+        } else {
+            console.error('No ID found for transactions');
+            return;
+        }
+        
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load transactions.');
+                return response.text();
+            })
+            .then(html => {
+                document.querySelector('.transaction-section-detail').innerHTML = html;
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Failed to load transactions. Please try again.');
+            });
+    }
+</script>

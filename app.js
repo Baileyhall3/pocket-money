@@ -17,10 +17,30 @@ app.get('/', (req, res) => {
 app.set('views', path.join(__dirname, 'views'));
 
 const TransactionCategories = require('./enums/transactionCategories');
+const userController = require('./controllers/userController');
+const alertsController = require('./controllers/alertsController');
 
 app.use((req, res, next) => {
   res.locals.transactionCategories = TransactionCategories;
   next();
+});
+
+// Middleware to set `user` and `userAlerts` globally
+app.use(async (req, res, next) => {
+  try {
+    // Fetch user if available
+    await userController.getUser(req, res, () => {});
+    res.locals.user = req.user || null;
+
+    // Fetch alerts for user
+    await alertsController.getAlertsForUser(req, res, () => {});
+    res.locals.userAlerts = req.userAlerts || [];
+
+    next();
+  } catch (err) {
+    console.error('Error setting global user and alerts:', err);
+    next(err); // Pass error to error-handling middleware
+  }
 });
 
 // Route modules
