@@ -16,12 +16,12 @@ app.get('/', (req, res) => {
 // Set the views directory explicitly
 app.set('views', path.join(__dirname, 'views'));
 
-const TransactionCategories = require('./enums/transactionCategories');
+const dsTransactionCategories = require('./DS/dsTransactionCategories');
 const userController = require('./controllers/userController');
 const alertsController = require('./controllers/alertsController');
 
 app.use((req, res, next) => {
-  res.locals.transactionCategories = TransactionCategories;
+  res.locals.transactionCategories = dsTransactionCategories;
   next();
 });
 

@@ -40,7 +40,28 @@ const transactions = [
     // Pot id 1 transactions (user 1)
     { id: 24, name: "Bonus", amount: 300, type: "income", category: TransactionCategories.BONUS, dateMade: "10/11/2024", potId: 1, userId: 1 },
     { id: 25, name: "Side Hustle", amount: 250, type: "income", category: TransactionCategories.FREELANCING, dateMade: "09/11/2024", potId: 1, userId: 1 },
-    { id: 26, name: "Gift", amount: 100, type: "income", category: TransactionCategories.GIFT, dateMade: "06/11/2024", potId: 1, userId: 1 }
+    { id: 26, name: "Gift", amount: 100, type: "income", category: TransactionCategories.GIFT, dateMade: "06/11/2024", potId: 1, userId: 1 },
+
+    // Budget 6
+    { id: 27, name: "Bailey wage", amount: 2200, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "15/12/2024", budgetId: 6, userId: 1 },
+    { id: 28, name: "Charlotte wage", amount: 2200, type: "income", category: TransactionCategories.PAY_CHECK, dateMade: "24/12/2024", budgetId: 6, userId: 2 },
+    { id: 29, name: "Mortgage", amount: 1178, type: "expense", category: TransactionCategories.HOUSING, dateMade: "17/12/2024", budgetId: 6, userId: 1 },
+    { id: 30, name: "Bailey Car", amount: 170, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "01/01/2025", budgetId: 6, userId: 1 },
+
+    { id: 31, name: "Charlotte Car", amount: 230, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "24/12/2024", budgetId: 6, userId: 2 },
+    { id: 32, name: "Charlotte Car Insurance", amount: 60, type: "expense", category: TransactionCategories.INSURANCE, dateMade: "24/12/2024", budgetId: 6, userId: 2 },
+
+    { id: 33, name: "Bailey Car Insurance", amount: 65, type: "expense", category: TransactionCategories.INSURANCE, dateMade: "22/12/2024", budgetId: 6, userId: 1 },
+    { id: 34, name: "Bailey Phone", amount: 25, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "22/12/2024", budgetId: 6, userId: 1 },
+    { id: 35, name: "Charlotte Phone", amount: 67, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "24/12/2024", budgetId: 6, userId: 2 },
+    { id: 36, name: "Bailey Other Bills", amount: 50, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "01/01/2025", budgetId: 6, userId: 1 },
+
+    { id: 37, name: "House Bills", amount: 300, type: "expense", category: TransactionCategories.DIRECT_DEBIT, dateMade: "01/01/2025", budgetId: 6, userId: 1 },
+    { id: 38, name: "Bailey Dinners", amount: 100, type: "expense", category: TransactionCategories.FOOD, dateMade: "20/12/2025", budgetId: 6, userId: 1 },
+    { id: 39, name: "Food for house", amount: 200, type: "expense", category: TransactionCategories.FOOD, dateMade: "20/12/2025", budgetId: 6, userId: 1 },
+    { id: 40, name: "Charlotte Dinners", amount: 100, type: "expense", category: TransactionCategories.FOOD, dateMade: "20/12/2025", budgetId: 6, userId: 2 },
+
+
 ];
 
 
@@ -48,7 +69,7 @@ const recurrentTransactions = [
     // Monthly Transaction Example
     {
         id: 1,
-        category: RecTransactionEnums.RecTransactionCategories.RENT,
+        category: TransactionCategories.HOUSING,
         description: "Monthly rent payment",
         amount: 1200,
         frequency: RecTransactionEnums.RecTransactionFrequencies.MONTHLY,
@@ -60,7 +81,7 @@ const recurrentTransactions = [
     // Bi-Weekly Transaction Example
     {
         id: 2,
-        category: RecTransactionEnums.RecTransactionCategories.SALARY,
+        category: TransactionCategories.PAY_CHECK,
         description: "Bi-weekly paycheck from employer",
         amount: 1500,
         frequency: RecTransactionEnums.RecTransactionFrequencies.BI_WEEKLY,
@@ -72,7 +93,7 @@ const recurrentTransactions = [
     // Weekly Transaction Example
     {
         id: 3,
-        category: RecTransactionEnums.RecTransactionCategories.UTILITIES,
+        category: TransactionCategories.UTILITIES,
         description: "Weekly cleaning service",
         amount: 75,
         frequency: RecTransactionEnums.RecTransactionFrequencies.WEEKLY,
@@ -84,7 +105,7 @@ const recurrentTransactions = [
     // Daily Transaction Example
     {
         id: 4,
-        category: RecTransactionEnums.RecTransactionCategories.SAVINGS,
+        category: TransactionCategories.SAVINGS,
         description: "Daily transfer to savings account",
         amount: 10,
         frequency: RecTransactionEnums.RecTransactionFrequencies.DAILY,
@@ -96,7 +117,7 @@ const recurrentTransactions = [
     // Random Transaction Example
     {
         id: 5,
-        category: RecTransactionEnums.RecTransactionCategories.DONATION,
+        category: TransactionCategories.DONATION,
         description: "Occasional charity donations",
         amount: 50,
         frequency: RecTransactionEnums.RecTransactionFrequencies.RANDOM,
@@ -108,7 +129,7 @@ const recurrentTransactions = [
     // Custom Frequency Transaction Example
     {
         id: 6,
-        category: RecTransactionEnums.RecTransactionCategories.INSURANCE,
+        category: TransactionCategories.INSURANCE,
         description: "Insurance payment every 45 days",
         amount: 200,
         frequency: RecTransactionEnums.RecTransactionFrequencies.CUSTOM,
@@ -158,9 +179,9 @@ const getPotTransactions = (userId, potIds) => {
 };
 
 // Fetch budget transactions for a user (including shared budgets)
-const getBudgetTransactions = (userId, budgetIds) => {
+const getBudgetTransactions = (budgetIds) => {
     return transactions.filter(transaction => {
-        return transaction.budgetId && budgetIds.includes(transaction.budgetId) && transaction.userId === userId;
+        return transaction.budgetId && budgetIds.includes(transaction.budgetId);
     });
 };
 
@@ -306,10 +327,10 @@ exports.getTransactionsForPot = (req, res, next) => {
 
 // Budget detail page - All pot transactions for a given budget
 exports.getTransactionsForBudget = (req, res, next) => {
-    const userId = req.user.id;
+    // const userId = req.user.id;
     const userBudgetId = req.budget.id;
 
-    const budgetTrans = getBudgetTransactions(userId, [userBudgetId]);
+    const budgetTrans = getBudgetTransactions([userBudgetId]);
 
     req.budgetTransactions = budgetTrans;
 
@@ -323,7 +344,7 @@ exports.getSavingsTransactionsForUser = (req, res, next) => {
     const budgetIds = req.userBudgets.map(budget => budget.id);
 
     const potTrans = getPotTransactions(userId, potIds); 
-    const budgetTrans = getBudgetTransactions(userId, budgetIds); 
+    const budgetTrans = getBudgetTransactions(budgetIds); 
 
     req.potTransactions = potTrans;
     req.budgetTransactions = budgetTrans;
