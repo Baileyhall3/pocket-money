@@ -1,14 +1,18 @@
 function openModal(modalId, itemData = {}) {
     const modal = document.getElementById(modalId);
     if (modal) {
-        // Reset animation classes
         modal.classList.remove("modal-close-animation");
         modal.classList.add("modal-open-animation");
         modal.style.display = "block";
 
         attachCloseEvents();
 
-        if (itemData) {
+        const errorMessage = modal.querySelector('#submit-error-message');
+        if (errorMessage) {
+            errorMessage.textContent = '';
+        }
+
+        if (Object.keys(itemData).length > 0) {
             const modalHeader = modal.querySelector('.modal-header h2');
             if (modalHeader && itemData.type && itemData.id) {
                 modalHeader.textContent = `New Transaction for ${itemData.type} ${itemData.id}`;
@@ -27,18 +31,87 @@ function openModal(modalId, itemData = {}) {
             }
         }
 
-        const categories = document.querySelectorAll('.category');
+        const transactionForm = document.getElementById('logTransactionForm');
+        if (transactionForm) {
+            transactionForm.addEventListener('submit', function (event) {
+                const isValid = validateForm(event, transactionForm, 
+                    ['transactionName', 'transactionAmount', 'transactionDate']);
+                if (!isValid) return;
 
-        categories.forEach(category => {
-            category.addEventListener('click', () => {
-                console.log('working')
-                // Remove active class from all categories
-                categories.forEach(cat => cat.classList.remove('active'));
+                console.log("Transaction form submitted successfully");
+            });
+        }
 
-                // Add active class to the clicked category
-                category.classList.add('active');
+        const newAccountForm = document.getElementById('newAccountForm');
+        if (newAccountForm) {
+            newAccountForm.addEventListener('submit', function (event) {
+                const isValid = validateForm(event, newAccountForm, 
+                    ['accountName', 'accountType']);
+                if (!isValid) return;
+
+                console.log("New account form submitted successfully");
+            });
+        }
+
+        const newBudgetForm = document.getElementById('newBudgetForm');
+        if (newBudgetForm) {
+            newBudgetForm.addEventListener('submit', function (event) {
+                const isValid = validateForm(event, newBudgetForm, 
+                    ['budgetName', 'budgetAmount']);
+                if (!isValid) return;
+
+                console.log("New budget form submitted successfully");
+            });
+        }
+
+        const newPotForm = document.getElementById('newPotForm');
+        if (newPotForm) {
+            newPotForm.addEventListener('submit', function (event) {
+                const isValid = validateForm(event, newPotForm, 
+                    ['potName', 'savingGoal']);
+                if (!isValid) return;
+
+                console.log("New pot form submitted successfully");
+            });
+        }
+
+        const categoryElements = document.querySelectorAll(".category");
+        const selectedCategoryElement = document.querySelector(".selected-category");
+        let selectedCategory = null;
+
+        categoryElements.forEach(category => {
+            category.addEventListener("click", function () {
+                const categoryId = this.getAttribute("data-id");
+                const categoryIconClass = this.querySelector("i").className;
+                const categoryName = this.querySelector("span").textContent;
+
+                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName };
+
+                categoryElements.forEach(cat => cat.classList.remove("selected"));
+                this.classList.add("selected");
             });
         });
+
+        window.switchViews = function () {
+            const errorMessage = document.getElementById('category-error-message');
+            errorMessage.textContent = '';
+            if (selectedCategory) {
+                selectedCategoryElement.querySelector("i").className = selectedCategory.icon;
+                selectedCategoryElement.querySelector("i").title = selectedCategory.name;
+                // selectedCategoryElement.insertAdjacentHTML("beforeend", `<span>${selectedCategory.name}</span>`);
+
+                const formContainer = document.querySelector('.modal-content');
+                formContainer.classList.toggle('show-transaction-details');
+
+                document.getElementById('category-selection').style.display = 
+                    formContainer.classList.contains('show-transaction-details') ? 'none' : 'block';
+                document.getElementById('transaction-details').style.display = 
+                    formContainer.classList.contains('show-transaction-details') ? 'block' : 'none';
+            } else {
+                errorMessage.textContent = 'Select a category before continuing.';
+            }
+        };
+
     }
 }
 
@@ -51,6 +124,7 @@ function closeModal(modalId) {
 
 function attachCloseEvents() {
     const closeButtons = document.querySelectorAll(".close");
+
     closeButtons.forEach(function (closeBtn) {
         closeBtn.onclick = function () {
             closeModal(closeBtn.closest(".modal").id);
@@ -62,4 +136,22 @@ function attachCloseEvents() {
             event.target.style.display = "none";
         }
     };
+}
+
+function validateForm(event, form, requiredFieldIds) {
+    event.preventDefault();
+    const errorMessage = form.querySelector('#submit-error-message');
+    errorMessage.textContent = '';
+
+    const missingFields = requiredFieldIds.filter(id => {
+        const field = document.getElementById(id);
+        return !field || !field.value.trim();
+    });
+
+    if (missingFields.length > 0) {
+        errorMessage.textContent = 'All fields must be filled in.';
+        return false;
+    }
+
+    return true;
 }

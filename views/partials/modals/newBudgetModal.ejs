@@ -5,36 +5,43 @@
             <h2>New Budget</h2>
         </div>
         
-        <form id="newBudgetForm">
-            <label for="budgetName">Name:</label>
+        <form id="newBudgetForm" novalidate>
+            <label for="budgetName">Name</label>
             <input type="text" class="modal-input" id="budgetName" name="budgetName" required>
         
-            <label for="budgetAmount">Budget Amount (£):</label>
-            <input type="number" class="modal-input" id="budgetAmount" name="budgetAmount" required>
+            <label for="budgetAmount">Budget Amount (£)</label>
+            <input type="number" min="0.01" class="modal-input" id="budgetAmount" name="budgetAmount" required>
             
             <div class="modal-row">
                 <div class="modal-item">
-                    <label for="budgetStartDate">Start Date (optional):</label>
+                    <label for="budgetStartDate">Start Date (optional)</label>
                     <input type="date" class="modal-input" id="budgetStartDate" name="budgetStartDate">
                 </div>
 
                 <div class="modal-item">
-                    <label for="budgetEndDate">End Date (optional):</label>
+                    <label for="budgetEndDate">End Date (optional)</label>
                     <input type="date" class="modal-input" id="budgetEndDate" name="budgetEndDate">
                 </div>
             </div>
 
-            <label for="sharedWith">Share With:</label>
+            <label for="sharedWith">Share With</label>
             <select id="sharedWith" class="modal-input" name="sharedWith">
                 <option value="" selected>-- Select Budget Buddy (optional) --</option>
-                <option value="lottie">Lottie</option>
-                <option value="mam">Gayle</option>
+                <% if (friends.length > 0) { %>
+                    <% friends.forEach((friend, index) => { %>
+                        <option value="friend.userId"><%= friend.userName %></option>
+                    <% }); %>
+                <% } %>
             </select>
         
             <label for="activeBudget">
                 <input type="checkbox" id="activeBudget" name="activeBudget">
                 Make this my active budget
             </label>
+
+            <div class="modal-row" style="margin-top: 20px;">
+                <div class="error" id="submit-error-message"></div>
+            </div>
         
             <button type="submit" class="btn">Create Budget</button>
         </form>

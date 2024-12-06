@@ -521,10 +521,14 @@ li {
 }
 
 .pagination {
+    position: absolute;
+    bottom: 0; /* Attach it to the bottom of the parent container */
+    left: 0; /* Center align horizontally */
+    width: 100%; /* Ensure the pagination spans the width */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    padding: 10px;
 }
 
 .pagination button {
@@ -946,12 +950,13 @@ canvas {
     overflow: hidden;
     opacity: 0;
     transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-    display: none;
+    /* display: none; */
 }
 
 .filters.visible {
     max-height: 200px;
     opacity: 1;
+    display: block;
 }
 
 .side-container-group {
@@ -1003,6 +1008,8 @@ canvas {
     flex-direction: column; 
     padding: 20px; 
     box-sizing: border-box;
+    position: relative;
+    /* height: 100%; */
 }
 
 .pagination-btn {

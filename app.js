@@ -19,9 +19,13 @@ app.set('views', path.join(__dirname, 'views'));
 const dsTransactionCategories = require('./DS/dsTransactionCategories');
 const userController = require('./controllers/userController');
 const alertsController = require('./controllers/alertsController');
+const AccountTypes = require('./enums/accountTypes');
+const RecTransactionEnums = require('./enums/recurrentTransactions');
 
 app.use((req, res, next) => {
   res.locals.transactionCategories = dsTransactionCategories;
+  res.locals.accountTypes = AccountTypes;
+  res.locals.RecTransactionEnums = RecTransactionEnums;
   next();
 });
 
@@ -35,6 +39,9 @@ app.use(async (req, res, next) => {
     // Fetch alerts for user
     await alertsController.getAlertsForUser(req, res, () => {});
     res.locals.userAlerts = req.userAlerts || [];
+
+    await userController.getFriends(req, res, () => {});
+    res.locals.friends = req.friendsList || [];
 
     next();
   } catch (err) {

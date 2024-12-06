@@ -5,47 +5,98 @@
             <h2>New Transaction for</h2>
         </div>
         
-        <form id="logTransactionForm">
+        <form id="logTransactionForm" novalidate>
             
-            <div>
-                <h3 style="margin-bottom: 5px;">Expenses</h3>
-                <div class="categories">
-                    <% transactionCategories.filter(x => x.type == 'expense').forEach(category => { %>
-                        <div class="category" data-id="<%= category.id %>">
-                            <i class="<%= category.icon %> category-icon"></i>
-                            <span><%= category.name %></span>
-                        </div>
-                    <% }); %>
+            <div class="category-selection" id="category-selection">
+                <div>
+                    <h3 style="margin-bottom: 5px;">Expenses</h3>
+                    <div class="categories expenses">
+                        <% transactionCategories.filter(x => x.type == 'expense').forEach(category => { %>
+                            <div class="category" data-id="<%= category.id %>">
+                                <i class="<%= category.icon %> category-icon"></i>
+                                <span><%= category.name %></span>
+                            </div>
+                        <% }); %>
+                    </div>
                 </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 5px;">Income</h3>
+                    <div class="categories">
+                        <% transactionCategories.filter(x => x.type == 'income').forEach(category => { %>
+                            <div class="category" data-id="<%= category.id %>">
+                                <i class="<%= category.icon %> category-icon"></i>
+                                <span><%= category.name %></span>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+                
+                <div class="modal-row">
+                    <div class="error" id="category-error-message"></div>
+                </div>
+                <button type="button" class="btn" style="margin-top: 2vh;" onclick="switchViews()">Continue</button>
             </div>
             
-            <div style="margin-bottom: 20px;">
-                <h3 style="margin-bottom: 5px;">Income</h3>
-                <div class="categories">
-                    <% transactionCategories.filter(x => x.type == 'income').forEach(category => { %>
-                        <div class="category" data-id="<%= category.id %>">
-                            <i class="<%= category.icon %> category-icon"></i>
-                            <span><%= category.name %></span>
+            <div class="transaction-details" id="transaction-details">
+                <div class="modal-row">
+                    <div class="selected-category">
+                        <div class="selected-category-icon-wrapper">
+                            <i class="selected-category-icon fa"></i>
                         </div>
-                    <% }); %>
+                    </div>
+                    <div class="modal-item" style="margin-left: 20px;">
+                        <label for="transactionName">Description</label>
+                        <input class="modal-input" type="text" id="transactionName" name="transactionName" required>
+                    </div>
+                </div>
+                
+                <div class="modal-row">
+                    <div class="modal-item">
+                        <label for="transactionAmount">Amount (£)</label>
+                        <input class="modal-input" type="number" min="0.01" id="transactionAmount" name="transactionAmount" required>
+                    </div>
+                    <div class="modal-item">
+                        <label for="transactionDate">Date</label>
+                        <input class="modal-input" type="date" id="transactionDate" name="transactionDate" required>
+                    </div>
+                </div>
+            
+                <label for="recurring">
+                    <input type="checkbox" id="recurring" name="recurring" onclick="toggleRecTransactions()">
+                    This transaction is recurring
+                </label>
+
+                <div class="rec-transactions-section" id="rec-transactions-section">
+                    <div class="modal-row">
+                        <div class="modal-item">
+                            <label for="transactionFrequency">Frequency</label>
+                            <select id="transactionFrequency" class="modal-input" name="transactionFrequency">
+                                <% 
+                                    const frequencies = Object.values(RecTransactionEnums.RecTransactionFrequencies);
+                                %>
+                                <option value="" selected>-- Select Frequency --</option>
+                                <% frequencies.forEach(freq => { %>
+                                    <option value="<%= freq %>"><%= freq %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="modal-item">
+                            <label for="transactionEndDate">End Date (optional)</label>
+                            <input class="modal-input" type="date" id="transactionEndDate" name="transactionEndDate">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-row" style="margin-top: 20px;">
+                    <div class="error" id="submit-error-message"></div>
+                </div>
+                
+                <div class="modal-buttons">
+                    <button type="button" class="back-btn fa fa-arrow-left" onclick="switchViews()" title="Go back to category selection"></button>
+                    <button type="submit" class="btn transaction-btn">Log Transaction</button>
                 </div>
             </div>
-
-            <label for="transactionName">Description:</label>
-            <input class="modal-input" type="text" id="transactionName" name="transactionName" required>
-        
-            <label for="transactionAmount">Amount (£):</label>
-            <input class="modal-input" type="number" id="transactionAmount" name="transactionAmount" required>
-
-            <label for="transactionDate">Date (optional):</label>
-            <input class="modal-input" type="date" id="transactionDate" name="transactionDate">
-        
-            <label for="recurring">
-                <input type="checkbox" id="recurring" name="recurring">
-                This transaction is recurring
-            </label>
-        
-            <button type="submit" class="btn">Log Transaction</button>
         </form>
     </div>
 </div>
@@ -67,5 +118,13 @@ app.post('/log-transaction', (req, res) => {
     // Save transaction and redirect or respond
     res.redirect('/somewhere');
 });
+
+function toggleRecTransactions() {
+    const recTransactionsSection = document.getElementById('rec-transactions-section'); 
+    if (!recTransactionsSection) { return; }
+    
+    recTransactionsSection.classList.toggle('visible');
+    recTransactionsSection.style.display = 'block';
+}
 
 </script>

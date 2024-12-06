@@ -5,20 +5,16 @@ const accountsController = require('../controllers/accountsController');
 const budgetsController = require('../controllers/budgetsController');
 const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
-const AccountTypes = require('../enums/accountTypes');
 
 // Accounts Page Route
 router.get('/accounts', 
     accountsController.getAccountsForUser, 
     transactionsController.getAccountTransactionsForUser,
-    userController.getFriends, 
     (req, res) => {
         res.render('accounts', { 
             title: "Accounts",
             accounts: req.userAccounts,
-            friends: req.friendsList,
             transactions: req.accountTransactions,
-            accountTypes: AccountTypes
         });
     }
 );
@@ -27,14 +23,11 @@ router.get('/accounts',
 router.get('/savings', 
     budgetsController.getBudgetsForUser, 
     potsController.getPotsForUser, 
-    userController.getFriends, 
     (req, res) => {
         res.render('savings', {
             title: "Savings",
             budgets: req.userBudgets,
             pots: req.userPots,
-            user: req.user,
-            friends: req.friendsList,
         });
     }
 );

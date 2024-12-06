@@ -18,7 +18,6 @@ router.get('/transactions',
             userPots: req.userPots,
             userBudgets: req.userBudgets,
             transactions: req.allTransactions,
-            friends: req.friends,
         });
     }
 );

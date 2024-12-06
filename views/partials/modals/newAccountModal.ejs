@@ -1,0 +1,48 @@
+<div id="newAccountModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>New Account</h2>
+        </div>
+        
+        <form id="newAccountForm" novalidate>
+            <label for="accountName">Name</label>
+            <input type="text" class="modal-input" id="accountName" name="accountName" required>
+        
+            <label for="defaultCurrency">Default Currency</label>
+            <select id="defaultCurrency" class="modal-input" name="defaultCurrency" required>
+                <option value="£">£ - British Pound</option>
+                <option value="€">€ - Euro</option>
+            </select>
+        
+            <label for="accountType">Type</label>
+            <select id="accountType" class="modal-input" name="accountType" required>
+                <option value="" selected>-- Select Type --</option>
+                <% Object.keys(accountTypes).forEach(key => { %>
+                    <option value="<%= key %>"><%= accountTypes[key] %></option>
+                <% }) %>
+            </select>
+        
+            <label for="joiningPartner">Joining Partner</label>
+            <select id="joiningPartner" class="modal-input" name="joiningPartner">
+                <option value="">--- Select a joining partner ---</option>
+                <% if (friends.length > 0) { %>
+                    <% friends.forEach((friend, index) => { %>
+                        <option value="friend.userId"><%= friend.userName %></option>
+                    <% }); %>
+                <% } %>
+            </select>
+        
+            <label for="defaultAccount">
+                <input type="checkbox" id="defaultAccount" name="defaultAccount">
+                Make this my default account
+            </label>
+
+            <div class="modal-row" style="margin-top: 20px;">
+                <div class="error" id="submit-error-message"></div>
+            </div>
+        
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+    </div>
+</div>
