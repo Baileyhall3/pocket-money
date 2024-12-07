@@ -1,13 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Highlight active link
     const currentPath = window.location.pathname.replace(/^\//, "");
 
-    // Select all nav links
     const navLinks = document.querySelectorAll('.nav-menu a');
-
-    // Loop through each link to check if its href matches any part of the current path
     navLinks.forEach(link => {
-        // Remove leading "/" from link href to match against currentPath
         const linkPath = link.getAttribute('href').replace(/^\//, "");
 
         // Check if the current path includes the link path (for nested routes)
@@ -17,6 +12,17 @@ document.addEventListener("DOMContentLoaded", function () {
             link.classList.remove('active'); // Remove active class from non-matching links
         }
     });
+
+    // Highlight the Transactions parent link for nested routes
+    const transactionsLink = document.querySelector('#transactions-link');
+    if (transactionsLink) {
+        const transactionPaths = ["transactions", "recurrentTransactions"];
+        if (transactionPaths.some(path => currentPath.startsWith(path))) {
+            transactionsLink.classList.add('active');
+        } else {
+            transactionsLink.classList.remove('active');
+        }
+    }
 
     // Collapse navigation functionality
     const collapseBtn = document.getElementById('collapse-btn');
@@ -83,23 +89,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Add dropdown toggle
-    const addBtn = document.getElementById('add-btn');
-    const addDropdown = document.getElementById('add-dropdown');
-    if (addBtn && addDropdown) {
-        addBtn.addEventListener('click', function () {
-            addDropdown.classList.toggle('open');
-        });
-    }
+    // const addBtn = document.getElementById('add-btn');
+    // const addDropdown = document.getElementById('add-dropdown');
+    // if (addBtn && addDropdown) {
+    //     addBtn.addEventListener('click', function () {
+    //         addDropdown.classList.toggle('open');
+    //     });
+    // }
 
-    // Alerts dropdown toggle
-    const alertsBtn = document.getElementById('alerts-btn');
-    const alertsDropdown = document.getElementById('alerts-dropdown');
-    if (alertsBtn && alertsDropdown) {
-        alertsBtn.addEventListener('click', function () {
-            alertsDropdown.classList.toggle('open');
-        });
-    }
+    // const alertsBtn = document.getElementById('alerts-btn');
+    // const alertsDropdown = document.getElementById('alerts-dropdown');
+    // if (alertsBtn && alertsDropdown) {
+    //     alertsBtn.addEventListener('click', function () {
+    //         alertsDropdown.classList.toggle('open');
+    //     });
+    // }
 
 });
 

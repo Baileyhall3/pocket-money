@@ -16,17 +16,12 @@
     
             <div class="settings-section">
                 <h3>Default Account</h3>
-                <div class="tooltip">
-                    <select id="default-account" class="input-box">
-                        <option value="" selected>-- Select Account --</option>
-                            <% accounts.forEach(account => { %>
-                                <option value="<%= account.id %>"><%= account.name %></option>
-                            <% }) %>
-                    </select>
-                    <!-- <span class="tooltiptext">Tooltip text</span> -->
-                </div>
-                
-
+                <select id="default-account" class="input-box">
+                    <option value="" selected>-- Select Account --</option>
+                        <% accounts.forEach(account => { %>
+                            <option value="<%= account.id %>"><%= account.name %></option>
+                        <% }) %>
+                </select>
             </div>
 
             <div class="settings-section">

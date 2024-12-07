@@ -1,73 +1,78 @@
 <% layout('layout') %>
 
-<div class="profile">
-    <div class="login">
-        <h2>My Profile</h2>
-        <div>
-            <%= user.firstName + ' ' + user.lastName %>
-        </div>
-        <div>
-            <%= user.email %>
-        </div>
-                <!-- <form id="profile-form" action="#" method="post">
-        <input id="user-name" type="text" placeholder="Name">
-        <input id="user-email" type="email" placeholder="Email">
-        <div class="error" id="error-message"></div>
-        <button type="submit">Save</button>
-    </form> -->
-    </div>
-
-    <div class="friends">
-        <div class="container-header">
-            <h2>My Friends</h2>
-            <h3><a class="link" href="search">Find Friends</a></h3>
-        </div>
-        <div class="container-rounded">
-            <div class="search input-row profile-search">
-                <i class="fa fa-search"></i>
-                <input type="text" id="user-search-bar" placeholder="Search friends...">
+<div class="flex-container">
+    <div class="profile">
+        <div class="login" style="display: contents;">
+            <div class="profile-row">
+                <div style="display: flex; align-items: center;">
+                    <div class="profile-icon-wrapper">
+                        <i class="fa fa-user" style="font-size: 36px;"></i>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <h3 style="margin-bottom: 5px;">
+                        <%= user.firstName + ' ' + user.lastName %>
+                    </h3>
+                    <div>
+                        <%= user.email %>
+                    </div>
+                </div>
             </div>
-            <div class="friends-list" id="friends-list">
-                <% if (friends.length > 0) { %>
-                    <% friends.forEach((friend, index) => { %>
-                        <!-- Display friend -->
-                        <div class="friend-row" data-name="<%= friend.userName %>">
-                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                            <span class="friend-name">
-                                <%= friend.userName %>
-                            </span>
-            
-                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
-                                <div class="dropdown-content">
-                                    <a href="#" onclick="openModal('friendModal-<%= index %>')">View Friends</a>
-                                    <a href="#">Nudge</a>
-                                    <a href="#" class="remove-friend">Remove Friend</a>
+            <!-- <h2>My Profile</h2> -->
+        </div>
+    
+        <div class="friends">
+            <div class="container-header">
+                <h2>My Friends</h2>
+                <h3><a class="link" href="search">Find Friends</a></h3>
+            </div>
+            <!-- <div class="container-rounded"> -->
+                <div class="search input-row profile-search">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="user-search-bar" placeholder="Search friends...">
+                </div>
+                <div class="friends-list" id="friends-list">
+                    <% if (friends.length > 0) { %>
+                        <% friends.forEach((friend, index) => { %>
+                            <!-- Display friend -->
+                            <div class="friend-row" data-name="<%= friend.userName %>">
+                                <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                                <span class="friend-name">
+                                    <%= friend.userName %>
+                                </span>
+                
+                                <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                                    <div class="dropdown-content">
+                                        <a href="#" onclick="openModal('friendModal-<%= index %>')">View Friends</a>
+                                        <a href="#">Nudge</a>
+                                        <a href="#" class="remove-friend">Remove Friend</a>
+                                    </div>
+                                </div>
+                
+                                <!-- Modal for this friend's friends list -->
+                                <div id="friendModal-<%= index %>" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeModal('friendModal-<%= index %>')">&times;</span>
+                                        <h2><%= friend.userName %></h2>
+                                        <h2>Friends since <%= friend.created %></h2>
+                                        <!-- Display the friend's friends -->
+                                         <h3>Friends List</h3>
+                                        <% if (friend.friendsOfFriend.length > 0) { %>
+                                            <% friend.friendsOfFriend.forEach(f => { %>
+                                                <p><%= f.friendName %></p>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <p>No friends to show.</p>
+                                        <% } %>
+                                    </div>
                                 </div>
                             </div>
-            
-                            <!-- Modal for this friend's friends list -->
-                            <div id="friendModal-<%= index %>" class="modal">
-                                <div class="modal-content">
-                                    <span class="close" onclick="closeModal('friendModal-<%= index %>')">&times;</span>
-                                    <h2><%= friend.userName %></h2>
-                                    <h2>Friends since <%= friend.created %></h2>
-                                    <!-- Display the friend's friends -->
-                                     <h3>Friends List</h3>
-                                    <% if (friend.friendsOfFriend.length > 0) { %>
-                                        <% friend.friendsOfFriend.forEach(f => { %>
-                                            <p><%= f.friendName %></p>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <p>No friends to show.</p>
-                                    <% } %>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
-                <% } else { %>
-                    <div>No friends yet!</div>
-                <% } %>
-            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div>No friends yet!</div>
+                    <% } %>
+                </div>
+            <!-- </div> -->
         </div>
     </div>
 </div>

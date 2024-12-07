@@ -674,6 +674,19 @@ li {
     position: relative;
 }
 
+.input-box {
+    width: 50%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    appearance: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+
 .search input, 
 .transaction-filter select, 
 .transaction-sort select, 
@@ -685,6 +698,7 @@ li {
     border: 1px solid #ccc;
     font-size: 16px;
     box-sizing: border-box;
+    appearance: none;
 }
 
 /* Position icons to the left inside input fields */
@@ -918,10 +932,13 @@ canvas {
 .profile {
     width: 40%;
     margin-top: 5vh;
-}
-
-.profile-search {
-    width: 50%;
+    padding: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f4f4f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: auto;
 }
 
 .alerts-container {
@@ -1054,7 +1071,7 @@ canvas {
 
 /* Rounded and styled dropdowns */
 .input-box {
-    width: 200px;
+    width: 50%;
     padding: 8px;
     border-radius: 8px;
     border: 1px solid #ccc;
@@ -1213,6 +1230,32 @@ canvas {
     font-size: 18px;
 }
 
+.profile-icon-wrapper {
+    width: 8vh;
+    height: 8vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid #4CAF50;
+    cursor: pointer;
+}
+
+.profile-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.profile-details {
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
 .forms-container {
     transition: transform 0.5s ease;
 }
@@ -1294,7 +1337,7 @@ canvas {
  
     .savings-container {
         display: flex;
-        flex-direction: row; /* Explicitly setting row direction */
+        flex-direction: row;
         flex-wrap: nowrap;
         overflow-x: auto;
         overflow-y: hidden; /* Prevent vertical scroll if not needed */
@@ -1361,7 +1404,7 @@ canvas {
  
     .profile {
         width: 90%;
-        margin-top: 10vh;
+        /* margin-top: 10vh; */
     }
  
     .profile-search {
