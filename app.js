@@ -1,22 +1,23 @@
 const express = require('express');
 const engine = require('ejs-mate');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Add cookie parser middleware
+app.use(cookieParser());
 
 const port = process.env.PORT || 3000;
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/public'));
+
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 require('dotenv').config();
-
-const path = require('path');
 
 // Set the views directory explicitly
 app.set('views', path.join(__dirname, 'views'));
@@ -51,16 +52,15 @@ app.get('/', (req, res) => {
 });
 
 // Login routes before auth middleware
-app.use(authRoutes);
+app.use('/', authRoutes);
 
-// Auth middleware - protect all routes except public ones
-app.use((req, res, next) => {
-  const publicPaths = ['/login', '/'];
-  if (publicPaths.includes(req.path)) {
-    return next();
-  }
-  requireAuth(req, res, next);
-});
+// Auth middleware for protected routes
+app.use('/dashboard', requireAuth);
+app.use('/accounts', requireAuth);
+app.use('/users', requireAuth);
+app.use('/transactions', requireAuth);
+app.use('/alerts', requireAuth);
+app.use('/settings', requireAuth);
 
 // Middleware to set `user` and `userAlerts` globally - only runs after auth check
 app.use(async (req, res, next) => {
@@ -90,6 +90,24 @@ app.use(dashboardRoutes);
 app.use(transactionsRoutes);
 app.use(alertsRoutes);
 app.use(settingsRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).render('404', { 
+    title: 'Error',
+    user: req.user || null,
+    error: 'Something went wrong!'
+  });
+});
+
+// Handle 404s
+app.use((req, res) => {
+  res.status(404).render('404', { 
+    title: '404 - Not Found',
+    user: req.user || null
+  });
+});
 
 // If the app is not running in a serverless environment (i.e., local dev), listen on a port
 if (require.main === module) {

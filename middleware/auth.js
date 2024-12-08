@@ -5,14 +5,6 @@ exports.requireAuth = async (req, res, next) => {
         // Get the session from Supabase
         const { data: { session }, error } = await supabase.auth.getSession();
 
-        // In development, try to refresh the session if it exists
-        if (process.env.NODE_ENV !== 'production' && session) {
-            const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession();
-            if (!refreshError && refreshedSession) {
-                req.session = refreshedSession;
-            }
-        }
-
         if (error) throw error;
 
         if (!session) {
