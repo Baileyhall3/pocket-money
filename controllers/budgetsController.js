@@ -1,30 +1,206 @@
-const budgets = [
-    { id: 1, name: "October", targetAmount: 2400, actualAmount: 1800, startDate: '15/10/2024', endDate: '15/11/2024', isActive: true, accountId: 1, userId: 1, },
-    { id: 2, name: "Thailand", targetAmount: 1600, actualAmount: 1600, startDate: '13/1/2025', endDate: '10/2/2025', userId: 1, sharedWithId: 2 },
-    { id: 3, name: "Budget 1", targetAmount: 200, actualAmount: 50, startDate: '11/10/2024', userId: 1 },
-    { id: 4, name: "User 2 Budget", targetAmount: 400, actualAmount: 100, startDate: '10/9/2024', endDate: '20/12/2024', userId: 2 },
-    { id: 5, name: "Shared User 2 budget", targetAmount: 800, actualAmount: 230, startDate: '1/12/2024', endDate: '24/12/2024', userId: 2, sharedWithId: 1 },
-    { id: 6, name: "Bailey & Lottie's House Budget", targetAmount: 4400, actualAmount: 1855, startDate: '15/12/2024', endDate: '15/01/2025', userId: 1, sharedWithId: 2 },
-];
+const supabase = require('../config/database');
 
-exports.getBudgetsForUser = (req, res, next) => {
-    const userId = req.user.id;
+exports.getBudgetsForUser = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
 
-    const userBudgets = budgets.filter(budget => {
-        return budget.userId === userId || budget.sharedWithId === userId;
-    });
+        // Get budgets that are either owned by the user or shared with them
+        const { data: budgets, error } = await supabase
+            .from('budgets')
+            .select(`
+                *,
+                account:account_id (
+                    name,
+                    balance
+                )
+            `)
+            .or(`user_id.eq.${userId},shared_with_id.eq.${userId}`);
 
-    req.userBudgets = userBudgets;
+        if (error) throw error;
 
-    next();
+        req.userBudgets = budgets;
+        next();
+    } catch (error) {
+        next(error);
+    }
 };
 
-exports.getBudgetById = (req, res, next) => {
-    const budgetId = parseInt(req.params.id);
-    const budget = budgets.find(b => b.id === budgetId);
-    if (!budget) {
-        return res.status(404).send('Budget not found');
+exports.getBudgetById = async (req, res, next) => {
+    try {
+        const budgetId = req.params.id;
+
+        const { data: budget, error } = await supabase
+            .from('budgets')
+            .select(`
+                *,
+                account:account_id (
+                    name,
+                    balance
+                )
+            `)
+            .eq('id', budgetId)
+            .single();
+
+        if (error) throw error;
+        if (!budget) {
+            return res.status(404).send('Budget not found');
+        }
+
+        req.budget = budget;
+        next();
+    } catch (error) {
+        next(error);
     }
-    req.budget = budget;
-    next();
+};
+
+exports.createBudget = async (req, res, next) => {
+    try {
+        const {
+            name,
+            targetAmount,
+            startDate,
+            endDate = null,
+            accountId = null,
+            sharedWithId = null
+        } = req.body;
+        const userId = req.user.id;
+
+        const { data: newBudget, error } = await supabase
+            .from('budgets')
+            .insert([{
+                name,
+                target_amount: targetAmount,
+                actual_amount: 0,
+                start_date: startDate,
+                end_date: endDate,
+                is_active: true,
+                account_id: accountId,
+                user_id: userId,
+                shared_with_id: sharedWithId
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        req.budget = newBudget;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateBudget = async (req, res, next) => {
+    try {
+        const budgetId = req.params.id;
+        const updates = req.body;
+        const userId = req.user.id;
+
+        // First verify the user owns this budget
+        const { data: existingBudget, error: fetchError } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('id', budgetId)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!existingBudget) {
+            return res.status(403).send('Not authorized to update this budget');
+        }
+
+        // Perform the update
+        const { data: updatedBudget, error: updateError } = await supabase
+            .from('budgets')
+            .update({
+                name: updates.name,
+                target_amount: updates.targetAmount,
+                actual_amount: updates.actualAmount,
+                start_date: updates.startDate,
+                end_date: updates.endDate,
+                is_active: updates.isActive,
+                account_id: updates.accountId,
+                shared_with_id: updates.sharedWithId
+            })
+            .eq('id', budgetId)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        req.budget = updatedBudget;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.deleteBudget = async (req, res, next) => {
+    try {
+        const budgetId = req.params.id;
+        const userId = req.user.id;
+
+        // First verify the user owns this budget
+        const { data: existingBudget, error: fetchError } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('id', budgetId)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!existingBudget) {
+            return res.status(403).send('Not authorized to delete this budget');
+        }
+
+        // Perform the deletion
+        const { error: deleteError } = await supabase
+            .from('budgets')
+            .delete()
+            .eq('id', budgetId);
+
+        if (deleteError) throw deleteError;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateBudgetAmount = async (req, res, next) => {
+    try {
+        const budgetId = req.params.id;
+        const { amount } = req.body;
+        const userId = req.user.id;
+
+        // First get the current amount
+        const { data: budget, error: fetchError } = await supabase
+            .from('budgets')
+            .select('actual_amount')
+            .eq('id', budgetId)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!budget) {
+            return res.status(404).send('Budget not found');
+        }
+
+        // Update the amount
+        const { data: updatedBudget, error: updateError } = await supabase
+            .from('budgets')
+            .update({
+                actual_amount: budget.actual_amount + amount
+            })
+            .eq('id', budgetId)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        req.budget = updatedBudget;
+        next();
+    } catch (error) {
+        next(error);
+    }
 };

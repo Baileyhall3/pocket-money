@@ -12,7 +12,7 @@
                 <div class="dropdown-content" id="add-dropdown">
                     <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account' })" href="#">Log Transaction</a>
                     <a href="#">Account Details</a>
-                    <a href="#">Remove Account</a>
+                    <a href="#" onclick="deleteAccount('<%= account.id %>')">Remove Account</a>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
                 <div class="balance-container">
                     <div class="container-rounded">
                         <h2>Balance: £<%= account.balance %></h2>
-                        <h3>Account Type: <span><%= account.type %></span></h3>
+                        <h3>Account Type: <span><%= accountTypes[account.type] %></span></h3>
                     </div>
                     <% if (transactions.length > 0) { %>
                         <!-- Make this show savings if account is savings account -->
@@ -51,7 +51,7 @@
                         <div class="friend-row">
                             <i class="fa fa-user friend-icon" style="display: flex;"></i>
                             <span class="friend-name">
-                                <%= sharedWithUser.firstName + " " + sharedWithUser.lastName %>
+                                <%= sharedWithUser.first_name + " " + sharedWithUser.last_name %>
                             </span>
             
                             <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
@@ -157,4 +157,26 @@
 
         }
     });
+
+    async function deleteAccount(accountId) {
+        try {
+            const response = await fetch(`/accounts/${accountId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                alert('Account deleted successfully!');
+                window.location.href = '/accounts'
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete account: ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Error deleting account:', err);
+            alert('An error occurred while deleting the account.');
+        }
+    }
 </script>

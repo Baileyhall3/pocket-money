@@ -6,6 +6,8 @@ const budgetsController = require('../controllers/budgetsController');
 const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
 
+const { requireAuth } = require('../middleware/auth');
+
 // Accounts Page Route
 router.get('/accounts', 
     accountsController.getAccountsForUser, 
@@ -18,6 +20,10 @@ router.get('/accounts',
         });
     }
 );
+
+router.post('/accounts/create', accountsController.createAccount, (req, res) => {
+    res.json({ success: true, account: req.account });
+});
 
 // Savings Page Route
 router.get('/savings', 
@@ -68,6 +74,10 @@ router.get('/accounts/:id',
         });
     }
 );
+
+router.delete('/accounts/:id', requireAuth, accountsController.deleteAccount, (req, res) => {
+    res.status(200).json({ success: true, message: 'Account deleted successfully' });
+});
 
 // Account transactions pagination
 router.get('/accounts/:id/transactions', 

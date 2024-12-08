@@ -1013,7 +1013,7 @@ canvas {
 
 .accounts {
     width: 80%; 
-    margin-top: 8vh;
+    margin-top: 4vh;
 }
 
 .transaction-section-detail {
@@ -1445,6 +1445,7 @@ canvas {
 
     .accounts {
         width: 95%; 
+        margin-top: 8vh;
     }
  
     .slide h3 {

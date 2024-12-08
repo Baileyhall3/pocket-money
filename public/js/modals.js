@@ -7,6 +7,8 @@ function openModal(modalId, itemData = {}) {
 
         attachCloseEvents();
 
+        const refreshManager = new RefreshManager();
+
         const errorMessage = modal.querySelector('#submit-error-message');
         if (errorMessage) {
             errorMessage.textContent = '';
@@ -44,12 +46,15 @@ function openModal(modalId, itemData = {}) {
 
         const newAccountForm = document.getElementById('newAccountForm');
         if (newAccountForm) {
-            newAccountForm.addEventListener('submit', function (event) {
+            newAccountForm.addEventListener('submit', async function (event) {
                 const isValid = validateForm(event, newAccountForm, 
                     ['accountName', 'accountType']);
                 if (!isValid) return;
 
-                console.log("New account form submitted successfully");
+                if (createAccount(event)) {
+                    closeModal(modalId);
+                    await refreshManager.refreshAccounts();
+                }
             });
         }
 
@@ -154,4 +159,39 @@ function validateForm(event, form, requiredFieldIds) {
     }
 
     return true;
+}
+
+async function createAccount(event) {
+    const formData = new FormData(event.target);
+    const data = {
+        name: formData.get('accountName'),
+        type: formData.get('accountType'),
+        balance: parseFloat(formData.get('balance') || 0),
+        shared_with_id: formData.get('joiningPartner') || null,
+        is_active: formData.get('defaultAccount') || false,
+    };
+
+    try {
+        const response = await fetch('/accounts/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // alert('Account created successfully!');
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to create account.');
+        }
+    } catch (error) {
+        // Handle errors
+        console.error('Error creating account:', error);
+        document.getElementById('submit-error-message').textContent = error.message;
+        return false;
+    }
 }

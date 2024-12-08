@@ -34,6 +34,7 @@
                 <div class="login" id="loginContent">
                     <h2>LOGIN</h2>
                     <form id="loginForm" novalidate>
+                        <input type="hidden" name="action" value="login">
                         <input type="email" id="login-email" placeholder="Email" required>
                         <div class="password-wrapper">
                             <input type="password" id="login-password" placeholder="Password" required>
@@ -53,6 +54,7 @@
                 <div class="login" id="registerContent">
                     <h2>REGISTER</h2>
                     <form id="registerForm" novalidate>
+                        <input type="hidden" name="action" value="register">
                         <div class="input-row" style="margin-bottom: 0;">
                             <input type="text" id="register-first-name" placeholder="First Name" required>
                             <input type="text" id="register-last-name" placeholder="Last Name" required>
@@ -104,6 +106,7 @@
     
     loginForm.addEventListener('submit', async function(event) {
         event.preventDefault();
+
         const errorMessage = document.getElementById('login-error-message');
         errorMessage.textContent = '';
 
@@ -115,7 +118,24 @@
             return;
         }
 
-        window.location.href = '/index'
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'login', email, password })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                window.location.href = '/dashboard'; // Redirect to dashboard
+            } else {
+                errorMessage.innerText = result.error; // Show error message
+            }
+        } catch (err) {
+            console.error(err);
+            errorMessage.innerText = 'An unexpected error occurred.';
+        }
     });
 
     togglePassword.addEventListener('click', function () {
@@ -149,18 +169,19 @@
         const errorMessage = document.getElementById('register-error-message');
         errorMessage.textContent = '';
 
-        const firstName = document.getElementById('register-first-name').value;
-        const lastName = document.getElementById('register-last-name').value;
+        const first_name = document.getElementById('register-first-name').value;
+        const last_name = document.getElementById('register-last-name').value;
         const email = document.getElementById('register-email').value;
         const password = document.getElementById('register-password').value;
-        
-        if (!firstName || !lastName || !email || !password || !repeatPasswordInput.value) {
+        const repeatPassword = repeatPasswordInput.value; // Correctly retrieve repeatPassword
+
+        if (!first_name || !last_name || !email || !password || !repeatPassword) {
             errorMessage.textContent = 'All fields must be filled in.';
             return;
         }
 
         // Check if passwords match
-        if (registerPasswordInput.value !== repeatPasswordInput.value) {
+        if (password !== repeatPassword) {
             errorMessage.textContent = 'Passwords do not match!';
             return;
         }
@@ -190,17 +211,27 @@
             return;
         }
 
-        console.log('New user: ', firstName, lastName, email);
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'register', first_name, last_name, email, password, repeatPassword })
+            });
 
-        // Add check to see if email already exists in DB (pseudo-code)
-        // const emailExists = await checkEmailInDatabase(email);
-        // if (emailExists) {
-        //     errorMessage.textContent = 'Email already exists!';
-        //     return;
-        // }
+            const result = await response.json();
 
-        console.log('Registration successful!');
+            if (response.ok) {
+                errorMessage.innerText = 'Registration successful. Please log in.';
+                toggleForms(); // Switch to login form
+            } else {
+                errorMessage.innerText = result.error; // Show error message
+            }
+        } catch (err) {
+            console.error(err);
+            errorMessage.innerText = 'An unexpected error occurred.';
+        }
     });
+
 
 
 </script>

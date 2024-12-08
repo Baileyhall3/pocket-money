@@ -8,12 +8,20 @@
         <form id="newAccountForm" novalidate>
             <label for="accountName">Name</label>
             <input type="text" class="modal-input" id="accountName" name="accountName" required>
-        
-            <label for="defaultCurrency">Default Currency</label>
-            <select id="defaultCurrency" class="modal-input" name="defaultCurrency" required>
-                <option value="£">£ - British Pound</option>
-                <option value="€">€ - Euro</option>
-            </select>
+            
+            <div class="modal-row">
+                <div class="modal-item">
+                    <label for="defaultCurrency">Default Currency</label>
+                    <select id="defaultCurrency" class="modal-input" name="defaultCurrency" required>
+                        <option value="£">£ - British Pound</option>
+                        <!-- <option value="€">€ - Euro</option> -->
+                    </select>
+                </div>
+                <div class="modal-item">
+                    <label for="balance">Balance</label>
+                    <input class="modal-input" type="number" min="0.00" id="balance" name="balance" required value="0">
+                </div>
+            </div>
         
             <label for="accountType">Type</label>
             <select id="accountType" class="modal-input" name="accountType" required>

@@ -1,17 +1,22 @@
 const express = require('express');
 const engine = require('ejs-mate');
+const cookieParser = require('cookie-parser');
+
 const app = express();
-const port = process.env.PORT || 3000; // Use the environment port or default to 3000
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // Add cookie parser middleware
+
+const port = process.env.PORT || 3000;
 
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
-const path = require('path');
+require('dotenv').config();
 
-app.get('/', (req, res) => {
-  res.redirect('/index');
-});
+const path = require('path');
 
 // Set the views directory explicitly
 app.set('views', path.join(__dirname, 'views'));
@@ -21,7 +26,9 @@ const userController = require('./controllers/userController');
 const alertsController = require('./controllers/alertsController');
 const AccountTypes = require('./enums/accountTypes');
 const RecTransactionEnums = require('./enums/recurrentTransactions');
+const { requireAuth } = require('./middleware/auth');
 
+// Basic middleware for setting enums
 app.use((req, res, next) => {
   res.locals.transactionCategories = dsTransactionCategories;
   res.locals.accountTypes = AccountTypes;
@@ -29,29 +36,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Middleware to set `user` and `userAlerts` globally
-app.use(async (req, res, next) => {
-  try {
-    // Fetch user if available
-    await userController.getUser(req, res, () => {});
-    res.locals.user = req.user || null;
-
-    // Fetch alerts for user
-    await alertsController.getAlertsForUser(req, res, () => {});
-    res.locals.userAlerts = req.userAlerts || [];
-
-    await userController.getFriends(req, res, () => {});
-    res.locals.friends = req.friendsList || [];
-
-    next();
-  } catch (err) {
-    console.error('Error setting global user and alerts:', err);
-    next(err); // Pass error to error-handling middleware
-  }
-});
-
 // Route modules
-const loginRoutes = require('./routes/login');
+const authRoutes = require('./routes/auth');
 const accountsRoutes = require('./routes/accounts');
 const usersRoutes = require('./routes/users');
 const dashboardRoutes = require('./routes/dashboard');
@@ -59,19 +45,51 @@ const transactionsRoutes = require('./routes/transactions');
 const alertsRoutes = require('./routes/alerts');
 const settingsRoutes = require('./routes/settings');
 
+// Root redirect
+app.get('/', (req, res) => {
+  res.redirect('/dashboard');
+});
 
-// Routes
-app.use(loginRoutes);
+// Login routes before auth middleware
+app.use(authRoutes);
+
+// Auth middleware - protect all routes except public ones
+app.use((req, res, next) => {
+  const publicPaths = ['/login', '/'];
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
+  requireAuth(req, res, next);
+});
+
+// Middleware to set `user` and `userAlerts` globally - only runs after auth check
+app.use(async (req, res, next) => {
+  try {
+    if (req.user) {
+      // Fetch alerts for user
+      await alertsController.getAlertsForUser(req, res, () => {});
+      res.locals.userAlerts = req.userAlerts || [];
+
+      await userController.getFriends(req, res, () => {});
+      res.locals.friends = req.friendsList || [];
+    }
+    
+    // Set user in locals from the auth middleware
+    res.locals.user = req.user || null;
+    next();
+  } catch (err) {
+    console.error('Error setting global user and alerts:', err);
+    next(err);
+  }
+});
+
+// Protected routes
 app.use(accountsRoutes);
 app.use(usersRoutes);
 app.use(dashboardRoutes);
 app.use(transactionsRoutes);
 app.use(alertsRoutes);
 app.use(settingsRoutes);
-
-// app.use((req, res, next) => {
-//   res.status(404).render('404', { title: "404 - Not Found" });
-// });
 
 // If the app is not running in a serverless environment (i.e., local dev), listen on a port
 if (require.main === module) {

@@ -1,138 +1,282 @@
-const user = {
-    id: 1,
-    firstName: 'Bailey',
-    lastName: 'Hall',
-    email: 'baileyhall271001@gmail.com'
-};
+const supabase = require('../config/database');
 
-const users = [
-    { id: 1, firstName: 'Bailey', lastName: 'Hall', email: 'baileyhall271001@gmail.com' },
-    { id: 2, firstName: 'Lottie', lastName: 'Anderson', email: 'charlotteandersonn@icloud.com' },
-    { id: 3, firstName: 'Gayle', lastName: 'Brown', email: 'gayle22brown@gmail.com' },
-    { id: 4, firstName: 'Jacob', lastName: 'Wilson', email: 'jacobwilson22@gmail.com' },
-    { id: 5, firstName: 'Craig', lastName: 'Davison', email: 'cd@omega.com' },
-    { id: 6, firstName: 'James', lastName: 'Clarke', email: 'jc@omega.com' },
-    { id: 7, firstName: 'Jayden', lastName: 'Richardson', email: 'jr@omega.com' },
-    { id: 8, firstName: 'Liam', lastName: 'Heywood', email: 'lh@omega.com' },
-];
+exports.getUser = async (req, res, next) => {
+    try {
+        // Get the current authenticated user from Supabase session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) throw sessionError;
+        if (!session) {
+            return res.redirect('/login');
+        }
 
-const friends = [
-    { userId: 1, friendId: 2, created: '10/10/2024' },
-    { userId: 1, friendId: 3, created: '10/10/2024' },
-    { userId: 1, friendId: 4, created: '10/10/2024' },
-    { userId: 2, friendId: 3, created: '10/10/2024' },
-    { userId: 2, friendId: 4, created: '10/10/2024' },
-    { userId: 5, friendId: 6, created: '10/10/2024' },
-    { userId: 5, friendId: 8, created: '10/10/2024' },
-    { userId: 7, friendId: 6, created: '10/10/2024' },
-    { userId: 7, friendId: 8, created: '10/10/2024' },
-    { userId: 7, friendId: 5, created: '10/10/2024' },
-    { userId: 7, friendId: 1, created: '10/10/2024' },
-    { userId: 4, friendId: 3, created: '10/10/2024' },
-    { userId: 8, friendId: 1, created: '10/10/2024' },
-];
+        // Get the user's profile data
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-exports.getUser = (req, res, next) => {
-    req.user = user;
-    next();
-};
+        if (userError) throw userError;
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
 
-exports.getUsers = (req, res, next) => {
-    req.users = users;
-    next();
-};
-
-// Helper function to get the user by ID
-const getUserById = (id) => users.find(user => user.id === id);
-
-exports.getFriends = (req, res, next) => {
-    const userId = req.user.id; // Current user ID
-
-    // friends of the current user
-    const userFriends = friends.filter(friend => friend.userId === userId || friend.friendId === userId);
-
-    // Map user friends with their names and include each friend's own friends
-    const friendsList = userFriends.map(friend => {
-        // Determine the actual friend's ID (who is not current user)
-        const friendId = (friend.userId === userId) ? friend.friendId : friend.userId;
-        const friendUser = getUserById(friendId); // Get the friend's details
-
-        // Get this friend's own friends (excluding current user)
-        const friendsOfFriend = friends.filter(f => f.userId === friendId || f.friendId === friendId)
-            .filter(f => f.userId !== userId && f.friendId !== userId) // Exclude current user
-            .map(f => {
-                const otherFriendId = (f.userId === friendId) ? f.friendId : f.userId;
-                const otherFriendInfo = getUserById(otherFriendId); // Get the other friend's info
-                return {
-                    friendId: otherFriendInfo.id,
-                    friendName: `${otherFriendInfo.firstName} ${otherFriendInfo.lastName}`
-                };
-            });
-
-        return {
-            userId: friendUser.id,
-            userName: `${friendUser.firstName} ${friendUser.lastName}`, // Friend's name
-            created: friend.created,
-            friendsOfFriend: friendsOfFriend // Friends of this friend
-        };
-    });
-
-    req.friendsList = friendsList;
-    next();
-};
-
-
-exports.searchUsers = (req, res, next) => {
-    const userId = req.user.id;  // Logged-in user's ID
-    const searchTerm = req.query.search || ""; // Get the search term from the query string (e.g., ?search=Bailey)
-    
-    // Filter users based on the search term (case-insensitive search by first name, last name, or email)
-    const matchingUsers = users.filter(user => {
-        const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-        const email = user.email.toLowerCase();
-        const searchQuery = searchTerm.toLowerCase();
-        return fullName.includes(searchQuery) || email.includes(searchQuery);
-    });
-
-    // Get the logged-in user's friends
-    const userFriends = friends.filter(friend => friend.userId === userId || friend.friendId === userId);
-
-    // Map over the matching users and add extra details (whether they are a friend, and their friends list)
-    const searchResultsWithFriends = matchingUsers.map(user => {
-        // Check if the searched user is a friend
-        const isFriend = userFriends.some(friend => friend.userId === user.id || friend.friendId === user.id);
-
-        // Get the friends of this user (excluding the current user)
-        const friendsOfUser = friends.filter(f => f.userId === user.id || f.friendId === user.id)
-            .filter(f => f.userId !== userId && f.friendId !== userId) // Exclude current user
-            .map(f => {
-                const friendId = (f.userId === user.id) ? f.friendId : f.userId;
-                const friendUser = users.find(u => u.id === friendId); // Find friend's details
-                return `${friendUser.firstName} ${friendUser.lastName}`;
-            });
-
-        return {
-            ...user,
-            isFriend, // Whether the user is a friend of the logged-in user
-            friendsOfUser // List of the user's friends (names)
-        };
-    });
-
-    // Attach the results to the request object
-    req.searchResults = searchResultsWithFriends;
-
-    next();
-};
-
-exports.getSharedWithUser = (req, res, next) => {
-    const sharedWithId = req.sharedWithId;
-
-    if (!sharedWithId) {
-        req.sharedWithUser = null;
-        return next();
+        req.user = user;
+        next();
+    } catch (error) {
+        next(error);
     }
+};
 
-    const sharedWithUser = getUserById(sharedWithId);
-    req.sharedWithUser = sharedWithUser;
-    next();
+exports.getUsers = async (req, res, next) => {
+    try {
+        const { data: users, error } = await supabase
+            .from('users')
+            .select('*');
+
+        if (error) throw error;
+
+        req.users = users;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Helper function to get user by ID
+const getUserById = async (id) => {
+    const { data: user, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error) throw error;
+    return user;
+};
+
+exports.getFriends = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        // Get all friendship relationships for the current user
+        const { data: friendships, error: friendshipsError } = await supabase
+            .from('friends')
+            .select(`
+                id,
+                created_at,
+                friend:friend_id (
+                    id,
+                    first_name,
+                    last_name
+                )
+            `)
+            .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+
+        if (friendshipsError) throw friendshipsError;
+
+        // Transform the friendships data
+        const friendsList = await Promise.all(friendships.map(async (friendship) => {
+            // Get the friend's ID (the one who isn't the current user)
+            const friendId = friendship.friend.id;
+
+            // Get this friend's own friends
+            const { data: friendsOfFriend, error: friendsOfFriendError } = await supabase
+                .from('friends')
+                .select(`
+                    friend:friend_id (
+                        id,
+                        first_name,
+                        last_name
+                    )
+                `)
+                .or(`user_id.eq.${friendId},friend_id.eq.${friendId}`)
+                .neq('friend_id', userId);
+
+            if (friendsOfFriendError) throw friendsOfFriendError;
+
+            return {
+                userId: friendId,
+                userName: `${friendship.friend.first_name} ${friendship.friend.last_name}`,
+                created: friendship.created_at,
+                friendsOfFriend: friendsOfFriend.map(f => ({
+                    friendId: f.friend.id,
+                    friendName: `${f.friend.first_name} ${f.friend.last_name}`
+                }))
+            };
+        }));
+
+        req.friendsList = friendsList;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.searchUsers = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const searchTerm = req.query.search || "";
+
+        // Search for users
+        const { data: users, error: usersError } = await supabase
+            .from('users')
+            .select('*')
+            .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`)
+            .neq('id', userId);
+
+        if (usersError) throw usersError;
+
+        // Get current user's friends
+        const { data: friendships, error: friendshipsError } = await supabase
+            .from('friends')
+            .select('friend_id')
+            .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+
+        if (friendshipsError) throw friendshipsError;
+
+        // Transform friend IDs into a Set for easy lookup
+        const friendIds = new Set(friendships.map(f => f.friend_id));
+
+        // Map users with additional friend information
+        const searchResultsWithFriends = await Promise.all(users.map(async user => {
+            // Check if this user is a friend
+            const isFriend = friendIds.has(user.id);
+
+            // Get this user's friends
+            const { data: userFriends, error: userFriendsError } = await supabase
+                .from('friends')
+                .select(`
+                    friend:friend_id (
+                        first_name,
+                        last_name
+                    )
+                `)
+                .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
+                .neq('friend_id', userId);
+
+            if (userFriendsError) throw userFriendsError;
+
+            const friendsOfUser = userFriends.map(f => 
+                `${f.friend.first_name} ${f.friend.last_name}`
+            );
+
+            return {
+                ...user,
+                isFriend,
+                friendsOfUser
+            };
+        }));
+
+        req.searchResults = searchResultsWithFriends;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getSharedWithUser = async (req, res, next) => {
+    try {
+        const sharedWithId = req.sharedWithId;
+
+        if (!sharedWithId) {
+            req.sharedWithUser = null;
+            return next();
+        }
+
+        const sharedWithUser = await getUserById(sharedWithId);
+        req.sharedWithUser = sharedWithUser;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+// New authentication methods
+
+exports.signUp = async (req, res, next) => {
+    try {
+        const { email, password, firstName, lastName } = req.body;
+
+        // Create auth user
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email,
+            password
+        });
+
+        if (authError) throw authError;
+
+        // Create user profile
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .insert([{
+                id: authData.user.id,
+                first_name: firstName,
+                last_name: lastName,
+                email
+            }])
+            .select()
+            .single();
+
+        if (userError) throw userError;
+
+        req.user = userData;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.signIn = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        req.session = data.session;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.signOut = async (req, res, next) => {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const updates = req.body;
+
+        const { data: updatedUser, error } = await supabase
+            .from('users')
+            .update({
+                first_name: updates.firstName,
+                last_name: updates.lastName,
+                email: updates.email
+            })
+            .eq('id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        req.user = updatedUser;
+        next();
+    } catch (error) {
+        next(error);
+    }
 };

@@ -57,10 +57,22 @@
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
-    border-radius: 20px; /* Rounded corners */
+    border-radius: 20px;
     border: 1px solid #ccc;
     box-sizing: border-box;
     appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .modal-input[type="date"]::-webkit-calendar-picker-indicator {
+      display: none;
+  }
+  .modal-input[type="date"] {
+      background-color: #fff;
+      color: #000;
+      padding: 10px;
+      border-radius: 20px;
   }
   
   /* Checkbox styling */
