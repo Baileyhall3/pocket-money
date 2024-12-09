@@ -111,4 +111,61 @@ router.get('/logout', async (req, res) => {
     }
 });
 
+router.get('/reset-password', (req, res) => {
+    res.render('reset-password', { title: 'Reset Password', user: null });
+});
+
+router.post('/reset-password', async (req, res) => {
+    const { action, email } = req.body;
+
+    try {
+        if (action === 'reset-password') {
+            
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            const redirectTo = `${baseUrl}/reset-password`;
+
+            const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo,
+            });
+
+            if (error) {
+                return res.status(400).json({ error: error.message });
+            }
+
+            return res.status(200).json({ message: 'Password reset link sent' });
+        }
+        // Fallback for unsupported actions
+        res.status(400).json({ error: 'Invalid action' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+});
+
+router.post('/update-password', async (req, res) => {
+    const { newPassword, accessToken } = req.body;
+
+    if (!accessToken || !newPassword) {
+        return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    try {
+        // Use the access token to update the user's password
+        const { data, error } = await supabase.auth.updateUser(accessToken, {
+            password: newPassword,
+        });
+
+        if (error) {
+            console.error('Password update error:', error);
+            return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ message: 'Password changed successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+});
+
+
 module.exports = router;

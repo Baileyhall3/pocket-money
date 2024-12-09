@@ -54,25 +54,18 @@ app.get('/', (req, res) => {
 // Login routes before auth middleware
 app.use('/', authRoutes);
 
-// Auth middleware for protected routes
-app.use('/dashboard', requireAuth);
-app.use('/accounts', requireAuth);
-app.use('/users', requireAuth);
-app.use('/transactions', requireAuth);
-app.use('/alerts', requireAuth);
-app.use('/settings', requireAuth);
+// Apply auth middleware to all routes after this point
+app.use(requireAuth);
 
-// Middleware to set `user` and `userAlerts` globally - only runs after auth check
+// Middleware to set `user` and `userAlerts` globally
 app.use(async (req, res, next) => {
   try {
-    if (req.user) {
-      // Fetch alerts for user
-      await alertsController.getAlertsForUser(req, res, () => {});
-      res.locals.userAlerts = req.userAlerts || [];
+    // Fetch alerts for user
+    await alertsController.getAlertsForUser(req, res, () => {});
+    res.locals.userAlerts = req.userAlerts || [];
 
-      await userController.getFriends(req, res, () => {});
-      res.locals.friends = req.friendsList || [];
-    }
+    await userController.getFriends(req, res, () => {});
+    res.locals.friends = req.friendsList || [];
     
     // Set user in locals from the auth middleware
     res.locals.user = req.user || null;

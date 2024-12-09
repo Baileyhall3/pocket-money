@@ -1268,6 +1268,10 @@ canvas {
     display: none;
 }
 
+#resetPasswordContent {
+    display: none;
+}
+
 .home-page {
     align-self: center;
 }
