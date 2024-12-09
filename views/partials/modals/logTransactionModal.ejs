@@ -12,7 +12,7 @@
                     <h3 style="margin-bottom: 5px;">Expenses</h3>
                     <div class="categories expenses">
                         <% transactionCategories.filter(x => x.type == 'expense').forEach(category => { %>
-                            <div class="category" data-id="<%= category.id %>">
+                            <div class="category" data-id="<%= category.id %>" data-type="expense">
                                 <i class="<%= category.icon %> category-icon"></i>
                                 <span><%= category.name %></span>
                             </div>
@@ -24,7 +24,7 @@
                     <h3 style="margin-bottom: 5px;">Income</h3>
                     <div class="categories">
                         <% transactionCategories.filter(x => x.type == 'income').forEach(category => { %>
-                            <div class="category" data-id="<%= category.id %>">
+                            <div class="category" data-id="<%= category.id %>" data-type="income">
                                 <i class="<%= category.icon %> category-icon"></i>
                                 <span><%= category.name %></span>
                             </div>
@@ -102,22 +102,6 @@
 </div>
 
 <script>
-
-app.post('/log-transaction', (req, res) => {
-    const { transactionName, transactionAmount, transactionType, transactionCategory, id, type } = req.body;
-
-    // Determine the type of item based on which ID is present
-    if (potId) {
-        // Handle transaction for pot
-    } else if (accountId) {
-        // Handle transaction for account
-    } else if (budgetId) {
-        // Handle transaction for budget
-    }
-
-    // Save transaction and redirect or respond
-    res.redirect('/somewhere');
-});
 
 function toggleRecTransactions() {
     const recTransactionsSection = document.getElementById('rec-transactions-section'); 

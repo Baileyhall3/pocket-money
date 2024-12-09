@@ -79,7 +79,6 @@ exports.createPot = async (req, res, next) => {
         } = req.body;
         const userId = req.user.id;
 
-        // Start a transaction
         const { data: newPot, error: potError } = await supabase
             .from('pots')
             .insert([{

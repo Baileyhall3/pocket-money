@@ -64,14 +64,14 @@
                             </button>
                             <div class="content">
                                 <% 
-                                    const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
+                                    const accountTransactions = transactions.filter(transaction => transaction.account_id === account.id);
                                 %>
                                 <% if (accountTransactions.length > 0) { %>
                                     <% accountTransactions.forEach(transaction => { %>
                                         <div class="transaction">
                                             <div class="money-bar-header">
                                                 <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                    <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                    <%= account.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
                                                 </h5>
                                                 <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                                     <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -82,7 +82,7 @@
                                                     <%= transaction.category %>
                                                 </h5>
                                                 <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                                    <%= transaction.dateMade %>
+                                                    <%= DateUtils.toShortDate(transaction.date_made) %>
                                                 </p>
                                             </div>
                                         </div>
@@ -112,14 +112,14 @@
                             </button>
                             <div class="content">
                                 <% 
-                                    const potTransactions = transactions.filter(transaction => transaction.potId === pot.id);
+                                    const potTransactions = transactions.filter(transaction => transaction.pot_id === pot.id);
                                 %>
                                 <% if (potTransactions.length > 0) { %>
                                     <% potTransactions.forEach(transaction => { %>
                                         <div class="transaction">
                                             <div class="money-bar-header">
                                                 <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                    <%= pot.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                    <%= pot.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
                                                 </h5>
                                                 <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                                     <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -130,7 +130,7 @@
                                                     <%= transaction.category %>
                                                 </h5>
                                                 <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                                    <%= transaction.dateMade %>
+                                                    <%= DateUtils.toShortDate(transaction.date_made) %>
                                                 </p>
                                             </div>
                                         </div>
@@ -160,14 +160,14 @@
                             </button>
                             <div class="content">
                                 <% 
-                                    const budgetTransactions = transactions.filter(transaction => transaction.budgetId === budget.id);
+                                    const budgetTransactions = transactions.filter(transaction => transaction.budget_id === budget.id);
                                 %>
                                 <% if (budgetTransactions.length > 0) { %>
                                     <% budgetTransactions.forEach(transaction => { %>
                                         <div class="transaction">
                                             <div class="money-bar-header">
                                                 <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                    <%= budget.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                    <%= budget.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
                                                 </h5>
                                                 <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                                     <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -178,7 +178,7 @@
                                                     <%= transaction.category %>
                                                 </h5>
                                                 <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                                    <%= transaction.dateMade %>
+                                                    <%= DateUtils.toShortDate(transaction.date_made) %>
                                                 </p>
                                             </div>
                                         </div>

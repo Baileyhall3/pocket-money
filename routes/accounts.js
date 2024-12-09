@@ -21,9 +21,35 @@ router.get('/accounts',
     }
 );
 
+// Accounts
 router.post('/accounts/create', accountsController.createAccount, (req, res) => {
     res.json({ success: true, account: req.account });
 });
+
+router.delete('/accounts/:id', requireAuth, accountsController.deleteAccount, (req, res) => {
+    res.status(200).json({ success: true, message: 'Account deleted successfully' });
+});
+
+
+// Pots
+router.post('/pots/create', potsController.createPot, (req, res) => {
+    res.json({ success: true, pot: req.pot });
+});
+
+router.delete('/pots/:id', requireAuth, potsController.deletePot, (req, res) => {
+    res.status(200).json({ success: true, message: 'Pot deleted successfully' });
+});
+
+
+// Budgets
+router.post('/budgets/create', budgetsController.createBudget, (req, res) => {
+    res.json({ success: true, budget: req.budget });
+});
+
+router.delete('/budgets/:id', requireAuth, budgetsController.deleteBudget, (req, res) => {
+    res.status(200).json({ success: true, message: 'Budget deleted successfully' });
+});
+
 
 // Savings Page Route
 router.get('/savings', 
@@ -74,10 +100,6 @@ router.get('/accounts/:id',
         });
     }
 );
-
-router.delete('/accounts/:id', requireAuth, accountsController.deleteAccount, (req, res) => {
-    res.status(200).json({ success: true, message: 'Account deleted successfully' });
-});
 
 // Account transactions pagination
 router.get('/accounts/:id/transactions', 

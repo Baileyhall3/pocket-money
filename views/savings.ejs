@@ -9,19 +9,19 @@
                         <i class="fa fa-plus"></i>
                     </button>
                 </div>
-                <div class="savings-container">
+                <div id="pots-container" class="savings-container">
                     <% if (pots.length > 0) { %>
                         <% pots.forEach((pot)=> { %>
                             <a href="/savings/pot/<%= pot.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
                                     <%= pot.name %>
                                     <!--Use an icon instead of displaying 'shared with.. etc'?-->
-                                    <% if (pot.sharedWithId) { %>
-                                        - shared with <%= pot.sharedWithId %>
+                                    <% if (pot.shared_with_id) { %>
+                                        - shared with <%= pot.shared_with_id %>
                                     <% } %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
-                                    £<%= pot.actualAmount %> out of £<%= pot.targetAmount %>
+                                    £<%= pot.actual_amount %> out of £<%= pot.target_amount %>
                                 </h5>
                                 <canvas id="pot-chart-<%= pot.id %>"></canvas>
                             </a>
@@ -42,18 +42,18 @@
                         <i class="fa fa-plus"></i>
                     </button>
                 </div>
-                <div class="savings-container">
+                <div id="budgets-container" class="savings-container">
                     <% if (budgets.length > 0) { %>
                         <% budgets.forEach((budget)=> { %>
                             <a href="/savings/budget/<%= budget.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
                                     <%= budget.name %>
-                                    <% if (budget.sharedWithId) { %>
-                                        - shared with <%= budget.sharedWithId %>
+                                    <% if (budget.shared_with_id) { %>
+                                        - shared with <%= budget.shared_with_id %>
                                     <% } %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
-                                    £<%= budget.actualAmount %> out of £<%= budget.targetAmount %>
+                                    £<%= budget.actual_amount %> out of £<%= budget.target_amount %>
                                 </h5>
                                 <canvas id="budget-chart-<%= budget.id %>"></canvas>
                             </a>
@@ -128,7 +128,7 @@
             const potId = pot.id;
             
             // if (pot.actualAmount >= pot.targetAmount) {
-                createDoughnutChart(`pot-chart-${pot.id}`, pot.actualAmount, pot.targetAmount); 
+                createDoughnutChart(`pot-chart-${pot.id}`, pot.actual_amount, pot.target_amount); 
             // } 
             // else {
             //     createDoughnutChart(`pot-chart-${pot.id}`, pot.actualAmount, pot.actualAmount); 
@@ -144,7 +144,7 @@
         budgets.forEach(budget => {
             const budgetId = budget.id;
             
-            createDoughnutChart(`budget-chart-${budget.id}`, budget.actualAmount, budget.targetAmount); 
+            createDoughnutChart(`budget-chart-${budget.id}`, budget.actual_amount, budget.target_amount); 
 
         });
     }

@@ -66,7 +66,7 @@
                     <%= transaction.category %>
                 </h5>
                 <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                    <%= transaction.dateMade %>
+                    <%= DateUtils.toShortDate(transaction.date_made) %>
                 </p>
             </div>
         </div>

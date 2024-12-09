@@ -22,6 +22,8 @@ require('dotenv').config();
 // Set the views directory explicitly
 app.set('views', path.join(__dirname, 'views'));
 
+const DateUtils = require('./public/js/DateUtils');
+
 const dsTransactionCategories = require('./DS/dsTransactionCategories');
 const userController = require('./controllers/userController');
 const alertsController = require('./controllers/alertsController');
@@ -36,6 +38,8 @@ app.use((req, res, next) => {
   res.locals.RecTransactionEnums = RecTransactionEnums;
   next();
 });
+
+app.locals.DateUtils = DateUtils;
 
 // Route modules
 const authRoutes = require('./routes/auth');

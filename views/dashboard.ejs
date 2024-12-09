@@ -10,12 +10,17 @@
                 <div class="spending-categories-container chart-container">
                     <h3>Spending Breakdown by Category</h3>
                     <canvas id="spending-chart"></canvas>
-                    
-                    <div class="account-summary">
-                        <p>Total Spent Last 30 Days: £2,800</p>
-                        <p>Largest Transaction: <span id="largest-transaction">0</span></p>
-                        <p>Most Spent Category: Housing</p>
-                    </div>
+                    <% if (transactions.length > 0) { %>
+                        <div class="account-summary">
+                            <p>Total Spent Last 30 Days: £2,800</p>
+                            <p>Largest Transaction: <span id="largest-transaction">0</span></p>
+                            <p>Most Spent Category: Housing</p>
+                        </div>
+                    <% } else { %>
+                        <div class="">
+                            When you begin logging transactions, this is where the analytical data will appear.
+                        </div>
+                    <% } %>
                 </div>
                 
                 <div class="chart-container">

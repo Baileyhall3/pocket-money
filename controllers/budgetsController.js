@@ -61,6 +61,7 @@ exports.createBudget = async (req, res, next) => {
             startDate,
             endDate = null,
             accountId = null,
+            isActive = false,
             sharedWithId = null
         } = req.body;
         const userId = req.user.id;
@@ -73,7 +74,7 @@ exports.createBudget = async (req, res, next) => {
                 actual_amount: 0,
                 start_date: startDate,
                 end_date: endDate,
-                is_active: true,
+                is_active: isActive,
                 account_id: accountId,
                 user_id: userId,
                 shared_with_id: sharedWithId

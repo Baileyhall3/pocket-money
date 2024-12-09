@@ -9,9 +9,9 @@
             <div class="dropdown">
                 <h3><a class="link" id="pot-actions-btn" href="#">Pot Actions</a></h3>
                 <div class="dropdown-content" id="pot-actions-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= pot.name %>' })" href="#">Log Transaction</a>
                     <a href="#">Pot Details</a>
-                    <a href="#">Delete Pot</a>
+                    <a href="#" onclick="deletePot('<%= pot.id %>')">Delete Pot</a>
                 </div>
             </div>
         </div>
@@ -23,8 +23,8 @@
                             <div class="money-pot actual"></div>
                             <div class="money-pot remaining"></div>
                         </div>
-                        <h3 id="title-display">Savings Goal: £<%= pot.actualAmount + " / £" + pot.targetAmount %></h3>
-                        <h3>Target Date: <span class="time-period-dates"><%= pot.targetDate %></span></h3>
+                        <h3 id="title-display">Savings Goal: £<%= pot.actual_amount + " / £" + pot.target_amount %></h3>
+                        <h3>Target Date: <span class="time-period-dates"><%= DateUtils.toLongDate(pot.target_date) %></span></h3>
                     </div>
                     <% if (transactions.length > 0) { %>
                         <div class="chart-container" style="max-height: 500px; padding-bottom: 10vh;">
@@ -73,8 +73,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const pot = <%- JSON.stringify(pot) %>;
 
-        const actualAmount = pot.actualAmount <= pot.targetAmount ? pot.actualAmount : pot.targetAmount;
-        const targetAmount = pot.targetAmount;
+        const actualAmount = pot.actual_amount <= pot.target_amount ? pot.actual_amount : pot.target_amount;
+        const targetAmount = pot.target_amount;
 
         // Calculate percentages
         const actualPercentage = (actualAmount / targetAmount) * 100;
@@ -103,7 +103,7 @@
             const savingsData = labels.map(date => {
                 // Sum up the transactions for each specific date
                 const dailyTotal = transactions
-                    .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
+                    .filter(transaction => transaction.date_made === date) // Compare against the formatted date
                     .reduce((total, transaction) => total + transaction.amount, 0);
                 return dailyTotal;
             });
@@ -134,4 +134,26 @@
             });
         }
     });
+
+    async function deletePot(potId) {
+        try {
+            const response = await fetch(`/pots/${potId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                alert('Pot deleted successfully!');
+                window.location.href = '/savings'
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete pot: ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Error deleting pot:', err);
+            alert('An error occurred while deleting the pot.');
+        }
+    }
 </script>

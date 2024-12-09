@@ -26,18 +26,24 @@ router.post('/login', async (req, res) => {
                 return res.status(400).json({ error: error.message });
             }
 
-            // Store session in memory for development environment
-            if (process.env.NODE_ENV !== 'production' && data.session) {
-                global.devSession = data.session;
-            }
+            if (data.session) {
+                // Set both access token and refresh token cookies
+                res.cookie('sb-access-token', data.session.access_token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    path: '/',
+                    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+                });
 
-            // Set auth cookie with session data
-            res.cookie('supabase-auth-token', data.session?.access_token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 24 * 60 * 60 * 1000 // 24 hours
-            });
+                res.cookie('sb-refresh-token', data.session.refresh_token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    path: '/',
+                    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+                });
+            }
 
             return res.status(200).json({ message: 'Login successful', session: data.session });
         }
@@ -95,13 +101,9 @@ router.get('/logout', async (req, res) => {
 
         if (error) throw error;
 
-        // Clear development session if in dev environment
-        if (process.env.NODE_ENV !== 'production') {
-            global.devSession = null;
-        }
-
-        // Clear the auth cookie
-        res.clearCookie('supabase-auth-token');
+        // Clear both access token and refresh token cookies
+        res.clearCookie('sb-access-token', { path: '/' });
+        res.clearCookie('sb-refresh-token', { path: '/' });
 
         // Redirect to the login page after logout
         res.redirect('/login');
@@ -166,6 +168,5 @@ router.post('/update-password', async (req, res) => {
         res.status(500).json({ error: 'An unexpected error occurred' });
     }
 });
-
 
 module.exports = router;

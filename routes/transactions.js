@@ -6,6 +6,8 @@ const potsController = require('../controllers/potsController');
 const transactionsController = require('../controllers/transactionsController');
 const RecTransactionEnums = require('../enums/recurrentTransactions');
 
+const { requireAuth } = require('../middleware/auth');
+
 router.get('/transactions', 
     accountsController.getAccountsForUser, 
     potsController.getPotsForUser,
@@ -21,6 +23,14 @@ router.get('/transactions',
         });
     }
 );
+
+router.post('/transactions/create', transactionsController.createTransaction, (req, res) => {
+    res.json({ success: true, account: req.account });
+});
+
+// router.delete('/transactions/:id', requireAuth, transactionsController.deleteTransaction, (req, res) => {
+//     res.status(200).json({ success: true, message: 'Account deleted successfully' });
+// });
 
 router.get('/recurrentTransactions', 
     transactionsController.getRecurrentTransactionsForUser,

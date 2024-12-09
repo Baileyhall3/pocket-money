@@ -2,13 +2,24 @@ const supabase = require('../config/database');
 
 exports.requireAuth = async (req, res, next) => {
     try {
-        // Get the session from Supabase
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Get the session from the request cookies
+        const accessToken = req.cookies['sb-access-token'];
+        const refreshToken = req.cookies['sb-refresh-token'];
 
-        if (error) throw error;
+        if (!accessToken || !refreshToken) {
+            return res.redirect('/login');
+        }
 
-        if (!session) {
-            // If no session exists, redirect to login
+        // Set the session in Supabase client
+        const { data: { session }, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+        });
+
+        if (error || !session) {
+            // Clear cookies if session is invalid
+            res.clearCookie('sb-access-token');
+            res.clearCookie('sb-refresh-token');
             return res.redirect('/login');
         }
 
@@ -24,6 +35,8 @@ exports.requireAuth = async (req, res, next) => {
         if (!user) {
             // If user profile doesn't exist, sign out and redirect to login
             await supabase.auth.signOut();
+            res.clearCookie('sb-access-token');
+            res.clearCookie('sb-refresh-token');
             return res.redirect('/login');
         }
 
@@ -32,20 +45,26 @@ exports.requireAuth = async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Auth middleware error:', error);
+        res.clearCookie('sb-access-token');
+        res.clearCookie('sb-refresh-token');
         res.redirect('/login');
     }
 };
 
 exports.redirectIfAuthenticated = async (req, res, next) => {
     try {
-        // Get the session from Supabase
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const accessToken = req.cookies['sb-access-token'];
+        const refreshToken = req.cookies['sb-refresh-token'];
 
-        if (error) throw error;
+        if (accessToken && refreshToken) {
+            const { data: { session }, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+            });
 
-        if (session) {
-            // If user is already authenticated, redirect to dashboard
-            return res.redirect('/dashboard');
+            if (!error && session) {
+                return res.redirect('/dashboard');
+            }
         }
 
         next();
@@ -57,24 +76,28 @@ exports.redirectIfAuthenticated = async (req, res, next) => {
 
 exports.attachUser = async (req, res, next) => {
     try {
-        // Get the session from Supabase
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const accessToken = req.cookies['sb-access-token'];
+        const refreshToken = req.cookies['sb-refresh-token'];
 
-        if (error) throw error;
+        if (accessToken && refreshToken) {
+            const { data: { session }, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+            });
 
-        if (session) {
-            // Get the user's profile data
-            const { data: user, error: userError } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
+            if (!error && session) {
+                // Get the user's profile data
+                const { data: user, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
 
-            if (userError) throw userError;
-
-            // Attach the user object to the request and response locals
-            req.user = user;
-            res.locals.user = user;
+                if (!userError && user) {
+                    req.user = user;
+                    res.locals.user = user;
+                }
+            }
         }
 
         next();

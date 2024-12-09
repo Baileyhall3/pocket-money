@@ -10,9 +10,9 @@
             <div class="dropdown">
                 <h3><a class="link" id="budget-actions-btn" href="#">Budget Actions</a></h3>
                 <div class="dropdown-content" id="budget-actions-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= budget.id %>', type: 'budget' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= budget.name %>' })" href="#">Log Transaction</a>
                     <a href="#">Budget Details</a>
-                    <a href="#">Delete budget</a>
+                    <a href="#" onclick="deleteBudget('<%= budget.id %>')">Delete Budget</a>
                 </div>
             </div>
         </div>
@@ -24,11 +24,11 @@
                             <div class="money-pot actual"></div>
                             <div class="money-pot remaining"></div>
                         </div>
-                        <h3 id="title-display">Spending Performance: £<%= budget.actualAmount + " / £" + budget.targetAmount %></h3>
+                        <h3 id="title-display">Spending Performance: £<%= budget.actual_amount + " / £" + budget.target_amount %></h3>
 
                         <h3>Budget Period: 
                             <span class="time-period-dates">
-                                <%= budget.startDate + (budget.endDate ? ' - ' + budget.endDate : '') %>
+                                <%= DateUtils.toLongDate(budget.start_date) + (budget.end_date ? ' - ' + DateUtils.toLongDate(budget.end_date) : '') %>
                             </span>
                         </h3>
                     </div>
@@ -49,7 +49,7 @@
             </div>            
             
             <div class="charts-wrapper">
-                <% if (budget.sharedWithId) { %>
+                <% if (budget.shared_with_id) { %>
                     <div class="container-rounded variable-width-50">
                         <h3>Budget Buddies</h3>
                         <div class="friend-row">
@@ -86,8 +86,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const budget = <%- JSON.stringify(budget) %>;
 
-        const actualAmount = budget.actualAmount <= budget.targetAmount ? budget.actualAmount : budget.targetAmount;
-        const targetAmount = budget.targetAmount;
+        const actualAmount = budget.actual_amount <= budget.target_amount ? budget.actual_amount : budget.target_amount;
+        const targetAmount = budget.target_amount;
 
         // Calculate percentages
         const actualPercentage = (actualAmount / targetAmount) * 100;
@@ -180,4 +180,25 @@
         }
     });
 
+    async function deleteBudget(budgetId) {
+        try {
+            const response = await fetch(`/budgets/${budgetId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                alert('Budget deleted successfully!');
+                window.location.href = '/savings'
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete budget: ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Error deleting budget:', err);
+            alert('An error occurred while deleting the budget.');
+        }
+    }
 </script>

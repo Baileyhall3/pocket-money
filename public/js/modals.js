@@ -14,10 +14,14 @@ function openModal(modalId, itemData = {}) {
             errorMessage.textContent = '';
         }
 
+        let item = {};
+
         if (Object.keys(itemData).length > 0) {
+            console.log(itemData)
             const modalHeader = modal.querySelector('.modal-header h2');
             if (modalHeader && itemData.type && itemData.id) {
-                modalHeader.textContent = `New Transaction for ${itemData.type} ${itemData.id}`;
+                modalHeader.textContent = `New Transaction for ${itemData.name}`;
+                item = { id: itemData.id, type: itemData.type }
             }
 
             const form = modal.querySelector('form#logTransactionForm');
@@ -33,14 +37,35 @@ function openModal(modalId, itemData = {}) {
             }
         }
 
+        const categoryElements = document.querySelectorAll(".category");
+        const selectedCategoryElement = document.querySelector(".selected-category");
+        let selectedCategory = null;
+
+        categoryElements.forEach(category => {
+            category.addEventListener("click", function () {
+                const categoryId = this.getAttribute("data-id");
+                const categoryIconClass = this.querySelector("i").className;
+                const categoryName = this.querySelector("span").textContent;
+                const categoryType = this.getAttribute("data-type"); // Retrieve the category type
+
+                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
+
+                categoryElements.forEach(cat => cat.classList.remove("selected"));
+                this.classList.add("selected");
+            });
+        });
+
         const transactionForm = document.getElementById('logTransactionForm');
         if (transactionForm) {
-            transactionForm.addEventListener('submit', function (event) {
+            transactionForm.addEventListener('submit', async function (event) {
                 const isValid = validateForm(event, transactionForm, 
                     ['transactionName', 'transactionAmount', 'transactionDate']);
                 if (!isValid) return;
 
-                console.log("Transaction form submitted successfully");
+                if (createTransaction(event, selectedCategory, item)) {
+                    closeModal(modalId);
+                    // await refreshManager.refreshAccounts();
+                }
             });
         }
 
@@ -60,42 +85,31 @@ function openModal(modalId, itemData = {}) {
 
         const newBudgetForm = document.getElementById('newBudgetForm');
         if (newBudgetForm) {
-            newBudgetForm.addEventListener('submit', function (event) {
+            newBudgetForm.addEventListener('submit', async function (event) {
                 const isValid = validateForm(event, newBudgetForm, 
                     ['budgetName', 'budgetAmount']);
                 if (!isValid) return;
 
-                console.log("New budget form submitted successfully");
+                if (createBudget(event)) {
+                    closeModal(modalId);
+                    await refreshManager.refreshBudgets();
+                }
             });
         }
 
         const newPotForm = document.getElementById('newPotForm');
         if (newPotForm) {
-            newPotForm.addEventListener('submit', function (event) {
+            newPotForm.addEventListener('submit', async function (event) {
                 const isValid = validateForm(event, newPotForm, 
                     ['potName', 'savingGoal']);
                 if (!isValid) return;
 
-                console.log("New pot form submitted successfully");
+                if (createPot(event)) {
+                    closeModal(modalId);
+                    await refreshManager.refreshPots();
+                }
             });
         }
-
-        const categoryElements = document.querySelectorAll(".category");
-        const selectedCategoryElement = document.querySelector(".selected-category");
-        let selectedCategory = null;
-
-        categoryElements.forEach(category => {
-            category.addEventListener("click", function () {
-                const categoryId = this.getAttribute("data-id");
-                const categoryIconClass = this.querySelector("i").className;
-                const categoryName = this.querySelector("span").textContent;
-
-                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName };
-
-                categoryElements.forEach(cat => cat.classList.remove("selected"));
-                this.classList.add("selected");
-            });
-        });
 
         window.switchViews = function () {
             const errorMessage = document.getElementById('category-error-message');
@@ -121,6 +135,7 @@ function openModal(modalId, itemData = {}) {
 }
 
 function closeModal(modalId) {
+    console.log('close')
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = "none";
@@ -183,14 +198,122 @@ async function createAccount(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // alert('Account created successfully!');
             return true;
         } else {
             throw new Error(result.error || 'Failed to create account.');
         }
     } catch (error) {
-        // Handle errors
         console.error('Error creating account:', error);
+        document.getElementById('submit-error-message').textContent = error.message;
+        return false;
+    }
+}
+
+async function createBudget(event) {
+    const formData = new FormData(event.target);
+    const data = {
+        name: formData.get('budgetName'),
+        targetAmount: parseFloat(formData.get('budgetAmount') || 0),
+        startDate: formData.get('budgetStartDate') ? new Date(formData.get('budgetStartDate')).toISOString().split('T')[0] : null,
+        endDate: formData.get('budgetEndDate') ? new Date(formData.get('budgetEndDate')).toISOString().split('T')[0] : null,
+        accountId: formData.get('accountId') || null,
+        isActive: formData.get('activeBudget') || false,
+        sharedWithId: formData.get('sharedWith') || null
+    };
+
+    try {
+        console.log('Sending budget data:', data);
+        const response = await fetch('/budgets/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        debugger
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to create budget.');
+        }
+    } catch (error) {
+        console.error('Error creating budget:', error);
+        document.getElementById('submit-error-message').textContent = error.message;
+        return false;
+    }
+}
+
+async function createPot(event) {
+    const formData = new FormData(event.target);
+    const data = {
+        name: formData.get('potName'),
+        targetAmount: parseFloat(formData.get('savingGoal') || 0),
+        targetDate: formData.get('targetDate') ? new Date(formData.get('targetDate')).toISOString().split('T')[0] : null,
+        sharedWithId: formData.get('sharedWith') || null,
+        participants: [],
+    };
+
+    try {
+        const response = await fetch('/pots/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to create pot.');
+        }
+    } catch (error) {
+        console.error('Error creating pot:', error);
+        document.getElementById('submit-error-message').textContent = error.message;
+        return false;
+    }
+}
+
+async function createTransaction(event, selCategory, item) {
+    const formData = new FormData(event.target);
+    const data = {
+        name: formData.get('transactionName'),
+        amount: parseFloat(formData.get('transactionAmount') || 0),
+        type: selCategory.type,
+        category: selCategory.name,
+        dateMade: formData.get('transactionDate') ? new Date(formData.get('transactionDate')).toISOString().split('T')[0] : null,
+        accountId: item.type == 'account' ? item.id : null,
+        budgetId: item.type == 'budget' ? item.id : null,
+        potId: item.type == 'pot' ? item.id : null,
+        isRecurring: formData.get('recurring') || false,
+        recurrency: formData.get('transactionFrequency') || null,
+        recurrentEnd: formData.get('transactionEndDate') ? new Date(formData.get('transactionEndDate')).toISOString().split('T')[0] : null,
+    };
+
+    try {
+        const response = await fetch('/transactions/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            return true;
+        } else {
+            throw new Error(result.error || 'Failed to create transaction.');
+        }
+    } catch (error) {
+        console.error('Error creating transaction:', error);
         document.getElementById('submit-error-message').textContent = error.message;
         return false;
     }

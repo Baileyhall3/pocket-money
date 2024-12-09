@@ -244,3 +244,74 @@ exports.getAllTransactionsForUser = async (req, res, next) => {
         next(error);
     }
 };
+
+// CRUD
+
+exports.createTransaction = async (req, res, next) => {
+    try {
+        const {
+            name,
+            amount,
+            type,
+            category,
+            dateMade,
+            accountId = null,
+            budgetId = null,
+            potId = null,
+            isRecurring = false,
+            recurrency = null, 
+            recurrentEnd = null, 
+        } = req.body;
+        const userId = req.user.id;
+
+        let recurrentId = null;
+
+        // If the transaction is recurring, insert into the `recurrent_transactions` table first
+        if (isRecurring && recurrency) {
+            const { data: recurrentTransaction, error: recurrentError } = await supabase
+                .from('recurrent_transactions')
+                .insert([{
+                    user_id: userId,
+                    amount: amount,
+                    category: category,
+                    type: type,
+                    description: name,
+                    frequency: recurrency,
+                    start_date: dateMade,
+                    end_date: recurrentEnd,
+                }])
+                .select()
+                .single();
+
+            if (recurrentError) throw recurrentError;
+
+            // Capture the recurrent transaction ID
+            recurrentId = recurrentTransaction.id;
+        }
+
+        // Insert the main transaction with the `recurrent_id` if it exists
+        const { data: newTransaction, error } = await supabase
+            .from('transactions')
+            .insert([{
+                name,
+                amount: amount,
+                type: type,
+                category: category,
+                date_made: dateMade,
+                account_id: accountId,
+                budget_id: budgetId,
+                pot_id: potId,
+                user_id: userId,
+                recurrent_id: recurrentId, // Add the ID from the recurrent transaction, if any
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        req.transaction = newTransaction;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

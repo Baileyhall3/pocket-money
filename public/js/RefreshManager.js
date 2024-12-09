@@ -36,6 +36,65 @@ class RefreshManager {
         }
     }
 
+    async refreshBudgets() {
+        try {
+            const response = await fetch('/savings', {
+                headers: this.headers,
+                credentials: 'same-origin',
+            });
+            debugger
+    
+            if (response.status === 401) {
+                return;
+            }
+    
+            if (!response.ok) throw new Error('Failed to refresh budgets');
+    
+            const savingsHTML = await response.text();
+    
+            // Parse the received HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(savingsHTML, 'text/html');
+            const newBudgetsContainer = doc.getElementById('budgets-container');
+    
+            if (newBudgetsContainer) {
+                const budgetsContainer = document.getElementById('budgets-container');
+                budgetsContainer.innerHTML = newBudgetsContainer.innerHTML;
+            }
+        } catch (error) {
+            console.error('Error refreshing budgets:', error);
+        }
+    }
+
+    async refreshPots() {
+        try {
+            const response = await fetch('/savings', {
+                headers: this.headers,
+                credentials: 'same-origin',
+            });
+    
+            if (response.status === 401) {
+                return;
+            }
+    
+            if (!response.ok) throw new Error('Failed to refresh pots');
+    
+            const savingsHTML = await response.text();
+    
+            // Parse the received HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(savingsHTML, 'text/html');
+            const newPotsContainer = doc.getElementById('pots-container');
+    
+            if (newPotsContainer) {
+                const potsContainer = document.getElementById('pots-container');
+                potsContainer.innerHTML = newPotsContainer.innerHTML;
+            }
+        } catch (error) {
+            console.error('Error refreshing pots:', error);
+        }
+    }
+
     async refreshTransactions() {
         try {
             const response = await fetch('/api/transactions', {

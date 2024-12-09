@@ -10,7 +10,7 @@
             <div class="dropdown">
                 <h3><a class="link" href="#">Actions</a></h3>
                 <div class="dropdown-content" id="add-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account', name: '<%= account.name %>' })" href="#">Log Transaction</a>
                     <a href="#">Account Details</a>
                     <a href="#" onclick="deleteAccount('<%= account.id %>')">Remove Account</a>
                 </div>
