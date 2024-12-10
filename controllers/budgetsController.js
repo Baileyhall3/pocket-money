@@ -94,7 +94,7 @@ exports.createBudget = async (req, res, next) => {
 exports.updateBudget = async (req, res, next) => {
     try {
         const budgetId = req.params.id;
-        const updates = req.body;
+        const { actualAmountChange, ...updates } = req.body;
         const userId = req.user.id;
 
         // First verify the user owns this budget
@@ -110,18 +110,17 @@ exports.updateBudget = async (req, res, next) => {
             return res.status(403).send('Not authorized to update this budget');
         }
 
+        // Calculate the new balance
+        const newActualAmount = actualAmountChange !== undefined
+            ? existingBudget.actual_amount + actualAmountChange
+            : updates.actual_amount || existingBudget.actual_amount;
+
         // Perform the update
         const { data: updatedBudget, error: updateError } = await supabase
             .from('budgets')
             .update({
-                name: updates.name,
-                target_amount: updates.targetAmount,
-                actual_amount: updates.actualAmount,
-                start_date: updates.startDate,
-                end_date: updates.endDate,
-                is_active: updates.isActive,
-                account_id: updates.accountId,
-                shared_with_id: updates.sharedWithId
+                ...updates,
+                actual_amount: newActualAmount,
             })
             .eq('id', budgetId)
             .select()

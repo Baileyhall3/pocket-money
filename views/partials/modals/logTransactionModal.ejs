@@ -6,7 +6,6 @@
         </div>
         
         <form id="logTransactionForm" novalidate>
-            
             <div class="category-selection" id="category-selection">
                 <div>
                     <h3 style="margin-bottom: 5px;">Expenses</h3>
@@ -35,7 +34,7 @@
                 <div class="modal-row">
                     <div class="error" id="category-error-message"></div>
                 </div>
-                <button type="button" class="btn" style="margin-top: 2vh;" onclick="switchViews()">Continue</button>
+                <button type="button" class="btn" style="margin-top: 2vh;" onclick="switchViews('details')">Continue</button>
             </div>
             
             <div class="transaction-details" id="transaction-details">
@@ -54,7 +53,7 @@
                 <div class="modal-row">
                     <div class="modal-item">
                         <label for="transactionAmount">Amount (£)</label>
-                        <input class="modal-input" type="number" min="0.01" id="transactionAmount" name="transactionAmount" required>
+                        <input class="modal-input" type="number" min="0.01" max="10000000" id="transactionAmount" name="transactionAmount" required>
                     </div>
                     <div class="modal-item">
                         <label for="transactionDate">Date</label>
@@ -93,7 +92,7 @@
                 </div>
                 
                 <div class="modal-buttons">
-                    <button type="button" class="back-btn fa fa-arrow-left" onclick="switchViews()" title="Go back to category selection"></button>
+                    <button type="button" class="back-btn fa fa-arrow-left" onclick="switchViews('categories')" title="Go back to category selection"></button>
                     <button type="submit" class="btn transaction-btn">Log Transaction</button>
                 </div>
             </div>

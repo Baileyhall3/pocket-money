@@ -113,7 +113,7 @@ exports.deleteAlert = async (req, res, next) => {
 
 // Helper functions for creating specific types of alerts
 
-exports.createFriendRequestAlert = async (userId, friendName) => {
+exports.createFriendRequestAlert = async (userId, friendName, sentById) => {
     try {
         await supabase
             .from('alerts')
@@ -122,7 +122,8 @@ exports.createFriendRequestAlert = async (userId, friendName) => {
                 body: `${friendName} sent you a friend request.`,
                 type: AlertTypes.FRIEND_REQUEST,
                 user_id: userId,
-                unread: true
+                unread: true,
+                received_from_id: sentById
             }]);
     } catch (error) {
         console.error('Error creating friend request alert:', error);

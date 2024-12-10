@@ -5,6 +5,12 @@ function openModal(modalId, itemData = {}) {
         modal.classList.add("modal-open-animation");
         modal.style.display = "block";
 
+        const formContainer = modal.querySelector('.modal-content');
+        if (formContainer) {        
+            document.getElementById('category-selection').style.display = 'block';
+            document.getElementById('transaction-details').style.display = 'none';
+        }
+
         attachCloseEvents();
 
         const refreshManager = new RefreshManager();
@@ -57,6 +63,7 @@ function openModal(modalId, itemData = {}) {
         let selectedCategory = null;
 
         categoryElements.forEach(category => {
+            categoryElements.forEach(cat => cat.classList.remove("selected"));
             category.addEventListener("click", function () {
                 const categoryId = this.getAttribute("data-id");
                 const categoryIconClass = this.querySelector("i").className;
@@ -65,7 +72,7 @@ function openModal(modalId, itemData = {}) {
 
                 selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
 
-                categoryElements.forEach(cat => cat.classList.remove("selected"));
+                // categoryElements.forEach(cat => cat.classList.remove("selected"));
                 this.classList.add("selected");
             });
         });
@@ -79,7 +86,7 @@ function openModal(modalId, itemData = {}) {
 
                 if (createTransaction(event, selectedCategory, item)) {
                     closeModal(modalId);
-                    await refreshManager.refreshTransactions();
+                    await refreshManager.refreshTransactions(item);
                 }
             });
         }
@@ -126,21 +133,25 @@ function openModal(modalId, itemData = {}) {
             });
         }
 
-        window.switchViews = function () {
+        window.switchViews = function (target) {
             const errorMessage = document.getElementById('category-error-message');
             errorMessage.textContent = '';
             if (selectedCategory) {
                 selectedCategoryElement.querySelector("i").className = selectedCategory.icon;
                 selectedCategoryElement.querySelector("i").title = selectedCategory.name;
                 // selectedCategoryElement.insertAdjacentHTML("beforeend", `<span>${selectedCategory.name}</span>`);
+                
+                const catSelection = document.getElementById('category-selection');
+                const transactionDetails = document.getElementById('transaction-details');
 
-                const formContainer = document.querySelector('.modal-content');
-                formContainer.classList.toggle('show-transaction-details');
-
-                document.getElementById('category-selection').style.display = 
-                    formContainer.classList.contains('show-transaction-details') ? 'none' : 'block';
-                document.getElementById('transaction-details').style.display = 
-                    formContainer.classList.contains('show-transaction-details') ? 'block' : 'none';
+                catSelection.style.display = 'none';
+                transactionDetails.style.display = 'none';
+        
+                if (target === 'categories') {
+                    catSelection.style.display = 'block';
+                } else if (target === 'details') {
+                    transactionDetails.style.display = 'block';
+                }
             } else {
                 errorMessage.textContent = 'Select a category before continuing.';
             }
@@ -150,9 +161,9 @@ function openModal(modalId, itemData = {}) {
 }
 
 function closeModal(modalId) {
-    console.log('close')
     const modal = document.getElementById(modalId);
     if (modal) {
+        clearValues(modalId)
         modal.style.display = "none";
     }
 }
@@ -168,6 +179,7 @@ function attachCloseEvents() {
 
     window.onclick = function (event) {
         if (event.target.classList.contains("modal")) {
+            console.log(event.target)
             event.target.style.display = "none";
         }
     };
@@ -295,7 +307,6 @@ async function createPot(event) {
 
 async function createTransaction(event, selCategory, item) {
     const formData = new FormData(event.target);
-    debugger
     const data = {
         name: formData.get('transactionName'),
         amount: parseFloat(formData.get('transactionAmount') || 0),
@@ -322,6 +333,15 @@ async function createTransaction(event, selCategory, item) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            const accountUpdateResponse = await updateItemBalance(
+                item.id,
+                item.type,
+                data.type === 'income' ? data.amount : -data.amount
+            );
+
+            if (!accountUpdateResponse.ok) {
+                throw new Error('Failed to update account balance.');
+            }
             return true;
         } else {
             throw new Error(result.error || 'Failed to create transaction.');
@@ -330,6 +350,44 @@ async function createTransaction(event, selCategory, item) {
         console.error('Error creating transaction:', error);
         document.getElementById('submit-error-message').textContent = error.message;
         return false;
+    }
+}
+
+async function updateItemBalance(itemId, type, amountChange) {
+    try {
+        let response = null;
+        if (type == 'account') {
+            response = await fetch(`/accounts/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ balanceChange: amountChange }),
+            });
+        }
+        else if (type == 'budget') {
+            response = await fetch(`/budgets/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ actualAmountChange: amountChange }),
+            });
+        }
+        else if (type == 'pot') {
+            response = await fetch(`/pots/${itemId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ actualAmountChange: amountChange }),
+            });
+        }
+
+        return response;
+    } catch (error) {
+        console.error('Error updating account balance:', error);
+        return { ok: false };
     }
 }
 
@@ -371,5 +429,28 @@ async function deleteItem(itemData) {
     } catch (err) {
         console.error('Error deleting item:', err);
         alert('An error occurred while deleting the item.');
+    }
+}
+
+function clearValues(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+
+    const form = modal.querySelector('form');
+    if (form) {
+        // Reset all form fields to their default values
+        form.reset();
+
+        const recurringCheckbox = form.querySelector('input[name="recurring"]');
+        if (recurringCheckbox) recurringCheckbox.checked = false;
+
+        const transactionFrequencyField = form.querySelector('input[name="transactionFrequency"]');
+        if (transactionFrequencyField) transactionFrequencyField.value = '';
+
+        const transactionEndDateField = form.querySelector('input[name="transactionEndDate"]');
+        if (transactionEndDateField) transactionEndDateField.value = '';
+
+        const errorMessages = form.querySelectorAll('.error-message');
+        errorMessages.forEach(msg => msg.textContent = '');
     }
 }

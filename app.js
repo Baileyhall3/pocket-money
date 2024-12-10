@@ -61,7 +61,6 @@ app.use('/', authRoutes);
 // Apply auth middleware to all routes after this point
 app.use(requireAuth);
 
-// Middleware to set `user` and `userAlerts` globally
 app.use(async (req, res, next) => {
   try {
     // Fetch alerts for user

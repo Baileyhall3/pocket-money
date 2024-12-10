@@ -23,4 +23,8 @@ router.get('/search',
     });
 });
 
+router.post('/friends/create', userController.createFriend, (req, res) => {
+    res.json({ success: true });
+});
+
 module.exports = router;

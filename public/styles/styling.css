@@ -520,11 +520,16 @@ li {
     padding-top: 10px;
 }
 
+.transaction:hover {
+    background-color: #e0e0e5;
+    cursor: pointer;
+}
+
 .pagination {
     position: absolute;
-    bottom: 0; /* Attach it to the bottom of the parent container */
-    left: 0; /* Center align horizontally */
-    width: 100%; /* Ensure the pagination spans the width */
+    bottom: 0; 
+    left: 0;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;

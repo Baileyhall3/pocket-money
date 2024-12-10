@@ -75,10 +75,10 @@ exports.createAccount = async (req, res, next) => {
 exports.updateAccount = async (req, res, next) => {
     try {
         const accountId = req.params.id;
-        const updates = req.body;
+        const { balanceChange, ...updates } = req.body;
         const userId = req.user.id;
 
-        // First verify the user owns this account
+        // Verify ownership
         const { data: existingAccount, error: fetchError } = await supabase
             .from('accounts')
             .select('*')
@@ -91,15 +91,17 @@ exports.updateAccount = async (req, res, next) => {
             return res.status(403).send('Not authorized to update this account');
         }
 
+        // Calculate the new balance
+        const newBalance = balanceChange !== undefined
+            ? existingAccount.balance + balanceChange
+            : updates.balance || existingAccount.balance;
+
         // Perform the update
         const { data: updatedAccount, error: updateError } = await supabase
             .from('accounts')
             .update({
-                name: updates.name,
-                type: updates.type,
-                balance: updates.balance,
-                is_active: updates.isActive,
-                shared_with_id: updates.sharedWithId
+                ...updates,
+                balance: newBalance,
             })
             .eq('id', accountId)
             .select()
@@ -113,6 +115,7 @@ exports.updateAccount = async (req, res, next) => {
         next(error);
     }
 };
+
 
 exports.deleteAccount = async (req, res, next) => {
     try {

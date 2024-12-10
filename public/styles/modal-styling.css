@@ -65,9 +65,9 @@
     -moz-appearance: none;
   }
 
-  .modal-input[type="date"]::-webkit-calendar-picker-indicator {
+  /* .modal-input[type="date"]::-webkit-calendar-picker-indicator {
       display: none;
-  }
+  } */
   .modal-input[type="date"] {
       background-color: #fff;
       color: #000;

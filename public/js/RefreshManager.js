@@ -42,25 +42,28 @@ class RefreshManager {
                 headers: this.headers,
                 credentials: 'same-origin',
             });
-            debugger
     
             if (response.status === 401) {
                 return;
             }
     
             if (!response.ok) throw new Error('Failed to refresh budgets');
-    
+            
+            
             const savingsHTML = await response.text();
-    
+            
             // Parse the received HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(savingsHTML, 'text/html');
             const newBudgetsContainer = doc.getElementById('budgets-container');
-    
+            
             if (newBudgetsContainer) {
                 const budgetsContainer = document.getElementById('budgets-container');
                 budgetsContainer.innerHTML = newBudgetsContainer.innerHTML;
             }
+
+            initBudgetCharts();
+            
         } catch (error) {
             console.error('Error refreshing budgets:', error);
         }
@@ -81,7 +84,6 @@ class RefreshManager {
     
             const savingsHTML = await response.text();
     
-            // Parse the received HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(savingsHTML, 'text/html');
             const newPotsContainer = doc.getElementById('pots-container');
@@ -90,36 +92,47 @@ class RefreshManager {
                 const potsContainer = document.getElementById('pots-container');
                 potsContainer.innerHTML = newPotsContainer.innerHTML;
             }
+    
+            initPotCharts();
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
-    }
+    }    
 
-    async refreshTransactions() {
-        return;
+    async refreshTransactions(item) {
         try {
-            const response = await fetch('/transactions', {
+            const endpointMap = {
+                account: `/accounts/${item.id}/transactions`,
+                budget: `/savings/budget/${item.id}/transactions`,
+                pot: `/savings/pot/${item.id}/transactions`
+            };
+    
+            const endpoint = endpointMap[item.type];
+            if (!endpoint) throw new Error('Invalid item type for transactions');
+    
+            const response = await fetch(`${endpoint}?_=${Date.now()}`, {
                 headers: this.headers,
-                credentials: 'same-origin' // Include cookies in the request
+                credentials: 'same-origin'
             });
-
-            if (response.status === 401) {
-                // If unauthorized, don't redirect - let the server middleware handle it
-                return;
-            }
-
+    
+            if (response.status === 401) return;
             if (!response.ok) throw new Error('Failed to refresh transactions');
-
+    
             const transactionsHTML = await response.text();
-
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(transactionsHTML, 'text/html');
+            const newTransactionsContent = newDoc.getElementById('transactions-container');
+    
             const transactionsContainer = document.getElementById('transactions-container');
-            if (transactionsContainer) {
-                transactionsContainer.outerHTML = transactionsHTML;
+            if (transactionsContainer && newTransactionsContent) {
+                transactionsContainer.innerHTML = newTransactionsContent.innerHTML;
+                // Reinitialize JavaScript dependencies here
             }
         } catch (error) {
             console.error('Error refreshing transactions:', error);
         }
     }
+    
 }
 
 window.RefreshManager = RefreshManager;

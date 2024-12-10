@@ -44,6 +44,7 @@
                             <% } else { %>
                                 <p>This user has no other friends listed.</p>
                             <% } %>
+                            <button type="button" class="btn" onclick="sendFriendRequest(<%= JSON.stringify(result) %>, <%= index %>)">Add Friend +</button>
                         </div>
                     </div>
                 </div>
@@ -58,4 +59,30 @@
 
 <script>
     searchUsers('user-search-bar', 'users-list');
+
+    const user = <%- JSON.stringify(user) %>;
+
+    async function sendFriendRequest(friend, index) {
+        try {
+            const response = await fetch('/alerts/friend-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: friend.id, friendName: user.first_name + ' ' + user.last_name, sentById: user.id }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('Friend request alert created successfully:', result.message);
+                closeModal(`userModal-${index}`);
+            } else {
+                console.error('Error creating friend request alert:', result.error);
+            }
+        } catch (error) {
+            console.error('Error sending friend request alert:', error);
+        }
+    }
+
 </script>

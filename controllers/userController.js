@@ -280,3 +280,27 @@ exports.updateProfile = async (req, res, next) => {
         next(error);
     }
 };
+
+
+exports.createFriend = async (req, res, next) => {
+    try {
+        const { friendId } = req.body;
+        const userId = req.user.id;
+
+        const { data: newFriend, error } = await supabase
+            .from('accounts')
+            .insert([{
+                user_id: userId,
+                friend_id: friendId,
+            }])
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        req.friend = newFriend;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

@@ -71,10 +71,18 @@
 
 <script>
 
+    window.potCharts = {};
+    window.budgetCharts = {};
+
     function createDoughnutChart(chartId, actual, total) {
         const ctx = document.getElementById(chartId).getContext('2d');
         const percentage = (actual / total) * 100;
         let actualColor;
+
+        if (!ctx) {
+            console.error(`Canvas with ID ${chartId} not found.`);
+            return;
+        }
 
         // Determine the color of the "actual" section based on the percentage
         if (percentage > 75) {
@@ -86,7 +94,7 @@
         }
 
         // Create the doughnut chart
-        new Chart(ctx, {
+        const chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 datasets: [{
@@ -113,40 +121,43 @@
                 }
             }
         });
-    }
 
+        return chart;
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         initPotCharts();
         initBudgetCharts();
     });
 
-    function initPotCharts() {
+    window.initPotCharts = async function () {
         const pots = <%- JSON.stringify(pots) %>;
 
+        // Destroy existing charts
+        Object.values(window.potCharts).forEach(chart => chart.destroy());
+        window.potCharts = {}; // Clear the reference storage
+
         pots.forEach(pot => {
-            const potId = pot.id;
-            
-            // if (pot.actualAmount >= pot.targetAmount) {
-                createDoughnutChart(`pot-chart-${pot.id}`, pot.actual_amount, pot.target_amount); 
-            // } 
-            // else {
-            //     createDoughnutChart(`pot-chart-${pot.id}`, pot.actualAmount, pot.actualAmount); 
-                // add a warning or something
-            // }
-
+            const chart = createDoughnutChart(`pot-chart-${pot.id}`, pot.actual_amount, pot.target_amount);
+            if (chart) {
+                window.potCharts[pot.id] = chart; // Store the chart instance
+            }
         });
-    }
+    };
 
-    function initBudgetCharts() {
+    window.initBudgetCharts = async function () {
         const budgets = <%- JSON.stringify(budgets) %>;
 
-        budgets.forEach(budget => {
-            const budgetId = budget.id;
-            
-            createDoughnutChart(`budget-chart-${budget.id}`, budget.actual_amount, budget.target_amount); 
+        // Destroy existing charts
+        Object.values(window.budgetCharts).forEach(chart => chart.destroy());
+        window.budgetCharts = {}; // Clear the reference storage
 
+        budgets.forEach(budget => {
+            const chart = createDoughnutChart(`budget-chart-${budget.id}`, budget.actual_amount, budget.target_amount);
+            if (chart) {
+                window.budgetCharts[budget.id] = chart; // Store the chart instance
+            }
         });
-    }
+    };
 
 </script>

@@ -1,56 +1,56 @@
-<div class="container-header">
-    <h3>Recent Transactions</h3>
-
-    <button class="icon-btn" id="filter-btn" onclick="toggleFilters()">
-        <i class="fa fa-sliders"></i>
-    </button>
-</div>
-
-<div class="filters" id="filters-section">
-    <!-- Search by Transaction Name -->
-    <div class="search input-row">
-        <i class="fa fa-search"></i>
-        <input type="text" id="search-transaction" placeholder="Search transactions...">
-    </div>
-    
-    <div class="input-row">
-        <!-- Filter by Category -->
-        <div class="transaction-filter input-col">
-            <i class="fa fa-filter"></i>
-            <select id="filter-category">
-                <option value="all">All Categories</option>
-                <option value="food">Food & Dining</option>
-                <option value="entertainment">Entertainment</option>
-                <option value="shopping">Shopping</option>
-                <option value="bills">Bills & Utilities</option>
-            </select>
-        </div>
-
-        <!-- Sort Transactions -->
-        <div class="transaction-sort input-col">
-            <i class="fa fa-sort"></i>
-            <select id="sort-transaction">
-                <option value="date">Date</option>
-                <option value="amount">Amount</option>
-                <option value="name">Name</option>
-            </select>
-        </div>   
-    </div>
-
-    <!-- Filter by Date Range -->
-    <div class="input-row">
-        <div class="input-col">
-            <i class="fa fa-calendar"></i>
-            <input type="date" id="start-date">
-        </div>
-        <div class="input-col">
-            <i class="fa fa-calendar"></i>
-            <input type="date" id="end-date">
-        </div>
-    </div>
-</div>
-
 <div id="transactions-container">
+    <div class="container-header">
+        <h3>Recent Transactions</h3>
+
+        <button class="icon-btn" id="filter-btn" onclick="toggleFilters()">
+            <i class="fa fa-sliders"></i>
+        </button>
+    </div>
+
+    <div class="filters" id="filters-section">
+        <!-- Search by Transaction Name -->
+        <div class="search input-row">
+            <i class="fa fa-search"></i>
+            <input type="text" id="search-transaction" placeholder="Search transactions...">
+        </div>
+        
+        <div class="input-row">
+            <!-- Filter by Category -->
+            <div class="transaction-filter input-col">
+                <i class="fa fa-filter"></i>
+                <select id="filter-category">
+                    <option value="all">All Categories</option>
+                    <option value="food">Food & Dining</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="bills">Bills & Utilities</option>
+                </select>
+            </div>
+
+            <!-- Sort Transactions -->
+            <div class="transaction-sort input-col">
+                <i class="fa fa-sort"></i>
+                <select id="sort-transaction">
+                    <option value="date">Date</option>
+                    <option value="amount">Amount</option>
+                    <option value="name">Name</option>
+                </select>
+            </div>   
+        </div>
+
+        <!-- Filter by Date Range -->
+        <div class="input-row">
+            <div class="input-col">
+                <i class="fa fa-calendar"></i>
+                <input type="date" id="start-date">
+            </div>
+            <div class="input-col">
+                <i class="fa fa-calendar"></i>
+                <input type="date" id="end-date">
+            </div>
+        </div>
+    </div>
+
     <% if (transactions.length > 0) { %>
         <% transactions.forEach(transaction => { %>
             <div class="transaction">
@@ -72,7 +72,7 @@
                 </div>
             </div>
         <% }); %>
-
+    
         <!-- Pagination Controls -->
         <div class="pagination">
             <% if (currentPage > 1) { %>
@@ -89,7 +89,6 @@
         </div>
     <% } %>
 </div>
-
 
 <script>
 

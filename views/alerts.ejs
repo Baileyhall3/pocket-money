@@ -46,10 +46,24 @@
         <% if (userAlerts.length > 0) { %>
             <% userAlerts.forEach((alert, index) => { %>
                 <div class="friend-row">
-                    <!-- <% if (alert.unread) { %>
-                        <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                        icons for each alert type?
-                    <% } %> -->
+
+                    <!-- Modal for an alert's details -->
+                    <div id="alertModal-<%= index %>" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('alertModal-<%= index %>')">&times;</span>
+                            <h2>
+                                <%= alert.title %>
+                            </h2>
+                            <p>Created: <%= alert.date %> </p>
+                            <div class="input-row">
+                                <button type="button" class="btn delete-btn">Delete</button>
+                                <% if (alert.type == 'Friend Request') { %>
+                                    <button type="button" class="btn" onclick="acceptFriendRequest(<%= JSON.stringify(alert) %>, <%= index %>)">Accept</button>
+                                <% }); %>
+                            </div>
+                        </div>
+                    </div>
+
                     <div style="padding: 10px;">
                         <strong><%= alert.title %></strong>
                         <p><%= alert.body %></p>
@@ -57,6 +71,7 @@
                     </div>
                     <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
                         <div class="dropdown-content">
+                            <a href="#" onclick="openModal('alertModal-<%= index %>')">View</a>
                             <a href="#">Mark As Unread</a>
                             <a href="#">Archive</a>
                             <a href="#">Delete</a>
@@ -69,6 +84,8 @@
         <% } %>
     </div>
 </div>
+
+<script src="/js/shared.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -83,4 +100,30 @@
         });
     });
 
+
+    const user = <%- JSON.stringify(user) %>;
+
+    async function acceptFreindRequest(alert, index) {
+        try {
+            const response = await fetch('/friends/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ friendId: alert.received_from_id }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                closeModal(`alertModal-${index}`)
+            } else {
+                throw new Error(result.error || 'Failed to create friend.');
+            }
+        } catch (error) {
+            console.error('Error creating friend:', error);
+            // document.getElementById('submit-error-message').textContent = error.message;
+            return false;
+        }
+    }
 </script>
