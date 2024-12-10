@@ -12,7 +12,7 @@
                 <div class="dropdown-content" id="budget-actions-dropdown">
                     <a onclick="openModal('logTransactionModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= budget.name %>' })" href="#">Log Transaction</a>
                     <a href="#">Budget Details</a>
-                    <a href="#" onclick="deleteBudget('<%= budget.id %>')">Delete Budget</a>
+                    <a onclick="openModal('deleteConfirmModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= budget.name %>' })" href="#">Delete Budget</a>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
                         </h3>
                     </div>
                     <% if (transactions.length > 0) { %>
-                        <div class="chart-container" style="max-height: 600px; padding-bottom: 10vh;">
+                        <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
                             <h3>Spending Over the Last 7 Days</h3>
                             <canvas id="recentSpendingChart"></canvas>
                         </div>
@@ -179,26 +179,4 @@
 
         }
     });
-
-    async function deleteBudget(budgetId) {
-        try {
-            const response = await fetch(`/budgets/${budgetId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                alert('Budget deleted successfully!');
-                window.location.href = '/savings'
-            } else {
-                const error = await response.json();
-                alert(`Failed to delete budget: ${error.message}`);
-            }
-        } catch (err) {
-            console.error('Error deleting budget:', err);
-            alert('An error occurred while deleting the budget.');
-        }
-    }
 </script>

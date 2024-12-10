@@ -45,7 +45,7 @@
                     </form>
                     <div class="link-group">
                         <div>
-                            <p>No account?</p> <a href="#" onclick="toggleForms()">Sign Up!</a>
+                            <p>No account?</p> <a href="#" onclick="toggleForms('register')">Sign Up!</a>
                         </div>
                         <a href="#" onclick="toggleForms('resetPassword')">Forgot Password?</a>
                     </div>
@@ -68,7 +68,7 @@
                     <div class="link-group">
                         <div>
                             <p>Already have an account?</p>
-                            <a href="#" onclick="toggleForms()">Log In</a>
+                            <a href="#" onclick="toggleForms('login')">Log In</a>
                         </div>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                     <div class="link-group">
                         <div>
                             <p>Already have an account?</p>
-                            <a href="#" onclick="toggleForms()">Log In</a>
+                            <a href="#" onclick="toggleForms('login')">Log In</a>
                         </div>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
 
             if (response.ok) {
                 errorMessage.innerText = 'Registration successful. Please log in.';
-                toggleForms(); // Switch to login form
+                toggleForms('login'); // Switch to login form
             } else {
                 errorMessage.innerText = result.error; // Show error message
             }

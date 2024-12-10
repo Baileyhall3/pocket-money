@@ -95,6 +95,10 @@
     display: block;
   }
 
+  .delete-btn {
+    background-color: red;
+  }
+
   .transaction-btn {
     margin: 20px;
     margin-left: 2vh;

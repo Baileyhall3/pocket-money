@@ -50,43 +50,46 @@
     </div>
 </div>
 
-<% if (transactions.length > 0) { %>
-    <% transactions.forEach(transaction => { %>
-        <div class="transaction">
-            <div class="money-bar-header">
-                <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                    <%= transaction.name %>
-                </h5>
-                <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
-                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
-                </p>
+<div id="transactions-container">
+    <% if (transactions.length > 0) { %>
+        <% transactions.forEach(transaction => { %>
+            <div class="transaction">
+                <div class="money-bar-header">
+                    <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                        <%= transaction.name %>
+                    </h5>
+                    <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
+                        <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                    </p>
+                </div>
+                <div class="money-bar-header" style="margin-bottom: 20px;">
+                    <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
+                        <%= transaction.category %>
+                    </h5>
+                    <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
+                        <%= DateUtils.toShortDate(transaction.date_made) %>
+                    </p>
+                </div>
             </div>
-            <div class="money-bar-header" style="margin-bottom: 20px;">
-                <h5 style="font-size: 16px; margin: 0; font-weight: 100;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                    <%= transaction.category %>
-                </h5>
-                <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                    <%= DateUtils.toShortDate(transaction.date_made) %>
-                </p>
-            </div>
-        </div>
-    <% }); %>
+        <% }); %>
 
-    <!-- Pagination Controls -->
-    <div class="pagination">
-        <% if (currentPage > 1) { %>
-            <button class="pagination-btn fa fa-arrow-left" onclick="loadTransactions('<%= currentPage - 1 %>')"></button>
-        <% } %>
-        <span>Page <%= currentPage %> of <%= totalPages %></span>
-        <% if (currentPage < totalPages) { %>
-            <button class="pagination-btn fa fa-arrow-right" onclick="loadTransactions('<%= currentPage + 1 %>')"></button>
-        <% } %>
-    </div>
-<% } else { %>
-    <div class="">
-        No transactions logged yet!
-    </div>
-<% } %>
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <button class="pagination-btn fa fa-arrow-left" onclick="loadTransactions('<%= currentPage - 1 %>')"></button>
+            <% } %>
+            <span>Page <%= currentPage %> of <%= totalPages %></span>
+            <% if (currentPage < totalPages) { %>
+                <button class="pagination-btn fa fa-arrow-right" onclick="loadTransactions('<%= currentPage + 1 %>')"></button>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="">
+            No transactions logged yet!
+        </div>
+    <% } %>
+</div>
+
 
 <script>
 

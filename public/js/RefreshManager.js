@@ -96,8 +96,9 @@ class RefreshManager {
     }
 
     async refreshTransactions() {
+        return;
         try {
-            const response = await fetch('/api/transactions', {
+            const response = await fetch('/transactions', {
                 headers: this.headers,
                 credentials: 'same-origin' // Include cookies in the request
             });

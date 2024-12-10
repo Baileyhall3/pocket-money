@@ -1,0 +1,22 @@
+<div id="deleteConfirmModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('deleteConfirmModal')">&times;</span>
+            <h2>Confirm Delete</h2>
+        </div>
+        <form id="deleteConfirmForm" novalidate>
+            <div id="delete-confirm">
+                <div class="modal-row" id="delete-message">
+                    <!-- Dynamic message -->
+                </div>
+                <div class="modal-row">
+                    All associated transactions will also be deleted.
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn transaction-btn" onclick="closeModal('deleteConfirmModal')">Cancel</button>
+                    <button type="submit" class="btn transaction-btn delete-btn">Delete</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

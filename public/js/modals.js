@@ -14,15 +14,30 @@ function openModal(modalId, itemData = {}) {
             errorMessage.textContent = '';
         }
 
+        if (modalId === 'deleteConfirmModal' && itemData) {
+            const messageElement = modal.querySelector("#delete-message");
+            if (messageElement) {
+                messageElement.textContent = `Are you sure you want to delete the ${itemData.type} "${itemData.name}"?`;
+            }
+
+            const deleteForm = modal.querySelector("#deleteConfirmForm");
+            if (deleteForm) {
+                deleteForm.onsubmit = function (e) {
+                    e.preventDefault();
+                    deleteItem(itemData);
+                };
+            }
+        }
+
         let item = {};
 
         if (Object.keys(itemData).length > 0) {
-            console.log(itemData)
-            const modalHeader = modal.querySelector('.modal-header h2');
-            if (modalHeader && itemData.type && itemData.id) {
-                modalHeader.textContent = `New Transaction for ${itemData.name}`;
-                item = { id: itemData.id, type: itemData.type }
-            }
+            // const modalHeader = modal.querySelector('.modal-header h2');
+            // if (modalHeader && itemData.type && itemData.id) {
+            //     modalHeader.textContent = `New Transaction for ${itemData.name}`;
+            //     
+            // }
+            item = { id: itemData.id, type: itemData.type }
 
             const form = modal.querySelector('form#logTransactionForm');
             form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
@@ -64,7 +79,7 @@ function openModal(modalId, itemData = {}) {
 
                 if (createTransaction(event, selectedCategory, item)) {
                     closeModal(modalId);
-                    // await refreshManager.refreshAccounts();
+                    await refreshManager.refreshTransactions();
                 }
             });
         }
@@ -231,8 +246,6 @@ async function createBudget(event) {
             body: JSON.stringify(data),
         });
 
-        debugger
-
         const result = await response.json();
 
         if (response.ok && result.success) {
@@ -282,6 +295,7 @@ async function createPot(event) {
 
 async function createTransaction(event, selCategory, item) {
     const formData = new FormData(event.target);
+    debugger
     const data = {
         name: formData.get('transactionName'),
         amount: parseFloat(formData.get('transactionAmount') || 0),
@@ -316,5 +330,46 @@ async function createTransaction(event, selCategory, item) {
         console.error('Error creating transaction:', error);
         document.getElementById('submit-error-message').textContent = error.message;
         return false;
+    }
+}
+
+async function deleteItem(itemData) {
+    try {
+        let response = null;
+        if (itemData.type == 'budget') {
+            response = await fetch(`/budgets/${itemData.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+        else if (itemData.type == 'pot') {
+            response = await fetch(`/pots/${itemData.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+        else if (itemData.type == 'account') {
+            response = await fetch(`/accounts/${itemData.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        }
+
+        if (response.ok) {
+            alert(`${itemData.type} deleted successfully!`);
+            window.location.href = '/' + (itemData.type == 'account' ? 'accounts' : 'savings')
+        } else {
+            const error = await response.json();
+            alert(`Failed to delete item: ${error.message}`);
+        }
+    } catch (err) {
+        console.error('Error deleting item:', err);
+        alert('An error occurred while deleting the item.');
     }
 }
