@@ -155,7 +155,6 @@ p {
     display: block;
 }
 
-/* Profile button styling */
 .profile-btn {
     display: flex;
     align-items: center;
@@ -170,7 +169,6 @@ p {
     transition: background-color 0.3s ease;
 }
 
-/* Profile button icon and text alignment */
 .profile-btn i {
     font-size: 22px;
     margin-right: 10px;
@@ -190,7 +188,6 @@ p {
     gap: 15px;
 }
 
-/* Right buttons */
 .icon-btn {
     background-color: #f4f4f9;
     border: none;
@@ -221,7 +218,6 @@ p {
     right: -5px;
 }
 
-/* Hover state for the icon button */
 .icon-btn:hover {
     background-color: #e0e0e5;
 }
@@ -255,36 +251,6 @@ p {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
-}
-
-.divider {
-    width: 10px;
-    cursor: col-resize;
-    background-color: #ccc;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 50px;
-}
-
-.divider:hover {
-    background-color: #aaa;
-}
-
-.divider .arrow-left,
-.divider .arrow-right {
-    font-size: 12px;
-    color: #333;
-    position: absolute;
-}
-
-.divider .arrow-left {
-    left: 2px;
-}
-
-.divider .arrow-right {
-    right: 2px;
 }
 
 .content {
@@ -346,6 +312,10 @@ p {
     cursor: pointer;
     color: red;
     margin-left: 10px;
+}
+
+.delete-btn:hover {
+    background-color: rgb(189, 0, 0);
 }
 
 ul {
@@ -462,12 +432,10 @@ li {
     border-bottom: none;
 }
 
-/* Hover effect */
 .dropdown-content a:hover {
     background-color: #ddd;
 }
 
-/* Show the dropdown on button click */
 .dropdown:hover .dropdown-content {
     display: block;
 }
@@ -932,6 +900,7 @@ canvas {
 .search-container {
     margin-top: 30px; 
     width: 30%;
+    height: fit-content;
 }
 
 .profile {
@@ -943,7 +912,8 @@ canvas {
     background-color: #f4f4f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: auto;
+    /* margin: auto; */
+    height: fit-content;
 }
 
 .alerts-container {

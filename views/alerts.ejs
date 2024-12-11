@@ -59,7 +59,7 @@
                                 <button type="button" class="btn delete-btn">Delete</button>
                                 <% if (alert.type == 'Friend Request') { %>
                                     <button type="button" class="btn" onclick="acceptFriendRequest(<%= JSON.stringify(alert) %>, <%= index %>)">Accept</button>
-                                <% }); %>
+                                <% }; %>
                             </div>
                         </div>
                     </div>

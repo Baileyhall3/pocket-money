@@ -4,9 +4,8 @@
 
 <div class="flex-container">
     <div class="content-wrapper" style="align-self: start;">
-        <div class="container-header variable-width-80">
+        <div id="container-header" class="container-header variable-width-80">
             <h2><%= account.name %></h2>
-            
             <div class="dropdown">
                 <h3><a class="link" href="#">Actions</a></h3>
                 <div class="dropdown-content" id="add-dropdown">
@@ -25,7 +24,7 @@
                     </div>
                     <% if (transactions.length > 0) { %>
                         <!-- Make this show savings if account is savings account -->
-                        <div class="chart-container" style="max-height: 600px; padding-bottom: 10vh;">
+                        <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
                             <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
                             <canvas id="accountTransactionsChart"></canvas>
                         </div>
@@ -45,7 +44,7 @@
                     <h3>Balance History</h3>
                     <canvas id="balanceHistoryChart"></canvas>
                 </div> -->
-                <% if (account.sharedWithId) { %>
+                <% if (account.shared_with_id) { %>
                     <div class="container-rounded variable-width-50">
                         <h3>Account Partner</h3>
                         <div class="friend-row">

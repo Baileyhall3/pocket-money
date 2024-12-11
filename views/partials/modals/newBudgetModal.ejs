@@ -29,7 +29,7 @@
                 <option value="" selected>-- Select Budget Buddy (optional) --</option>
                 <% if (friends.length > 0) { %>
                     <% friends.forEach((friend, index) => { %>
-                        <option value="friend.userId"><%= friend.userName %></option>
+                        <option value="friend.userId"><%= friend.first_name + ' ' + friend.last_name %></option>
                     <% }); %>
                 <% } %>
             </select>

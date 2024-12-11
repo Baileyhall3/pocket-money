@@ -11,7 +11,7 @@
             <% if (accounts.length > 0) { %>
                 <% accounts.forEach((account) => { %>
                     <% 
-                        const accountTransactions = transactions.filter(transaction => transaction.accountId === account.id);
+                        const accountTransactions = transactions.filter(transaction => transaction.account_id === account.id);
                         const limitedTransactions = accountTransactions.slice(0, 5);
                     %>
                     <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;">
@@ -25,22 +25,22 @@
                             <div class="account-details">
                                 <h5 class="account-title">
                                     <%= account.name %>
-                                    <% if (account.sharedWithId) { %>
+                                    <% if (account.shared_with_id) { %>
                                         - shared with 
-                                        <% if (account.sharedWithId === user.id) { %>
+                                        <% if (account.shared_with_id === user.id) { %>
                                             me
                                         <% } else { %>
-                                            <%= account.sharedWithId %>
+                                            <%= account.shared_with_id %>
                                         <% } %>
                                     <% } %>
                                 </h5>
                                 <% if (limitedTransactions.length > 0) { %>
                                     <% limitedTransactions.forEach(transaction => { %>
-                                        <% if (transaction.accountId === account.id) { %>
+                                        <% if (transaction.account_id === account.id) { %>
                                             <div class="transaction">
                                                 <div class="money-bar-header">
                                                     <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                        <%= account.sharedWithId ? transaction.name + ' made by ' + transaction.userId : transaction.name %>
+                                                        <%= account.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
                                                     </h5>
                                                     <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                                         <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -51,7 +51,7 @@
                                                         <%= transaction.category %>
                                                     </h5>
                                                     <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'normal' %>">
-                                                        <%= transaction.dateMade %>
+                                                        <%= DateUtils.toShortDate(transaction.date_made) %>
                                                     </p>
                                                 </div>
                                             </div>
@@ -97,7 +97,7 @@
             const accountId = account.id;
 
             // Filter transactions for the specific account
-            const accountTransactions = transactions.filter(transaction => transaction.accountId === accountId);
+            const accountTransactions = transactions.filter(transaction => transaction.account_id === accountId);
 
             if (accountTransactions.length > 0) {
 
@@ -108,7 +108,7 @@
                 const spendingData = labels.map(date => {
                     // Sum up the transactions for each specific date
                     const dailyTotal = accountTransactions
-                        .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
+                        .filter(transaction => transaction.date_made === date) // Compare against the formatted date
                         .reduce((total, transaction) => total + transaction.amount, 0);
                     return dailyTotal;
                 });

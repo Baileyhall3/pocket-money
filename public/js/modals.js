@@ -23,7 +23,7 @@ function openModal(modalId, itemData = {}) {
         if (modalId === 'deleteConfirmModal' && itemData) {
             const messageElement = modal.querySelector("#delete-message");
             if (messageElement) {
-                messageElement.textContent = `Are you sure you want to delete the ${itemData.type} "${itemData.name}"?`;
+                messageElement.textContent = `Are you sure you want to delete this ${itemData.type}?`;
             }
 
             const deleteForm = modal.querySelector("#deleteConfirmForm");
