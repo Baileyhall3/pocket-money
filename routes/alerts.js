@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const alertsController = require('../controllers/alertsController');
 
+const { requireAuth } = require('../middleware/auth');
+
 router.get('/alerts', 
     (req, res) => {
         res.render('alerts',
@@ -23,6 +25,10 @@ router.post('/alerts/friend-request', async (req, res) => {
         console.error('Error creating friend request alert:', error);
         res.status(500).json({ success: false, error: 'Failed to create friend request alert.' });
     }
+});
+
+router.delete('/alerts/:id', requireAuth, alertsController.deleteAlert, (req, res) => {
+    res.status(200).json({ success: true, message: 'Account deleted successfully' });
 });
 
 module.exports = router;

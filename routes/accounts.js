@@ -66,7 +66,7 @@ router.delete('/budgets/:id', requireAuth, budgetsController.deleteBudget, (req,
 // Savings Page Route
 router.get('/savings', 
     budgetsController.getBudgetsForUser, 
-    potsController.getPotsForUser, 
+    potsController.getPotsForUser,
     (req, res) => {
         res.render('savings', {
             title: "Savings",
@@ -79,7 +79,7 @@ router.get('/savings',
 router.get('/accounts/:id', 
     accountsController.getAccountById, 
     (req, res, next) => {
-        req.sharedWithId = req.account.sharedWithId;
+        req.sharedWithId = req.account.shared_with_id;
         req.type = 'account';
         req.id = req.account.id;
         next();
@@ -192,7 +192,7 @@ router.get('/savings/pot/:id/transactions',
 router.get('/savings/pot/:id', 
     potsController.getPotById,
     (req, res, next) => {
-        req.sharedWithId = req.pot.sharedWithId;
+        req.sharedWithId = req.pot.shared_with_id;
         next();
     },
     userController.getSharedWithUser,
@@ -224,7 +224,7 @@ router.get('/savings/pot/:id',
 router.get('/savings/budget/:id', 
     budgetsController.getBudgetById,
     (req, res, next) => {
-        req.sharedWithId = req.budget.sharedWithId;
+        req.sharedWithId = req.budget.shared_with_id;
         req.type = 'budget';
         req.id = req.budget.id;
         next();

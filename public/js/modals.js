@@ -209,9 +209,11 @@ async function createAccount(event) {
         name: formData.get('accountName'),
         type: formData.get('accountType'),
         balance: parseFloat(formData.get('balance') || 0),
-        shared_with_id: formData.get('joiningPartner') || null,
-        is_active: formData.get('defaultAccount') || false,
+        sharedWithId: formData.get('joiningPartner') || null,
+        isActive: formData.get('defaultAccount') || false,
     };
+
+    console.log(data)
 
     try {
         const response = await fetch('/accounts/create', {
@@ -281,6 +283,8 @@ async function createPot(event) {
         sharedWithId: formData.get('sharedWith') || null,
         participants: [],
     };
+
+    console.log(data)
 
     try {
         const response = await fetch('/pots/create', {

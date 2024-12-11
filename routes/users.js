@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 
+const { requireAuth } = require('../middleware/auth');
+
 // Profile Page Route
 router.get('/profile', 
+    requireAuth,
     userController.getUsers, 
     userController.getFriends, 
     (req, res) => {
@@ -15,6 +18,7 @@ router.get('/profile',
 });
 
 router.get('/search', 
+    requireAuth,
     userController.searchUsers, 
     (req, res) => {
     res.render('search', {
@@ -23,8 +27,18 @@ router.get('/search',
     });
 });
 
-router.post('/friends/create', userController.createFriend, (req, res) => {
-    res.json({ success: true });
+router.post('/friends/create', 
+    requireAuth,
+    userController.createFriend, 
+    (req, res) => {
+        res.json({ success: true, message: 'Friend added successfully!' });
+});
+
+router.put('/users/friends/update-status', 
+    requireAuth, 
+    userController.updateFriendStatus, 
+    (req, res) => {
+        res.status(200).json({ success: true, friend: req.friend });
 });
 
 module.exports = router;

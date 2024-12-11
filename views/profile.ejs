@@ -54,7 +54,7 @@
                                     <div class="modal-content">
                                         <span class="close" onclick="closeModal('friendModal-<%= index %>')">&times;</span>
                                         <h2><%= friend.userName %></h2>
-                                        <h2>Friends since <%= friend.created %></h2>
+                                        <h2>Friends since <%= DateUtils.toShortDate(friend.created) %></h2>
                                         <!-- Display the friend's friends -->
                                          <h3>Friends List</h3>
                                         <% if (friend.friendsOfFriend.length > 0) { %>

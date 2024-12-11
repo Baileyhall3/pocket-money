@@ -97,7 +97,7 @@ class RefreshManager {
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
-    }    
+    }
 
     async refreshTransactions(item) {
         try {
@@ -132,6 +132,36 @@ class RefreshManager {
             console.error('Error refreshing transactions:', error);
         }
     }
+
+    async refreshAlerts() {
+        try {
+            const response = await fetch('/alerts', {
+                headers: this.headers,
+                credentials: 'same-origin',
+            });
+    
+            if (response.status === 401) {
+                return;
+            }
+    
+            if (!response.ok) throw new Error('Failed to refresh alerts');
+    
+            const alertsHTML = await response.text();
+    
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(alertsHTML, 'text/html');
+            const newAlertsContainer = doc.getElementById('alerts-container');
+    
+            if (newAlertsContainer) {
+                const alertsContainer = document.getElementById('alerts-container');
+                alertsContainer.innerHTML = newAlertsContainer.innerHTML;
+            }
+    
+            initPotCharts();
+        } catch (error) {
+            console.error('Error refreshing pots:', error);
+        }
+    }  
     
 }
 

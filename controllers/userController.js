@@ -60,50 +60,77 @@ exports.getFriends = async (req, res, next) => {
     try {
         const userId = req.user.id;
 
-        // Get all friendship relationships for the current user
+        // Get all friendship relationships for the current user where status is true
         const { data: friendships, error: friendshipsError } = await supabase
             .from('friends')
             .select(`
                 id,
                 created_at,
+                user_id,
+                friend_id,
+                user:user_id (
+                    id,
+                    first_name,
+                    last_name
+                ),
                 friend:friend_id (
                     id,
                     first_name,
                     last_name
                 )
             `)
-            .or(`user_id.eq.${userId},friend_id.eq.${userId}`);
+            .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
+            .eq('status', true);
 
         if (friendshipsError) throw friendshipsError;
 
         // Transform the friendships data
         const friendsList = await Promise.all(friendships.map(async (friendship) => {
-            // Get the friend's ID (the one who isn't the current user)
-            const friendId = friendship.friend.id;
+            const isCurrentUserUserId = friendship.user_id === userId;
+            const friend = isCurrentUserUserId ? friendship.friend : friendship.user;
 
-            // Get this friend's own friends
+            // Get this friend's own friends where status is true, excluding the current user
             const { data: friendsOfFriend, error: friendsOfFriendError } = await supabase
                 .from('friends')
                 .select(`
+                    user:user_id (
+                        id,
+                        first_name,
+                        last_name
+                    ),
                     friend:friend_id (
                         id,
                         first_name,
                         last_name
                     )
                 `)
-                .or(`user_id.eq.${friendId},friend_id.eq.${friendId}`)
-                .neq('friend_id', userId);
+                .or(`user_id.eq.${friend.id},friend_id.eq.${friend.id}`)
+                .eq('status', true);
 
             if (friendsOfFriendError) throw friendsOfFriendError;
 
+            // Transform friendsOfFriend and include the current user
+            const transformedFriendsOfFriend = friendsOfFriend.map(f => {
+                const isFriendUserId = f.user.id === friend.id;
+                const friendOfFriend = isFriendUserId ? f.friend : f.user;
+
+                return {
+                    friendId: friendOfFriend.id,
+                    friendName: `${friendOfFriend.first_name} ${friendOfFriend.last_name}`
+                };
+            });
+
+            // Add the current user to the friends of friend list
+            transformedFriendsOfFriend.push({
+                friendId: userId,
+                friendName: 'You'
+            });
+
             return {
-                userId: friendId,
-                userName: `${friendship.friend.first_name} ${friendship.friend.last_name}`,
+                userId: friend.id,
+                userName: `${friend.first_name} ${friend.last_name}`,
                 created: friendship.created_at,
-                friendsOfFriend: friendsOfFriend.map(f => ({
-                    friendId: f.friend.id,
-                    friendName: `${f.friend.first_name} ${f.friend.last_name}`
-                }))
+                friendsOfFriend: transformedFriendsOfFriend
             };
         }));
 
@@ -113,6 +140,8 @@ exports.getFriends = async (req, res, next) => {
         next(error);
     }
 };
+
+
 
 exports.searchUsers = async (req, res, next) => {
     try {
@@ -192,8 +221,6 @@ exports.getSharedWithUser = async (req, res, next) => {
         next(error);
     }
 };
-
-// New authentication methods
 
 exports.signUp = async (req, res, next) => {
     try {
@@ -281,17 +308,17 @@ exports.updateProfile = async (req, res, next) => {
     }
 };
 
-
 exports.createFriend = async (req, res, next) => {
     try {
         const { friendId } = req.body;
         const userId = req.user.id;
 
         const { data: newFriend, error } = await supabase
-            .from('accounts')
+            .from('friends')
             .insert([{
                 user_id: userId,
                 friend_id: friendId,
+                status: false
             }])
             .select()
             .single();
@@ -301,6 +328,70 @@ exports.createFriend = async (req, res, next) => {
         req.friend = newFriend;
         next();
     } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateFriendStatus = async (req, res, next) => {
+    try {
+        const { friendId, status } = req.body;
+        const userId = req.user.id;
+
+        // First try to find the friend record where the current user is the friend_id
+        // (this would be the case for friend requests sent to the current user)
+        let { data: friendRecord, error: fetchError } = await supabase
+            .from('friends')
+            .select('id, status')
+            .eq('user_id', friendId)
+            .eq('friend_id', userId)
+            .single();
+
+        // If not found, try to find where current user is the user_id
+        // (this would be the case for friend requests sent by the current user)
+        if (!friendRecord) {
+            const { data: altRecord, error: altFetchError } = await supabase
+                .from('friends')
+                .select('id, status')
+                .eq('user_id', userId)
+                .eq('friend_id', friendId)
+                .single();
+
+            if (altFetchError) throw altFetchError;
+            friendRecord = altRecord;
+        }
+
+        if (!friendRecord) {
+            return res.status(404).send('Friend record not found.');
+        }
+
+        // Update the friend record
+        const { data: updatedFriend, error: updateError } = await supabase
+            .from('friends')
+            .update({ status: status })
+            .eq('id', friendRecord.id)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        // If the friend request was accepted, delete the corresponding alert
+        if (status === true) {
+            const { error: deleteError } = await supabase
+                .from('alerts')
+                .delete()
+                .eq('user_id', userId)
+                .eq('received_from_id', friendId)
+                .eq('type', 'Friend Request');
+
+            if (deleteError) {
+                console.error('Error deleting friend request alert:', deleteError);
+            }
+        }
+
+        req.friend = updatedFriend;
+        next();
+    } catch (error) {
+        console.error('Error updating friend status:', error);
         next(error);
     }
 };

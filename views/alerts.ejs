@@ -42,19 +42,18 @@
         </div>
     </div>
 
-    <div class="friends-list" id="users-list">
+    <div class="friends-list" id="alerts-container">
         <% if (userAlerts.length > 0) { %>
             <% userAlerts.forEach((alert, index) => { %>
                 <div class="friend-row">
-
-                    <!-- Modal for an alert's details -->
                     <div id="alertModal-<%= index %>" class="modal">
                         <div class="modal-content">
                             <span class="close" onclick="closeModal('alertModal-<%= index %>')">&times;</span>
                             <h2>
                                 <%= alert.title %>
                             </h2>
-                            <p>Created: <%= alert.date %> </p>
+                            <p><%= alert.body %></p>
+                            <p>Created: <%= DateUtils.toShortDate(alert.date) %> </p>
                             <div class="input-row">
                                 <button type="button" class="btn delete-btn">Delete</button>
                                 <% if (alert.type == 'Friend Request') { %>
@@ -63,18 +62,17 @@
                             </div>
                         </div>
                     </div>
-
                     <div style="padding: 10px;">
                         <strong><%= alert.title %></strong>
                         <p><%= alert.body %></p>
-                        <p style="font-size: 12px; color: #666;"><%= alert.date %></p>
+                        <p style="font-size: 12px; color: #666;"><%= DateUtils.toDateTime(alert.date) %></p>
                     </div>
                     <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
                         <div class="dropdown-content">
                             <a href="#" onclick="openModal('alertModal-<%= index %>')">View</a>
                             <a href="#">Mark As Unread</a>
                             <a href="#">Archive</a>
-                            <a href="#">Delete</a>
+                            <a href="#" onclick="deleteAlert(<%= JSON.stringify(alert) %>)" >Delete</a>
                         </div>
                     </div>
                 </div>
@@ -100,30 +98,54 @@
         });
     });
 
-
     const user = <%- JSON.stringify(user) %>;
 
-    async function acceptFreindRequest(alert, index) {
+    async function acceptFriendRequest(alert, index) {
         try {
-            const response = await fetch('/friends/create', {
-                method: 'POST',
+            const response = await fetch('/users/friends/update-status', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ friendId: alert.received_from_id }),
+                body: JSON.stringify({ friendId: alert.received_from_id, status: true }),
             });
 
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                closeModal(`alertModal-${index}`)
-            } else {
-                throw new Error(result.error || 'Failed to create friend.');
+            if (!response.ok) {
+                throw new Error('Failed to update friend status');
             }
+
+            const result = await response.json();
+            console.log('Friend status updated:', result);
+            closeModal(`alertModal-${index}`)
+            // Refresh the alerts after accepting
+            window.location.reload();
         } catch (error) {
-            console.error('Error creating friend:', error);
-            // document.getElementById('submit-error-message').textContent = error.message;
-            return false;
+            console.error('Error toggling friend status:', error);
         }
     }
+
+    async function deleteAlert(alert) {
+        try {
+            const response = await fetch(`/alerts/${alert.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                // alert(`Alert deleted successfully!`);
+                refreshAlerts();
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete item: ${error.message}`);
+            }
+
+            // const result = await response.json();
+        } catch (err) {
+            console.error('Error deleting item:', err);
+            alert('An error occurred while deleting the item.');
+        }
+    }
+
 </script>

@@ -47,7 +47,7 @@ exports.getAccountById = async (req, res, next) => {
 
 exports.createAccount = async (req, res, next) => {
     try {
-        const { name, type, balance = 0, sharedWithId = null } = req.body;
+        const { name, type, balance = 0, sharedWithId = null, isActive = false } = req.body;
         const userId = req.user.id;
 
         const { data: newAccount, error } = await supabase
@@ -58,7 +58,7 @@ exports.createAccount = async (req, res, next) => {
                 balance,
                 user_id: userId,
                 shared_with_id: sharedWithId,
-                is_active: true
+                is_active: isActive
             }])
             .select()
             .single();
