@@ -12,9 +12,9 @@
                     <canvas id="spending-chart"></canvas>
                     <% if (transactions.length > 0) { %>
                         <div class="account-summary">
-                            <p>Total Spent Last 30 Days: £2,800</p>
+                            <!-- <p>Total Spent Last 30 Days: £2,800</p>
                             <p>Largest Transaction: <span id="largest-transaction">0</span></p>
-                            <p>Most Spent Category: Housing</p>
+                            <p>Most Spent Category: Housing</p> -->
                         </div>
                     <% } else { %>
                         <div class="">
@@ -44,7 +44,7 @@
                                         <%= transaction.category %>
                                     </h5>
                                     <p style="font-size: 14px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                        <%= transaction.dateMade %>
+                                        <%= DateUtils.toShortDate(transaction.date_made) %>
                                     </p>
                                 </div>
                             </div>

@@ -161,6 +161,36 @@ class RefreshManager {
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
+    }
+
+    async refreshFriends() {
+        try {
+            const response = await fetch('/profile', {
+                headers: this.headers,
+                credentials: 'same-origin',
+            });
+    
+            if (response.status === 401) {
+                return;
+            }
+    
+            if (!response.ok) throw new Error('Failed to refresh friends');
+    
+            const friendsHTML = await response.text();
+    
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(friendsHTML, 'text/html');
+            const newFriendsContainer = doc.getElementById('friends-list');
+    
+            if (newFriendsContainer) {
+                const friendsList = document.getElementById('friends-list');
+                friendsList.innerHTML = newFriendsContainer.innerHTML;
+            }
+    
+            initPotCharts();
+        } catch (error) {
+            console.error('Error refreshing pots:', error);
+        }
     }  
     
 }

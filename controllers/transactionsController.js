@@ -315,3 +315,34 @@ exports.createTransaction = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.deleteTransaction = async (req, res, next) => {
+    try {
+        const transactionId = req.params.id;
+        const userId = req.user.id;
+
+        // First verify the user owns this account
+        const { data: existingTransaction, error: fetchError } = await supabase
+            .from('transactions')
+            .select('*')
+            .eq('id', transactionId)
+            .eq('user_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!existingTransaction) {
+            return res.status(403).send('Not authorized to delete this transaction');
+        }
+
+        const { error: deleteError } = await supabase
+            .from('transactions')
+            .delete()
+            .eq('id', transactionId);
+
+        if (deleteError) throw deleteError;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

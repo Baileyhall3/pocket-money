@@ -134,8 +134,8 @@
             });
 
             if (response.ok) {
-                // alert(`Alert deleted successfully!`);
-                refreshAlerts();
+                const refreshManager = new RefreshManager();
+                refreshManager.refreshAlerts();
             } else {
                 const error = await response.json();
                 alert(`Failed to delete item: ${error.message}`);

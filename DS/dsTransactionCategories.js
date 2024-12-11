@@ -13,6 +13,7 @@ const dsTransactionCategories = [
     { id: "OTHER", name: "Other", type: "expense", icon: "fa fa-ellipsis-h" },
     { id: "PAY_CHECK", name: "Pay Check", type: "income", icon: "fa fa-money" },
     { id: "GIFT", name: "Gift", type: "income", icon: "fa fa-handshake-o" },
+    // { id: "OTHER", name: "Other", type: "income", icon: "fa fa-ellipsis-h" },
 ];
 
 module.exports = dsTransactionCategories

@@ -24,15 +24,11 @@
                             
                             <div class="account-details">
                                 <h5 class="account-title">
-                                    <%= account.name %>
                                     <% if (account.shared_with_id) { %>
-                                        - shared with 
-                                        <% if (account.shared_with_id === user.id) { %>
-                                            me
-                                        <% } else { %>
-                                            <%= account.shared_with_id %>
-                                        <% } %>
+                                        <i class="fa fa-handshake-o" title="This is a shared account"></i>
+                                        | 
                                     <% } %>
+                                    <%= account.name %>
                                 </h5>
                                 <% if (limitedTransactions.length > 0) { %>
                                     <% limitedTransactions.forEach(transaction => { %>

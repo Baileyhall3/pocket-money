@@ -34,7 +34,6 @@
                 <div class="friends-list" id="friends-list">
                     <% if (friends.length > 0) { %>
                         <% friends.forEach((friend, index) => { %>
-                            <!-- Display friend -->
                             <div class="friend-row" data-name="<%= friend.userName %>">
                                 <i class="fa fa-user friend-icon" style="display: flex;"></i>
                                 <span class="friend-name">
@@ -45,7 +44,7 @@
                                     <div class="dropdown-content">
                                         <a href="#" onclick="openModal('friendModal-<%= index %>')">View Friends</a>
                                         <a href="#">Nudge</a>
-                                        <a href="#" class="remove-friend">Remove Friend</a>
+                                        <a href="#" class="remove-friend" onclick="removeFriend('<%= friend.friendshipId %>')" >Remove Friend</a>
                                     </div>
                                 </div>
                 
@@ -69,7 +68,7 @@
                             </div>
                         <% }); %>
                     <% } else { %>
-                        <div>No friends yet!</div>
+                        <div>No friends yet :(</div>
                     <% } %>
                 </div>
             <!-- </div> -->
@@ -82,4 +81,29 @@
 <!-- Initialize the search function -->
 <script>
     searchUsers('user-search-bar', 'friends-list');
+
+    async function removeFriend(friendshipId) {
+        console.log(friendshipId)
+        try {
+            const response = await fetch(`/friends/${friendshipId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {;
+                const refreshManager = new RefreshManager();
+                refreshManager.refreshFriends();
+            } else {
+                const error = await response.json();
+                alert(`Failed to remove friend: ${error.message}`);
+            }
+
+            // const result = await response.json();
+        } catch (err) {
+            console.error('Error removing friend:', err);
+            alert('An error occurred while removing friend.');
+        }
+    }
 </script>

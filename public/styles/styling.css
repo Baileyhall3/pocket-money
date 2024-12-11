@@ -308,16 +308,6 @@ p {
     color: #000;
 }
 
-.delete-btn {
-    cursor: pointer;
-    color: red;
-    margin-left: 10px;
-}
-
-.delete-btn:hover {
-    background-color: rgb(189, 0, 0);
-}
-
 ul {
     list-style-type: none;
     padding: 0;
@@ -488,7 +478,7 @@ li {
     padding-top: 10px;
 }
 
-.transaction:hover {
+.transaction-editable:hover {
     background-color: #e0e0e5;
     cursor: pointer;
 }

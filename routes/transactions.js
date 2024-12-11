@@ -28,9 +28,9 @@ router.post('/transactions/create', transactionsController.createTransaction, (r
     res.json({ success: true, account: req.account });
 });
 
-// router.delete('/transactions/:id', requireAuth, transactionsController.deleteTransaction, (req, res) => {
-//     res.status(200).json({ success: true, message: 'Account deleted successfully' });
-// });
+router.delete('/transactions/:id', requireAuth, transactionsController.deleteTransaction, (req, res) => {
+    res.status(200).json({ success: true, message: 'Transaction deleted successfully' });
+});
 
 router.get('/recurrentTransactions', 
     transactionsController.getRecurrentTransactionsForUser,

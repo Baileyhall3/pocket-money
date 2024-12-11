@@ -53,6 +53,9 @@ router.post('/login', async (req, res) => {
                 return res.status(400).json({ error: 'Passwords do not match' });
             }
         
+            // Get the base URL from the request
+            const baseUrl = `${req.protocol}://${req.get('host')}`;
+            
             const { data: user, error } = await supabase.auth.signUp({ 
                 email, 
                 password,
@@ -60,7 +63,8 @@ router.post('/login', async (req, res) => {
                     data: {
                         first_name,
                         last_name
-                    }
+                    },
+                    emailRedirectTo: `${baseUrl}/login`  // Add redirect URL here
                 }
             });
         

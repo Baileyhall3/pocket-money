@@ -127,6 +127,7 @@ exports.getFriends = async (req, res, next) => {
             });
 
             return {
+                friendshipId: friendship.id,
                 userId: friend.id,
                 userName: `${friend.first_name} ${friend.last_name}`,
                 created: friendship.created_at,
@@ -392,6 +393,37 @@ exports.updateFriendStatus = async (req, res, next) => {
         next();
     } catch (error) {
         console.error('Error updating friend status:', error);
+        next(error);
+    }
+};
+
+exports.removeFriend = async (req, res, next) => {
+    try {
+        const friendshipId = req.params.id;
+        // const userId = req.user.id;
+
+        const { data: existingFriendship, error: fetchError } = await supabase
+            .from('friends')
+            .select('*')
+            .eq('id', friendshipId)
+            // .eq('user_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!existingFriendship) {
+            return res.status(403).send('Not authorized to delete this friendship');
+        }
+
+        // Perform the deletion
+        const { error: deleteError } = await supabase
+            .from('friends')
+            .delete()
+            .eq('id', friendshipId);
+
+        if (deleteError) throw deleteError;
+
+        next();
+    } catch (error) {
         next(error);
     }
 };

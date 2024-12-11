@@ -41,4 +41,7 @@ router.put('/users/friends/update-status',
         res.status(200).json({ success: true, friend: req.friend });
 });
 
+router.delete('/friends/:id', requireAuth, userController.removeFriend);
+
+
 module.exports = router;

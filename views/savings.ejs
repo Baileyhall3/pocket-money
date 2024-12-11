@@ -14,11 +14,11 @@
                         <% pots.forEach((pot)=> { %>
                             <a href="/savings/pot/<%= pot.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
-                                    <%= pot.name %>
-                                    <!--Use an icon instead of displaying 'shared with.. etc'?-->
                                     <% if (pot.shared_with_id) { %>
-                                        - shared with <%= pot.shared_with_id %>
+                                        <i class="fa fa-handshake-o" title="This is a shared pot"></i>
+                                        | 
                                     <% } %>
+                                    <%= pot.name %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
                                     £<%= pot.actual_amount %> out of £<%= pot.target_amount %>
@@ -47,10 +47,11 @@
                         <% budgets.forEach((budget)=> { %>
                             <a href="/savings/budget/<%= budget.id %>" class="side-container" style="text-decoration: none; color: inherit;">
                                 <h5 style="font-size: 16px">
-                                    <%= budget.name %>
                                     <% if (budget.shared_with_id) { %>
-                                        - shared with <%= budget.shared_with_id %>
+                                        <i class="fa fa-handshake-o" title="This is a shared budget"></i>
+                                        | 
                                     <% } %>
+                                    <%= budget.name %>
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
                                     £<%= budget.actual_amount %> out of £<%= budget.target_amount %>

@@ -52,8 +52,27 @@
     </div>
 
     <% if (transactions.length > 0) { %>
-        <% transactions.forEach(transaction => { %>
-            <div class="transaction">
+        <% transactions.forEach((transaction, index) => { %>
+
+            <div id="transactionModal-<%= index %>" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal('transactionModal-<%= index %>')">&times;</span>
+                    <h2>
+                        <%= transaction.name %>
+                    </h2>
+                    <p>Amount: £<%- transaction.amount %></p>
+                    <p>Date Made: <%- DateUtils.toDateTime(transaction.date_made) %> </p>
+                    <!--Made by???-->
+                    <div class="modal-buttons">
+                        <button type="button" class="cancel-btn transaction-btn" onclick="closeModal('transactionModal-<%= index %>')">Cancel</button>
+                        <button type="button" class="transaction-btn delete-btn" onclick="deleteTransaction('<%- transaction.id %>')">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="transaction transaction-editable" onclick="openModal('transactionModal-<%- index %>')">
                 <div class="money-bar-header">
                     <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
                         <%= transaction.name %>
@@ -130,5 +149,28 @@
                 console.error(error);
                 alert('Failed to load transactions. Please try again.');
             });
+    }
+
+    async function deleteTransaction(transactionId) {
+        console.log(transactionId);
+        try {
+            const response = await fetch(`/transactions/${transactionId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                alert('Transaction deleted successfully!');
+                // window.location.href = '/accounts'
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete transaction: ${error.message}`);
+            }
+        } catch (err) {
+            console.error('Error deleting transaction:', err);
+            alert('An error occurred while deleting the transaction.');
+        }
     }
 </script>
