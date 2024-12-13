@@ -9,9 +9,9 @@
             <div class="dropdown">
                 <h3><a class="link" id="pot-actions-btn" href="#">Pot Actions</a></h3>
                 <div class="dropdown-content" id="pot-actions-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= pot.name %>' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= escape(pot.name) %>' })" href="#">Log Transaction</a>
                     <a href="#">Pot Details</a>
-                    <a onclick="openModal('deleteConfirmModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= pot.name %>' })" href="#">Delete Pot</a>
+                    <a onclick="openModal('deleteConfirmModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= escape(pot.name) %>' })" href="#">Delete Pot</a>
                 </div>
             </div>
         </div>

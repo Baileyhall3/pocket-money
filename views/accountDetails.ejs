@@ -9,9 +9,9 @@
             <div class="dropdown">
                 <h3><a class="link" href="#">Actions</a></h3>
                 <div class="dropdown-content" id="add-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account', name: '<%= account.name %>' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Log Transaction</a>
                     <a href="#">Account Details</a>
-                    <a onclick="openModal('deleteConfirmModal', { id: '<%= account.id %>', type: 'account', name: '<%= account.name %>' })" href="#">Remove Account</a>
+                    <a onclick="openModal('deleteConfirmModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Remove Account</a>
                 </div>
             </div>
         </div>
@@ -23,7 +23,7 @@
                         <h3>Account Type: <span><%= accountTypes[account.type] %></span></h3>
                     </div>
                     <% if (transactions.length > 0) { %>
-                        <!-- Make this show savings if account is savings account -->
+                        <!-- Make this show savings if account is savings account, line chart instead ???-->
                         <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
                             <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
                             <canvas id="accountTransactionsChart"></canvas>

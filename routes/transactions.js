@@ -25,7 +25,7 @@ router.get('/transactions',
 );
 
 router.post('/transactions/create', transactionsController.createTransaction, (req, res) => {
-    res.json({ success: true, account: req.account });
+    res.json({ success: true, transaction: req.transaction });
 });
 
 router.delete('/transactions/:id', requireAuth, transactionsController.deleteTransaction, (req, res) => {

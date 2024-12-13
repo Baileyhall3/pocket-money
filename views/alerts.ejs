@@ -54,10 +54,10 @@
                             </h2>
                             <p><%= alert.body %></p>
                             <p>Created: <%= DateUtils.toShortDate(alert.date) %> </p>
-                            <div class="input-row">
-                                <button type="button" class="btn delete-btn">Delete</button>
+                            <div class="modal-buttons-end">
+                                <button type="button" class="modal-footer-btn delete-btn">Delete</button>
                                 <% if (alert.type == 'Friend Request') { %>
-                                    <button type="button" class="btn" onclick="acceptFriendRequest(<%= JSON.stringify(alert) %>, <%= index %>)">Accept</button>
+                                    <button type="button" class="modal-footer-btn btn" onclick="acceptFriendRequest(<%= JSON.stringify(alert) %>, <%= index %>)">Accept</button>
                                 <% }; %>
                             </div>
                         </div>
