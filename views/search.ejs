@@ -5,13 +5,13 @@
         <i class="fa fa-search"></i>
         <input type="text" id="user-search-bar" placeholder="Search users...">
     </div>
-    <div class="friends-list" id="users-list">
+    <div class="friends-list" id="users-list" style="display: none;">
         <% 
             const usersExcludingCurrent = searchResults.filter(result => result.id != user.id);
         %>
         <% if (usersExcludingCurrent.length > 0) { %>
             <% usersExcludingCurrent.forEach((result, index) => { %>
-                <div class="friend-row" data-name="<%= result.first_name %>">
+                <div class="friend-row" data-name="<%= result.first_name + result.last_name %>">
                     <i class="fa fa-user friend-icon" style="display: flex;"></i>
                     <span class="friend-name">
                         <%= result.first_name + ' ' + result.last_name %>
@@ -20,7 +20,7 @@
                     <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
                         <div class="dropdown-content">
                             <a href="#" onclick="openModal('userModal-<%= index %>')">Details</a>
-                            <a href="#">Nudge</a>
+                            <a href="#" onclick="sendNudgeAlert(<%= JSON.stringify(result) %>)">Nudge</a>
                         </div>
                     </div>
     
@@ -41,7 +41,7 @@
                             <% } else { %>
                                 <p>This user has no other friends listed.</p>
                             <% } %>
-                            <button type="button" class="btn" onclick="sendFriendRequest(this, <%= index %>)" data-user='<%= JSON.stringify(result) %>'>Add Friend +</button>
+                            <button type="button" class="btn" onclick="sendFriendRequest(<%= JSON.stringify(result) %>, <%= index %>)">Add Friend +</button>
                         </div>
                     </div>
                 </div>
@@ -59,51 +59,14 @@
 
     const user = <%- JSON.stringify(user) %>;
 
-    async function sendFriendRequest(button, index) {
-        try {
-            const friend = JSON.parse(button.dataset.user);
-            const response = await fetch('/alerts/friend-request', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: friend.id, friendName: user.first_name + ' ' + user.last_name, sentById: user.id }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                console.log('Friend request alert created successfully:', result.message);
-                await createFriendRequest(friend, index);
-            } else {
-                console.error('Error creating friend request alert:', result.error);
-            }
-        } catch (error) {
-            console.error('Error sending friend request alert:', error);
-        }
+    async function sendFriendRequest(targetUser, index) {
+        const alertManager = new AlertManager();
+        await alertManager.sendFriendRequest(targetUser, user);
+        closeModal(`userModal-${index}`);
     }
 
-    async function createFriendRequest(friend, index) {
-        try {
-            const response = await fetch('/friends/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ friendId: friend.id }),
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                closeModal(`userModal-${index}`);
-                console.log('Friend created successfully:', result.message);
-            } else {
-                throw new Error(result.error || 'Failed to create friend.');
-            }
-        } catch (error) {
-            console.error('Error creating friend:', error);
-            return false;
-        }
+    async function sendNudgeAlert(targetUser) {
+        const alertManager = new AlertManager();
+        alertManager.sendNudgeAlert(targetUser, user);
     }
 </script>

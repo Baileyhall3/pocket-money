@@ -27,6 +27,22 @@ router.post('/alerts/friend-request', async (req, res) => {
     }
 });
 
+router.post('/alerts/nudge', async (req, res) => {
+    const { userId, friendName, sentById } = req.body;
+
+    if (!userId || !friendName || !sentById) {
+        return res.status(400).json({ error: 'Missing values' });
+    }
+
+    try {
+        await alertsController.createNudgeAlert(userId, friendName, sentById);
+        res.status(201).json({ success: true, message: 'Nudge alert created.' });
+    } catch (error) {
+        console.error('Error creating nudge alert:', error);
+        res.status(500).json({ success: false, error: 'Failed to create nudge alert.' });
+    }
+});
+
 router.delete('/alerts/:id', requireAuth, alertsController.deleteAlert, (req, res) => {
     res.status(200).json({ success: true, message: 'Account deleted successfully' });
 });

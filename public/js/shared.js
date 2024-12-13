@@ -11,10 +11,11 @@ function searchUsers(inputId, listId) {
 
         Array.from(friends).forEach(friend => {
             const friendName = friend.getAttribute('data-name').toLowerCase();
-            if (friendName.includes(filter)) {
-                friend.style.display = ''; // Show the friend
+            if (friendName.includes(filter) && filter) {
+                usersList.style.display = 'block';
+                friend.style.display = ''; 
             } else {
-                friend.style.display = 'none'; // Hide the friend
+                friend.style.display = 'none';
             }
         });
     });

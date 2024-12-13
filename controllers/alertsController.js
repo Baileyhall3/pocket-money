@@ -114,46 +114,66 @@ exports.deleteAlert = async (req, res, next) => {
 // Helper functions for creating specific types of alerts
 
 exports.createFriendRequestAlert = async (userId, friendName, sentById) => {
-    try {
-        await supabase
-            .from('alerts')
-            .insert([{
-                title: 'New Friend Request',
-                body: `${friendName} sent you a friend request.`,
-                type: AlertTypes.FRIEND_REQUEST,
-                user_id: userId,
-                unread: true,
-                received_from_id: sentById
-            }]);
-    } catch (error) {
-        console.error('Error creating friend request alert:', error);
+    if (!userId || !friendName || !sentById) {
+        throw new Error('Missing required fields for friend request alert');
     }
+
+    const { data, error } = await supabase
+        .from('alerts')
+        .insert([{
+            title: 'New Friend Request',
+            body: `${friendName} sent you a friend request.`,
+            type: AlertTypes.FRIEND_REQUEST,
+            user_id: userId,
+            unread: true,
+            received_from_id: sentById
+        }])
+        .select();
+
+    if (error) {
+        console.error('Error creating friend request alert:', error);
+        throw error; // Propagate the error instead of just logging it
+    }
+
+    return data;
 };
 
 exports.createTransactionAlert = async (userId, accountName) => {
-    try {
-        await supabase
-            .from('alerts')
-            .insert([{
-                title: 'Transaction Made',
-                body: `New transaction logged for ${accountName}. See here`,
-                type: AlertTypes.SPENDING_ACTIVITY,
-                user_id: userId,
-                unread: true
-            }]);
-    } catch (error) {
-        console.error('Error creating transaction alert:', error);
+    if (!userId || !accountName) {
+        throw new Error('Missing required fields for transaction alert');
     }
+
+    const { data, error } = await supabase
+        .from('alerts')
+        .insert([{
+            title: 'Transaction Made',
+            body: `New transaction logged for ${accountName}. See here`,
+            type: AlertTypes.SPENDING_ACTIVITY,
+            user_id: userId,
+            unread: true
+        }])
+        .select();
+
+    if (error) {
+        console.error('Error creating transaction alert:', error);
+        throw error;
+    }
+
+    return data;
 };
 
 exports.createMilestoneAlert = async (userId, potName, targetAmount, currentAmount) => {
+    if (!userId || !potName || !targetAmount || currentAmount === undefined) {
+        throw new Error('Missing required fields for milestone alert');
+    }
+
     try {
         const percentage = (currentAmount / targetAmount) * 100;
         const message = percentage >= 100
             ? `You just reached your £${targetAmount} savings goal for ${potName}! Good job!`
             : `You're ${Math.floor(percentage)}% of the way to your saving goal of £${targetAmount} for ${potName}! Keep up the good work!`;
 
-        await supabase
+        const { data, error } = await supabase
             .from('alerts')
             .insert([{
                 title: percentage >= 100 ? 'Savings Goal Reached!' : 'Savings Milestone!',
@@ -161,40 +181,62 @@ exports.createMilestoneAlert = async (userId, potName, targetAmount, currentAmou
                 type: AlertTypes.MILESTONE,
                 user_id: userId,
                 unread: true
-            }]);
+            }])
+            .select();
+
+        if (error) throw error;
+        return data;
     } catch (error) {
         console.error('Error creating milestone alert:', error);
+        throw error;
     }
 };
 
 exports.createWarningAlert = async (userId, accountName, balance) => {
-    try {
-        await supabase
-            .from('alerts')
-            .insert([{
-                title: 'Account Warning',
-                body: `You have less than £${balance} in ${accountName} remaining.`,
-                type: AlertTypes.WARNING,
-                user_id: userId,
-                unread: true
-            }]);
-    } catch (error) {
-        console.error('Error creating warning alert:', error);
+    if (!userId || !accountName || balance === undefined) {
+        throw new Error('Missing required fields for warning alert');
     }
+
+    const { data, error } = await supabase
+        .from('alerts')
+        .insert([{
+            title: 'Account Warning',
+            body: `You have less than £${balance} in ${accountName} remaining.`,
+            type: AlertTypes.WARNING,
+            user_id: userId,
+            unread: true
+        }])
+        .select();
+
+    if (error) {
+        console.error('Error creating warning alert:', error);
+        throw error;
+    }
+
+    return data;
 };
 
-exports.createNudgeAlert = async (userId, fromUserName) => {
-    try {
-        await supabase
-            .from('alerts')
-            .insert([{
-                title: 'You\'ve been nudged!',
-                body: `${fromUserName} just nudged you.`,
-                type: AlertTypes.NUDGE,
-                user_id: userId,
-                unread: true
-            }]);
-    } catch (error) {
-        console.error('Error creating nudge alert:', error);
+exports.createNudgeAlert = async (userId, friendName, sentById) => {
+    if (!userId || !friendName || !sentById) {
+        throw new Error('Missing required fields for nudge alert');
     }
+
+    const { data, error } = await supabase
+        .from('alerts')
+        .insert([{
+            title: 'You\'ve been nudged!',
+            body: `${friendName} just nudged you.`,
+            type: AlertTypes.NUDGE,
+            user_id: userId,
+            unread: true,
+            received_from_id: sentById
+        }])
+        .select();
+
+    if (error) {
+        console.error('Error creating nudge alert:', error);
+        throw error;
+    }
+
+    return data;
 };
