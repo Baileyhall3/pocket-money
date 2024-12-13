@@ -22,7 +22,7 @@ function openModal(modalId, itemData = {}) {
 
         const categoryErrorMessage = document.getElementById('category-error-message');
         if (categoryErrorMessage) {
-            errorMessage.textContent = '';
+            categoryErrorMessage.textContent = '';
         }
 
         if (modalId === 'deleteConfirmModal' && itemData) {
@@ -354,7 +354,10 @@ async function createTransaction(event, selCategory, item) {
 
 async function deleteItem(itemData) {
     try {
-        const response = await fetch(`/${itemData.type}s/${itemData.id}`, {
+        // Ensure proper pluralization
+        const endpoint = itemData.type === 'budget' || itemData.type === 'pot' ? `${itemData.type}s` : 'accounts';
+
+        const response = await fetch(`/${endpoint}/${itemData.id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -362,8 +365,8 @@ async function deleteItem(itemData) {
         });
 
         if (response.ok) {
-            alert(`${itemData.type} deleted successfully!`);
-            window.location.href = '/' + (itemData.type == 'account' ? 'accounts' : 'savings')
+            alert(`${itemData.type.charAt(0).toUpperCase() + itemData.type.slice(1)} deleted successfully!`);
+            window.location.href = `/${itemData.type === 'account' ? 'accounts' : 'savings'}`;
         } else {
             const error = await response.json();
             alert(`Failed to delete item: ${error.message}`);
@@ -373,6 +376,7 @@ async function deleteItem(itemData) {
         alert('An error occurred while deleting the item.');
     }
 }
+
 
 function clearValues(modalId) {
     const modal = document.getElementById(modalId);
