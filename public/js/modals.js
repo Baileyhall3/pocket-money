@@ -157,7 +157,7 @@ function openModal(modalId, itemData = {}) {
                     transactionDetails.style.display = 'block';
                 }
             } else {
-                errorMessage.textContent = 'Select a category before continuing.';
+                categoryErrorMessage.textContent = 'Select a category before continuing.';
             }
         };
 

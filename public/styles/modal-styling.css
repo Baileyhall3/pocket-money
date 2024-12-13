@@ -104,17 +104,6 @@
 
   .delete-btn {
     background-color: red;
-    width: 15%;
-    padding: 10px;
-    font-size: 16px;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    margin: 5px;
-    display: block;
-    margin-left: 0;
-
   }
 
   .delete-btn:hover {
@@ -123,6 +112,13 @@
 
   .cancel-btn {
     background-color: rgb(148, 148, 148);
+  }
+
+  .cancel-btn:hover {
+    background-color: rgb(110, 110, 110);
+  }
+
+  .modal-footer-btn {
     width: 15%;
     padding: 10px;
     font-size: 16px;
@@ -133,15 +129,18 @@
     display: block;
     margin: 5px;
     margin-left: 0;
-  }
-
-  .cancel-btn:hover {
-    background-color: rgb(110, 110, 110);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
   }
 
   .transaction-btn {
     margin: 20px;
     margin-left: 2vh;
+  }
+
+  .modal-header h2 {
+    margin-top: 0;
   }
 
   .back-btn {
@@ -345,6 +344,10 @@ to {
 
   .category span {
     font-size: 11px;
+  }
+
+  .modal-footer-btn {
+    width: 100%;
   }
 
 }

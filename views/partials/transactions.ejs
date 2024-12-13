@@ -57,15 +57,15 @@
             <div id="transactionModal-<%= index %>" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal('transactionModal-<%= index %>')">&times;</span>
-                    <h2>
-                        <%= transaction.name %>
-                    </h2>
+                    <div class="modal-header">
+                        <h2><%= transaction.name %></h2>
+                    </div>
                     <p>Amount: £<%- transaction.amount %></p>
                     <p>Date Made: <%- DateUtils.toDateTime(transaction.date_made) %> </p>
                     <!--Made by???-->
                     <div class="modal-buttons-end">
-                        <button type="button" class="cancel-btn" onclick="closeModal('transactionModal-<%= index %>')">Cancel</button>
-                        <button type="button" class=" delete-btn" onclick="deleteTransaction('<%- transaction.id %>')">
+                        <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('transactionModal-<%= index %>')">Cancel</button>
+                        <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction('<%- transaction.id %>')">
                             Delete
                         </button>
                     </div>
