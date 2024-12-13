@@ -41,7 +41,14 @@
                             <% } else { %>
                                 <p>This user has no other friends listed.</p>
                             <% } %>
-                            <button type="button" class="btn" onclick="sendFriendRequest(this, <%= index %>)" data-user='<%= JSON.stringify(result) %>'>Add Friend +</button>
+                                <button 
+                                    type="button" 
+                                    class="btn <%= result.isFriend ? 'disabled' : '' %>" 
+                                    onclick="<%= result.isFriend ? '' : 'sendFriendRequest(this, ' + index + ')'%>" 
+                                    data-user='<%= JSON.stringify(result) %>' 
+                                    <%= result.isFriend ? 'disabled title="Friend request already sent."' : '' %>>
+                                    Add Friend +
+                                </button>
                         </div>
                     </div>
                 </div>
@@ -60,6 +67,7 @@
     const user = <%- JSON.stringify(user) %>;
 
     async function sendFriendRequest(button, index) {
+        if (button.disabled) return;
         try {
             const friend = JSON.parse(button.dataset.user);
             const response = await fetch('/alerts/friend-request', {
@@ -84,6 +92,7 @@
     }
 
     async function createFriendRequest(friend, index) {
+        console.log(friend)
         try {
             const response = await fetch('/friends/create', {
                 method: 'POST',
@@ -94,6 +103,8 @@
             });
 
             const result = await response.json();
+
+            console.log(result)
 
             if (response.ok && result.success) {
                 closeModal(`userModal-${index}`);

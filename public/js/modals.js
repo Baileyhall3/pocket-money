@@ -20,6 +20,11 @@ function openModal(modalId, itemData = {}) {
             errorMessage.textContent = '';
         }
 
+        const categoryErrorMessage = document.getElementById('category-error-message');
+        if (categoryErrorMessage) {
+            errorMessage.textContent = '';
+        }
+
         if (modalId === 'deleteConfirmModal' && itemData) {
             const messageElement = modal.querySelector("#delete-message");
             if (messageElement) {
@@ -72,7 +77,7 @@ function openModal(modalId, itemData = {}) {
 
                 selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
 
-                // categoryElements.forEach(cat => cat.classList.remove("selected"));
+                categoryElements.forEach(cat => cat.classList.remove("selected"));
                 this.classList.add("selected");
             });
         });
@@ -134,8 +139,7 @@ function openModal(modalId, itemData = {}) {
         }
 
         window.switchViews = function (target) {
-            const errorMessage = document.getElementById('category-error-message');
-            errorMessage.textContent = '';
+            categoryErrorMessage.textContent = '';
             if (selectedCategory) {
                 selectedCategoryElement.querySelector("i").className = selectedCategory.icon;
                 selectedCategoryElement.querySelector("i").title = selectedCategory.name;
@@ -337,15 +341,6 @@ async function createTransaction(event, selCategory, item) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            const accountUpdateResponse = await updateItemBalance(
-                item.id,
-                item.type,
-                data.type === 'income' ? data.amount : -data.amount
-            );
-
-            if (!accountUpdateResponse.ok) {
-                throw new Error('Failed to update account balance.');
-            }
             return true;
         } else {
             throw new Error(result.error || 'Failed to create transaction.');
@@ -357,71 +352,14 @@ async function createTransaction(event, selCategory, item) {
     }
 }
 
-async function updateItemBalance(itemId, type, amountChange) {
-    try {
-        let response = null;
-        if (type == 'account') {
-            response = await fetch(`/accounts/${itemId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ balanceChange: amountChange }),
-            });
-        }
-        else if (type == 'budget') {
-            response = await fetch(`/budgets/${itemId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ actualAmountChange: amountChange }),
-            });
-        }
-        else if (type == 'pot') {
-            response = await fetch(`/pots/${itemId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ actualAmountChange: amountChange }),
-            });
-        }
-
-        return response;
-    } catch (error) {
-        console.error('Error updating account balance:', error);
-        return { ok: false };
-    }
-}
-
 async function deleteItem(itemData) {
     try {
-        let response = null;
-        if (itemData.type == 'budget') {
-            response = await fetch(`/budgets/${itemData.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
-        else if (itemData.type == 'pot') {
-            response = await fetch(`/pots/${itemData.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
-        else if (itemData.type == 'account') {
-            response = await fetch(`/accounts/${itemData.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-        }
+        const response = await fetch(`/${itemData.type}s/${itemData.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
         if (response.ok) {
             alert(`${itemData.type} deleted successfully!`);
