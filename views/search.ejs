@@ -60,13 +60,11 @@
     const user = <%- JSON.stringify(user) %>;
 
     async function sendFriendRequest(targetUser, index) {
-        const alertManager = new AlertManager();
         await alertManager.sendFriendRequest(targetUser, user);
         closeModal(`userModal-${index}`);
     }
 
     async function sendNudgeAlert(targetUser) {
-        const alertManager = new AlertManager();
         alertManager.sendNudgeAlert(targetUser, user);
     }
 </script>

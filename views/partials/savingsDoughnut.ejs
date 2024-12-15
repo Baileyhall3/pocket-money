@@ -1,0 +1,11 @@
+<canvas id="<%= chartId %>"></canvas>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartId = '<%= chartId %>';
+        const actual = <%= actualAmount %>;
+        const total = <%= totalAmount %>;
+
+        refreshManager.createDoughnutChart(chartId, actual, total)
+
+    });
+</script>

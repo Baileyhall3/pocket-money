@@ -240,3 +240,28 @@ exports.createNudgeAlert = async (userId, friendName, sentById) => {
 
     return data;
 };
+
+exports.createSharedAlert = async (userId, friendName, item) => {
+    if (!userId || !friendName || !item) {
+        throw new Error('Missing required fields for shared alert');
+    }
+
+    const { data, error } = await supabase
+        .from('alerts')
+        .insert([{
+            title: `New Shared ${item.type}`,
+            body: `${friendName} just shared a ${item.type.toLowerCase()} with you.`,
+            type: AlertTypes.SHARED,
+            user_id: userId,
+            unread: true,
+            shared_item_id: item.id,
+        }])
+        .select();
+
+    if (error) {
+        console.error('Error creating shared alert:', error);
+        throw error;
+    }
+
+    return data;
+};

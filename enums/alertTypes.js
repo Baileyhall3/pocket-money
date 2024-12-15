@@ -4,6 +4,7 @@ const AlertTypes = Object.freeze({
     WARNING: "Warning",
     MILESTONE: "Milestone",
     NUDGE: "Nudge",
+    SHARED: "Shared",
 });
 
 module.exports = AlertTypes;

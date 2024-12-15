@@ -256,4 +256,38 @@ router.get('/savings/budget/:id',
     }
 );
 
+router.get('/savings/pot-data/:id', 
+    potsController.getPotById,
+    (req, res) => {
+        if (!req.pot) {
+            return res.status(404).json({ error: 'Pot not found' });
+        }
+
+        res.json({
+            id: req.pot.id,
+            name: req.pot.name,
+            actual_amount: req.pot.actual_amount,
+            target_amount: req.pot.target_amount,
+            shared_with_id: req.pot.shared_with_id
+        });
+    }
+);
+
+router.get('/savings/budget-data/:id', 
+    budgetsController.getBudgetById,
+    (req, res) => {
+        if (!req.budget) {
+            return res.status(404).json({ error: 'Pot not found' });
+        }
+
+        res.json({
+            id: req.budget.id,
+            name: req.budget.name,
+            actual_amount: req.budget.actual_amount,
+            target_amount: req.budget.target_amount,
+            shared_with_id: req.budget.shared_with_id
+        });
+    }
+);
+
 module.exports = router;

@@ -44,7 +44,7 @@
                                     <div class="dropdown-content">
                                         <a href="#" onclick="openModal('friendModal-<%= index %>')">View Friends</a>
                                         <a href="#">Nudge</a>
-                                        <a href="#" class="remove-friend" onclick="removeFriend('<%= friend.friendshipId %>')" >Remove Friend</a>
+                                        <a href="#" class="remove-friend" onclick="openModal('deleteFriendModal-<%= index %>')" >Remove Friend</a>
                                     </div>
                                 </div>
                 
@@ -65,6 +65,24 @@
                                         <% } %>
                                     </div>
                                 </div>
+                                
+                                <!--Confirm Delete for friend-->
+                                <div id="deleteFriendModal-<%= index %>" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeModal('deleteFriendModal-<%= index %>')">&times;</span>
+                                        <div class="modal-header">
+                                            <h2>Please Confirm</h2>
+                                        </div>
+                                        <p>Are you sure you want to remove <%= friend.userName %> as a friend?</p>
+                                        <p>Shared items with this user will no longer be visible. </p>
+                                        <div class="modal-buttons-end">
+                                            <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('deleteFriendModal-<%= index %>')">Cancel</button>
+                                            <button type="button" class="modal-footer-btn delete-btn" onclick="removeFriend('<%= friend.friendshipId %>', <%= index %>)">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         <% }); %>
                     <% } else { %>
@@ -83,7 +101,6 @@
     searchUsers('user-search-bar', 'friends-list');
 
     async function removeFriend(friendshipId) {
-        console.log(friendshipId)
         try {
             const response = await fetch(`/friends/${friendshipId}`, {
                 method: 'DELETE',
@@ -91,19 +108,26 @@
                     'Content-Type': 'application/json',
                 },
             });
-
             if (response.ok) {;
-                const refreshManager = new RefreshManager();
                 refreshManager.refreshFriends();
+                alertManager.showAlert({
+                    title: 'Friend Removed Successfully.',
+                    type: 'success',
+                });
             } else {
                 const error = await response.json();
-                alert(`Failed to remove friend: ${error.message}`);
+                alertManager.showAlert({
+                    title: `Failed to remove friend: ${error.message}`,
+                    type: 'error-alert',
+                });
             }
-
-            // const result = await response.json();
         } catch (err) {
             console.error('Error removing friend:', err);
-            alert('An error occurred while removing friend.');
+            alertManager.showAlert({
+                    title: 'An error occurred while removing friend.',
+                    body: `Error: ${err}`,
+                    type: 'error-alert',
+                });
         }
     }
 </script>

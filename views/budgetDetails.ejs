@@ -19,24 +19,28 @@
             <div class="charts-wrapper">
                 <div class="balance-container">
                     <div class="chart-container">
-                        <div id="money-bar">
+                        <!-- <div id="money-bar">
                             <div class="money-pot actual"></div>
                             <div class="money-pot remaining"></div>
-                        </div>
+                        </div> -->
+                        <%- include('partials/savingsDoughnut', { 
+                            chartId: `budget-chart-${budget.id}`, 
+                            actualAmount: budget.actual_amount, 
+                            totalAmount: budget.target_amount 
+                        }) %>
                         <h3 id="title-display">Spending Performance: £<%= budget.actual_amount + " / £" + budget.target_amount %></h3>
-
                         <h3>Budget Period: 
                             <span class="time-period-dates">
                                 <%= DateUtils.toLongDate(budget.start_date) + (budget.end_date ? ' - ' + DateUtils.toLongDate(budget.end_date) : '') %>
                             </span>
                         </h3>
                     </div>
-                    <% if (transactions.length > 0) { %>
+                    <!-- <% if (transactions.length > 0) { %>
                         <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
                             <h3>Spending Over the Last 7 Days</h3>
                             <canvas id="recentSpendingChart"></canvas>
                         </div>
-                    <% } %>
+                    <% } %> -->
                 </div>
                 
                 <% if (transactions.length > 0) { %>
@@ -85,66 +89,42 @@
     document.addEventListener('DOMContentLoaded', function() {
         const budget = <%- JSON.stringify(budget) %>;
 
-        const actualAmount = budget.actual_amount <= budget.target_amount ? budget.actual_amount : budget.target_amount;
-        const targetAmount = budget.target_amount;
-
-        // Calculate percentages
-        const actualPercentage = (actualAmount / targetAmount) * 100;
-        const remainingPercentage = 100 - actualPercentage;
-
-        // Set widths dynamically based on calculated percentages
-        document.querySelector('.money-pot.actual').style.width = actualPercentage + '%';
-        document.querySelector('.money-pot.remaining').style.width = remainingPercentage + '%';
-
-        // Set colors based on percentage thresholds
-        if (actualPercentage > 75) {
-            document.querySelector('.money-pot.actual').style.backgroundColor = '#45a049'; // green
-        } else if (actualPercentage > 25) {
-            document.querySelector('.money-pot.actual').style.backgroundColor = '#FFA500'; // amber
-        } else {
-            document.querySelector('.money-pot.actual').style.backgroundColor = '#FF0000'; // red
-        }
-
-        const transactions = <%- JSON.stringify(transactions) %>; // Get transaction data
+        const transactions = <%- JSON.stringify(transactions) %>;
         
         if (transactions.length > 0) {
 
-            // Get the last 7 days in DD/MM/YYYY format
-            const labels = getLast7Days();
+            // const labels = getLast7Days();
 
-            // Prepare the data for the chart
-            const spendingData = labels.map(date => {
-                // Sum up the transactions for each specific date
-                const dailyTotal = transactions
-                    .filter(transaction => transaction.dateMade === date) // Compare against the formatted date
-                    .reduce((total, transaction) => total + transaction.amount, 0);
-                return dailyTotal;
-            });
+            // const spendingData = labels.map(date => {
+            //     const dailyTotal = transactions
+            //         .filter(transaction => transaction.dateMade === date)
+            //         .reduce((total, transaction) => total + transaction.amount, 0);
+            //     return dailyTotal;
+            // });
 
-            // Chart configuration
-            const ctx = document.getElementById('recentSpendingChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels, // Last 7 days
-                    datasets: [{
-                        label: 'Spending',
-                        data: spendingData, // Dynamic spending data
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                        }
-                    }
-                }
-            });
+            // const ctx = document.getElementById('recentSpendingChart').getContext('2d');
+            // new Chart(ctx, {
+            //     type: 'bar',
+            //     data: {
+            //         labels: labels, 
+            //         datasets: [{
+            //             label: 'Spending',
+            //             data: spendingData,
+            //             backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            //             borderColor: 'rgba(54, 162, 235, 1)',
+            //             borderWidth: 1
+            //         }]
+            //     },
+            //     options: {
+            //         responsive: true,
+            //         maintainAspectRatio: false,
+            //         scales: {
+            //             y: {
+            //                 beginAtZero: true,
+            //             }
+            //         }
+            //     }
+            // });
 
             const categorySpending = <%- JSON.stringify(categorySpending) %>; 
 

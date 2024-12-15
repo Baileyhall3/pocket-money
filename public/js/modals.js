@@ -13,8 +13,6 @@ function openModal(modalId, itemData = {}) {
 
         attachCloseEvents();
 
-        const refreshManager = new RefreshManager();
-
         const errorMessage = modal.querySelector('#submit-error-message');
         if (errorMessage) {
             errorMessage.textContent = '';
@@ -209,15 +207,14 @@ function validateForm(event, form, requiredFieldIds) {
 
 async function createAccount(event) {
     const formData = new FormData(event.target);
+    const selectedPartner = formData.get('joiningPartner');
     const data = {
         name: formData.get('accountName'),
         type: formData.get('accountType'),
         balance: parseFloat(formData.get('balance') || 0),
-        sharedWithId: formData.get('joiningPartner') || null,
+        sharedWithId: selectedPartner ? JSON.parse(selectedPartner).userId : null,
         isActive: formData.get('defaultAccount') || false,
     };
-
-    console.log(data)
 
     try {
         const response = await fetch('/accounts/create', {
@@ -231,6 +228,10 @@ async function createAccount(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            if (result.account.shared_with_id) {
+                const parsedPartner = JSON.parse(selectedPartner)
+                await sendSharedAlert(result, result.account, parsedPartner);
+            }
             return true;
         } else {
             throw new Error(result.error || 'Failed to create account.');
@@ -399,4 +400,11 @@ function clearValues(modalId) {
         const errorMessages = form.querySelectorAll('.error-message');
         errorMessages.forEach(msg => msg.textContent = '');
     }
+}
+
+async function sendSharedAlert(itemType, item, parsedPartner) {
+    const targetPersonId = item.shared_with_id;
+    const userName = parsedPartner.userName;
+    const formattedItem = { id: item.id, type: itemType.account ? 'Account' : (itemType.budget ? 'Budget' : 'Pot')}
+    await alertManager.sendSharedAlert(targetPersonId, userName, formattedItem);
 }

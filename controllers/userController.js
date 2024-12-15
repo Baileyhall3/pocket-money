@@ -400,13 +400,13 @@ exports.updateFriendStatus = async (req, res, next) => {
 exports.removeFriend = async (req, res, next) => {
     try {
         const friendshipId = req.params.id;
-        // const userId = req.user.id;
+        const userId = req.user.id; // Assuming you have the authenticated user in `req.user.id`
 
+        // Fetch the friendship to get the IDs involved (both `user_id` and `friend_id`)
         const { data: existingFriendship, error: fetchError } = await supabase
             .from('friends')
             .select('*')
             .eq('id', friendshipId)
-            // .eq('user_id', userId)
             .single();
 
         if (fetchError) throw fetchError;
@@ -414,7 +414,12 @@ exports.removeFriend = async (req, res, next) => {
             return res.status(403).send('Not authorized to delete this friendship');
         }
 
-        // Perform the deletion
+        // Identify which friend's ID to use for shared items (user_id or friend_id)
+        const friendId = (existingFriendship.user_id === userId) 
+            ? existingFriendship.friend_id 
+            : existingFriendship.user_id;
+
+        // Remove the friendship record
         const { error: deleteError } = await supabase
             .from('friends')
             .delete()
@@ -422,8 +427,58 @@ exports.removeFriend = async (req, res, next) => {
 
         if (deleteError) throw deleteError;
 
+        // Now, handle updating shared items for both cases:
+        // 1. Items where the user is the owner, and friend is `shared_with_id`
+        // 2. Items where the friend is the owner, and user is `shared_with_id`
+
+        // 1. Update items where the user is the owner, and the friend is `shared_with_id`
+        for (const table of ['accounts', 'pots', 'budgets']) {
+            const { data: items, error: fetchItemsError } = await supabase
+                .from(table)
+                .select('id, user_id, shared_with_id')
+                .eq('shared_with_id', friendId);
+
+            if (fetchItemsError) throw fetchItemsError;
+
+            // Only update items if the user is the owner
+            for (const item of items) {
+                if (item.user_id === userId) {
+                    const { error: updateError } = await supabase
+                        .from(table)
+                        .update({ shared_with_id: null })
+                        .eq('id', item.id);
+
+                    if (updateError) throw updateError;
+                }
+            }
+        }
+
+        // 2. Update items where the friend is the owner, and the user is `shared_with_id`
+        for (const table of ['accounts', 'pots', 'budgets']) {
+            const { data: items, error: fetchItemsError } = await supabase
+                .from(table)
+                .select('id, user_id, shared_with_id')
+                .eq('shared_with_id', userId);
+
+            if (fetchItemsError) throw fetchItemsError;
+
+            // Only update items if the friend is the owner
+            for (const item of items) {
+                if (item.user_id === friendId) {
+                    const { error: updateError } = await supabase
+                        .from(table)
+                        .update({ shared_with_id: null })
+                        .eq('id', item.id);
+
+                    if (updateError) throw updateError;
+                }
+            }
+        }
+
+        // Proceed to the next middleware (if any)
         next();
     } catch (error) {
         next(error);
     }
 };
+

@@ -23,7 +23,11 @@
                                 <h5 style="font-size: 18px; color: #45a049;">
                                     £<%= pot.actual_amount %> out of £<%= pot.target_amount %>
                                 </h5>
-                                <canvas id="pot-chart-<%= pot.id %>"></canvas>
+                                <%- include('partials/savingsDoughnut', { 
+                                    chartId: `pot-chart-${pot.id}`, 
+                                    actualAmount: pot.actual_amount, 
+                                    totalAmount: pot.target_amount 
+                                }) %>
                             </a>
                         <% }); %>
                     <% } else { %>
@@ -55,8 +59,12 @@
                                 </h5>
                                 <h5 style="font-size: 18px; color: #45a049;">
                                     £<%= budget.actual_amount %> out of £<%= budget.target_amount %>
-                                </h5>
-                                <canvas id="budget-chart-<%= budget.id %>"></canvas>
+                                </h5>                
+                                <%- include('partials/savingsDoughnut', { 
+                                    chartId: `budget-chart-${budget.id}`, 
+                                    actualAmount: budget.actual_amount, 
+                                    totalAmount: budget.target_amount 
+                                }) %>
                             </a>
                         <% }); %>
                     <% } else { %>
@@ -69,96 +77,3 @@
         </div>
     </div>
 </div>
-
-<script>
-
-    window.potCharts = {};
-    window.budgetCharts = {};
-
-    function createDoughnutChart(chartId, actual, total) {
-        const ctx = document.getElementById(chartId).getContext('2d');
-        const percentage = (actual / total) * 100;
-        let actualColor;
-
-        if (!ctx) {
-            console.error(`Canvas with ID ${chartId} not found.`);
-            return;
-        }
-
-        // Determine the color of the "actual" section based on the percentage
-        if (percentage > 75) {
-            actualColor = '#45a049'; // green
-        } else if (percentage > 25 && percentage <= 75) {
-            actualColor = '#FFA500'; // amber
-        } else {
-            actualColor = '#FF0000'; // red
-        }
-
-        // Create the doughnut chart
-        const chart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [actual, total - actual], // actual vs remaining
-                    backgroundColor: [actualColor, '#C0C0C0'], // actual and remaining colors
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                cutout: '70%', // Control the size of the doughnut hole
-                plugins: {
-                    legend: {
-                        display: false // Hide the legend
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                const label = tooltipItem.dataIndex === 0 ? 'Actual' : 'Remaining';
-                                return `${label}: £${tooltipItem.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        return chart;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initPotCharts();
-        initBudgetCharts();
-    });
-
-    window.initPotCharts = async function () {
-        const pots = <%- JSON.stringify(pots) %>;
-
-        // Destroy existing charts
-        Object.values(window.potCharts).forEach(chart => chart.destroy());
-        window.potCharts = {}; // Clear the reference storage
-
-        pots.forEach(pot => {
-            const chart = createDoughnutChart(`pot-chart-${pot.id}`, pot.actual_amount, pot.target_amount);
-            if (chart) {
-                window.potCharts[pot.id] = chart; // Store the chart instance
-            }
-        });
-    };
-
-    window.initBudgetCharts = async function () {
-        const budgets = <%- JSON.stringify(budgets) %>;
-
-        // Destroy existing charts
-        Object.values(window.budgetCharts).forEach(chart => chart.destroy());
-        window.budgetCharts = {}; // Clear the reference storage
-
-        budgets.forEach(budget => {
-            const chart = createDoughnutChart(`budget-chart-${budget.id}`, budget.actual_amount, budget.target_amount);
-            if (chart) {
-                window.budgetCharts[budget.id] = chart; // Store the chart instance
-            }
-        });
-    };
-
-</script>

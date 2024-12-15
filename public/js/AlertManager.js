@@ -124,6 +124,29 @@ class AlertManager {
         }
     }
 
+    async sendSharedAlert(targetPersonId, userName, item) {
+        try {
+            const response = await fetch('/alerts/shared', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: targetPersonId, friendName: userName, item: item }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('Shared created successfully:', result.message);
+            } else {
+                console.error('Error creating shared alert:', result.error);
+            }
+        } catch (error) {
+            this.networkError(); 
+            console.error('Error sending shared alert:', error);
+        }
+    }
+
     networkError() {
         this.showAlert({
             title: 'Network Error',
@@ -133,4 +156,5 @@ class AlertManager {
     }
 }
 
-window.AlertManager = AlertManager;
+const alertManager = new AlertManager();
+window.alertManager = alertManager;

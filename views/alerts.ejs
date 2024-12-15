@@ -59,6 +59,9 @@
                                 <% if (alert.type == 'Friend Request') { %>
                                     <button type="button" class="modal-footer-btn btn" onclick="acceptFriendRequest(<%= JSON.stringify(alert) %>, <%= index %>)">Accept</button>
                                 <% }; %>
+                                <% if (alert.type == 'Shared') { %>
+                                    <button type="button" class="modal-footer-btn btn" onclick="redirectToItemPage(<%= JSON.stringify(alert) %>)">View</button>
+                                <% }; %>
                             </div>
                         </div>
                     </div>
@@ -115,12 +118,26 @@
             }
 
             const result = await response.json();
-            console.log('Friend status updated:', result);
             closeModal(`alertModal-${index}`)
-            // Refresh the alerts after accepting
             window.location.reload();
+            alertManager.showAlert({
+                    title: `Friend Request Accepted!`,
+                    type: 'success',
+                });
         } catch (error) {
             console.error('Error toggling friend status:', error);
+        }
+    }
+
+    function redirectToItemPage(alert) {
+        if (alert.title.includes('Account')) {
+            window.location.href = `/accounts/${alert.shared_item_id}`;
+        }
+        else if (alert.title.includes('Budget')) {
+            window.location.href = `/savings/budget/${alert.shared_item_id}`;
+        }
+        else if (alert.title.includes('Pot')) {
+            window.location.href = `/savings/pot/${alert.shared_item_id}`;
         }
     }
 
@@ -134,7 +151,6 @@
             });
 
             if (response.ok) {
-                const refreshManager = new RefreshManager();
                 refreshManager.refreshAlerts();
             } else {
                 const error = await response.json();

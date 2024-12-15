@@ -19,7 +19,7 @@
                 </div>
                 <div class="modal-item">
                     <label for="balance">Balance</label>
-                    <input class="modal-input" type="number" min="0.00" id="balance" name="balance" required value="0">
+                    <input class="modal-input" type="number" min="0.00" id="balance" name="balance" required value="0.00">
                 </div>
             </div>
         
@@ -36,7 +36,7 @@
                 <option value="">--- Select a joining partner ---</option>
                 <% if (friends.length > 0) { %>
                     <% friends.forEach((friend, index) => { %>
-                        <option value="<%- friend.userId %>"><%= friend.userName %></option>
+                        <option value="<%= JSON.stringify(friend) %>"><%= friend.userName %></option>
                     <% }); %>
                 <% } %>
             </select>

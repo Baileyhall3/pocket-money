@@ -31,7 +31,7 @@
             <div class="transaction-sort input-col">
                 <i class="fa fa-sort"></i>
                 <select id="sort-transaction">
-                    <option value="date">Date</option>
+                    <option value="date" selected>Date</option>
                     <option value="amount">Amount</option>
                     <option value="name">Name</option>
                 </select>
@@ -65,7 +65,7 @@
                     <!--Made by???-->
                     <div class="modal-buttons-end">
                         <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('transactionModal-<%= index %>')">Cancel</button>
-                        <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction('<%- transaction.id %>')">
+                        <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction(<%= JSON.stringify(transaction) %>, <%= index %>)">
                             Delete
                         </button>
                     </div>
@@ -109,6 +109,8 @@
     <% } %>
 </div>
 
+<script src="/js/shared.js"></script>
+
 <script>
 
     function toggleFilters() {
@@ -151,10 +153,18 @@
             });
     }
 
-    async function deleteTransaction(transactionId) {
-        console.log(transactionId);
+    async function deleteTransaction(transaction, index) {
+        let item = {}
+        if (transaction.budget_id) {
+            item = { id: transaction.budget_id, type: 'budget' }
+        } else if (transaction.pot_id) {
+            item = { id: transaction.pot_id, type: 'pot' }
+        } else if (transaction.account_id) {
+            item = { id: transaction.account_id, type: 'account' }
+        }
+
         try {
-            const response = await fetch(`/transactions/${transactionId}`, {
+            const response = await fetch(`/transactions/${transaction.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -162,15 +172,24 @@
             });
 
             if (response.ok) {
-                alert('Transaction deleted successfully!');
-                // window.location.href = '/accounts'
+                await refreshManager.refreshTransactions(item);
+                closeModal(`transactionModal-${index}`)
+                alertManager.showAlert({
+                    title: 'Transaction Deleted Successfully.',
+                    type: 'success',
+                });
             } else {
                 const error = await response.json();
-                alert(`Failed to delete transaction: ${error.message}`);
+                alertManager.showAlert({
+                    title: 'Delete Failed',
+                    body: `Error: while deleting transaction: ${error}`,
+                    type: 'error-alert',
+                });
             }
         } catch (err) {
             console.error('Error deleting transaction:', err);
             alert('An error occurred while deleting the transaction.');
         }
     }
+
 </script>
