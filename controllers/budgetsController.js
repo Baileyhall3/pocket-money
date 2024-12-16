@@ -45,7 +45,9 @@ exports.getBudgetById = async (req, res, next) => {
         if (!budget) {
             return res.status(404).send('Budget not found');
         }
-
+        
+        budget.type = 'budget';
+        
         req.budget = budget;
         next();
     } catch (error) {
@@ -94,7 +96,7 @@ exports.createBudget = async (req, res, next) => {
 exports.updateBudget = async (req, res, next) => {
     try {
         const budgetId = req.params.id;
-        const { actualAmountChange, ...updates } = req.body;
+        const { ...updates } = req.body;
         const userId = req.user.id;
 
         // First verify the user owns this budget
@@ -110,17 +112,11 @@ exports.updateBudget = async (req, res, next) => {
             return res.status(403).send('Not authorized to update this budget');
         }
 
-        // Calculate the new balance
-        const newActualAmount = actualAmountChange !== undefined
-            ? existingBudget.actual_amount + actualAmountChange
-            : updates.actual_amount || existingBudget.actual_amount;
-
         // Perform the update
         const { data: updatedBudget, error: updateError } = await supabase
             .from('budgets')
             .update({
                 ...updates,
-                actual_amount: newActualAmount,
             })
             .eq('id', budgetId)
             .select()

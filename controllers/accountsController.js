@@ -36,6 +36,8 @@ exports.getAccountById = async (req, res, next) => {
             return res.status(404).send('Account not found');
         }
 
+        account.type = 'account';
+
         req.account = account;
         next();
     } catch (error) {
@@ -75,7 +77,7 @@ exports.createAccount = async (req, res, next) => {
 exports.updateAccount = async (req, res, next) => {
     try {
         const accountId = req.params.id;
-        const { balanceChange, ...updates } = req.body;
+        const { ...updates } = req.body;
         const userId = req.user.id;
 
         // Verify ownership
@@ -89,19 +91,13 @@ exports.updateAccount = async (req, res, next) => {
         if (fetchError) throw fetchError;
         if (!existingAccount) {
             return res.status(403).send('Not authorized to update this account');
-        }
-
-        // Calculate the new balance
-        const newBalance = balanceChange !== undefined
-            ? existingAccount.balance + balanceChange
-            : updates.balance || existingAccount.balance;
+        };
 
         // Perform the update
         const { data: updatedAccount, error: updateError } = await supabase
             .from('accounts')
             .update({
                 ...updates,
-                balance: newBalance,
             })
             .eq('id', accountId)
             .select()

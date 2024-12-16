@@ -26,6 +26,14 @@ router.post('/accounts/create', accountsController.createAccount, (req, res) => 
     res.json({ success: true, account: req.account });
 });
 
+router.put('/update-account/:id', 
+    requireAuth,
+    accountsController.updateAccount,
+    (req, res) => {
+        res.status(200).json({ success: true, account: req.account });
+    }
+);
+
 router.put('/accounts/:id', accountsController.updateAccount, (req, res) => {
     res.status(200).json({ success: true, message: 'Account updated successfully' });
 });
@@ -40,6 +48,14 @@ router.post('/pots/create', potsController.createPot, (req, res) => {
     res.json({ success: true, pot: req.pot });
 });
 
+router.put('/update-pot/:id', 
+    requireAuth,
+    potsController.updatePot,
+    (req, res) => {
+        res.status(200).json({ success: true, pot: req.pot });
+    }
+);
+
 router.put('/pots/:id', potsController.updatePot, (req, res) => {
     res.status(200).json({ success: true, message: 'Pot updated successfully' });
 });
@@ -53,6 +69,14 @@ router.delete('/pots/:id', requireAuth, potsController.deletePot, (req, res) => 
 router.post('/budgets/create', budgetsController.createBudget, (req, res) => {
     res.json({ success: true, budget: req.budget });
 });
+
+router.put('/update-budget/:id', 
+    requireAuth,
+    budgetsController.updateBudget,
+    (req, res) => {
+        res.status(200).json({ success: true, budget: req.budget });
+    }
+);
 
 router.put('/budgets/:id', budgetsController.updateBudget, (req, res) => {
     res.status(200).json({ success: true, message: 'Budget updated successfully' });

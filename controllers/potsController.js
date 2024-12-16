@@ -61,6 +61,8 @@ exports.getPotById = async (req, res, next) => {
         // Transform the participants data
         pot.participants = pot.participants.map(p => p.participant);
 
+        pot.type = 'pot';
+
         req.pot = pot;
         next();
     } catch (error) {
@@ -118,7 +120,7 @@ exports.createPot = async (req, res, next) => {
 exports.updatePot = async (req, res, next) => {
     try {
         const potId = req.params.id;
-        const { actualAmountChange, ...updates } = req.body;
+        const { ...updates } = req.body;
         const userId = req.user.id;
 
         // First verify the user owns this pot
@@ -134,17 +136,11 @@ exports.updatePot = async (req, res, next) => {
             return res.status(403).send('Not authorized to update this pot');
         }
 
-        // Calculate the new balance
-        const newActualAmount = actualAmountChange !== undefined
-            ? existingPot.actual_amount + actualAmountChange
-            : updates.actual_amount || existingPot.actual_amount;
-
         // Update the pot
         const { data: updatedPot, error: updateError } = await supabase
             .from('pots')
             .update({
                 ...updates,
-                actual_amount: newActualAmount,
             })
             .eq('id', potId)
             .select()

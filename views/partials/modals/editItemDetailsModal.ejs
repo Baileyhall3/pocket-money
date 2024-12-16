@@ -1,0 +1,45 @@
+<div id="itemDetailsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('itemDetailsModal')">&times;</span>
+            <h2>Edit Item</h2>
+        </div>
+        <form id="editItemForm" novalidate>
+            <div id="edit-item">
+                <div class="modal-row">
+                    <div class="modal-item">
+                        <label for="itemName">Name</label>
+                        <input class="modal-input" type="text" id="itemName" name="itemName">
+                    </div>
+                </div>
+
+                <div id="item-actual-amounts" class="modal-row" style="display: none;">
+                    <div class="modal-item">
+                        <label for="itemActualAmount">Actual Amount (£)</label>
+                        <input class="modal-input" type="number" disabled id="itemActualAmount" name="itemActualAmount">
+                    </div>
+                    <div class="modal-item">
+                        <label for="itemTargetAmount">Target Amount (£)</label>
+                        <input class="modal-input" type="number" id="itemTargetAmount" name="itemTargetAmount" min="0" max="10000000">
+                    </div>
+                </div>
+
+                <div id="budget-dates" class="modal-row" style="display: none;">
+                    <div class="modal-item">
+                        <label for="itemStartDate">Start Date</label>
+                        <input class="modal-input" type="date" id="itemStartDate" name="itemStartDate">
+                    </div>
+                    <div class="modal-item">
+                        <label for="itemEndDate">End Date</label>
+                        <input class="modal-input" type="date" id="itemEndDate" name="itemEndDate">
+                    </div>
+                </div>
+                <p id="item-created"></p>
+                <div id="is-editing" class="modal-buttons-end">
+                    <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('itemDetailsModal')">Close</button>
+                    <button type="submit" class="modal-footer-btn save-btn">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

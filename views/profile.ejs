@@ -2,7 +2,7 @@
 
 <div class="flex-container" style="justify-content: center;">
     <div class="profile">
-        <div class="login" style="display: contents;">
+        <div id="user-profile" class="login" style="display: contents;">
             <div class="profile-row">
                 <div style="display: flex; align-items: center;">
                     <div class="profile-icon-wrapper">
@@ -10,15 +10,32 @@
                     </div>
                 </div>
                 <div class="profile-details">
-                    <h3 style="margin-bottom: 5px;">
+                    <h3 id="profile-user-name" style="margin-bottom: 5px;">
                         <%= user.first_name + ' ' + user.last_name %>
                     </h3>
-                    <div>
+                    <div id="edit-profile-user-name" style="display: none;">
+                        <div>
+                            <input id="edit-user-first-name" type="text" class="input-box" value="<%= user.first_name %>" placeholder="First Name"/>
+                        </div>
+                        <div style="margin-left: 10px;">
+                            <input id="edit-user-last-name" type="text" class="input-box" value="<%= user.last_name %>" placeholder="Last Name" />
+                        </div>
+                    </div>
+                    <div id="profile-user-email">
                         <%= user.email %>
+                    </div>
+                    <div id="edit-profile-email" style="display: none; width: 100%;">
+                        <input id="edit-user-email" type="email" class="input-box" value="<%= user.email %>" placeholder="Email Address"/>
+                    </div>
+                </div>
+                <div style="margin-left: auto; margin-right: 20px; cursor: pointer;">
+                    <i id="no-edit" class="fa fa-pencil" style="font-size: 24px; display: flex;" onclick="toggleEditMode(true)" title="Edit profile"></i>
+                    <div id="edit-mode" style="display: none;">
+                        <i class="fa fa-check" style="font-size: 24px; color: #4CAF50;" onclick="saveChanges()" title="Save profile changes"></i>
+                        <i class="fa fa-close" style="font-size: 24px; margin-left: 10px; color: red;" onclick="toggleEditMode(false)" title="Exit editing without saving changes"></i>
                     </div>
                 </div>
             </div>
-            <!-- <h2>My Profile</h2> -->
         </div>
     
         <div class="friends">
@@ -99,6 +116,91 @@
 <!-- Initialize the search function -->
 <script>
     searchUsers('user-search-bar', 'friends-list');
+
+    const user = <%- JSON.stringify(user) %>;
+
+    function toggleEditMode(edit) {
+        const editElems = document.getElementById('edit-mode');
+        const noEditElem = document.getElementById('no-edit');
+
+        const editUserName = document.getElementById('edit-profile-user-name');
+        const currentUsername = document.getElementById('profile-user-name');
+        const currentUerEmail = document.getElementById('profile-user-email');
+        const editUserEmail = document.getElementById('edit-profile-email');
+
+        if (edit) {
+            noEditElem.style.display = 'none';
+            editElems.style.display = 'flex';
+
+            editUserName.style.display = 'flex';
+            editUserEmail.style.display = 'flex';
+
+            currentUsername.style.display = 'none';
+            currentUerEmail.style.display = 'none';
+        } else {
+            noEditElem.style.display = 'flex';
+            editElems.style.display = 'none'; 
+
+            editUserName.style.display = 'none';
+            editUserEmail.style.display = 'none';
+
+            currentUsername.style.display = 'flex';
+            currentUerEmail.style.display = 'flex';
+        }
+    }
+
+    async function saveChanges() {
+        const newFirstName = document.getElementById('edit-user-first-name').value;
+        const newLastName = document.getElementById('edit-user-last-name').value;
+
+        let updates = {};
+
+        if (newFirstName !== user.first_name) {
+            updates.firstName = newFirstName;
+        }
+        if (newLastName !== user.last_name) {
+            updates.lastName = newLastName;
+        }
+
+        if (Object.keys(updates).length === 0) {
+            console.log('No changes to save.');
+            alertManager.showAlert({
+                title: `No changes detected.`,
+                type: 'info',
+            });
+            toggleEditMode(false);
+            return;
+        }
+
+        try {
+            const response = await fetch('/update-profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updates),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+
+            const result = await response.json();
+            refreshManager.refreshProfile();
+            alertManager.showAlert({
+                title: `Profile Updated!`,
+                type: 'success',
+            });
+            toggleEditMode(false);
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            alertManager.showAlert({
+                title: `Error updating profile.`,
+                type: 'error',
+            });
+        }
+    }
+
 
     async function removeFriend(friendshipId) {
         try {

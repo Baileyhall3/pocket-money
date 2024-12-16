@@ -1,4 +1,4 @@
-function openModal(modalId, itemData = {}) {
+function openModal(modalId, itemData) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove("modal-close-animation");
@@ -34,6 +34,68 @@ function openModal(modalId, itemData = {}) {
                 deleteForm.onsubmit = function (e) {
                     e.preventDefault();
                     deleteItem(itemData);
+                };
+            }
+        }
+
+        if (modalId === 'itemDetailsModal' && itemData) {
+            
+            const itemName = document.getElementById('itemName');
+            itemName.value = itemData.name || '';
+            document.getElementById('item-created').innerText = `Created: ${DateUtils.toDateTime(itemData.created_at)}`; 
+
+            let itemStartDate = null;
+            let itemEndDate = null;
+            let itemTargetAmount = null;
+            
+            if (itemData.type == 'budget') {
+                document.getElementById('budget-dates').style.display = 'flex';
+                itemStartDate = document.getElementById('itemStartDate');
+                itemEndDate = document.getElementById('itemEndDate');
+
+                itemStartDate.value = DateUtils.toInputFormatDate(itemData.start_date) || '';
+                itemEndDate.value = DateUtils.toInputFormatDate(itemData.end_date) || '';
+            }
+
+            if (itemData.type == 'budget' || itemData.type == 'pot') {
+                document.getElementById('item-actual-amounts').style.display = 'flex';
+
+                itemTargetAmount = document.getElementById('itemTargetAmount');
+                document.getElementById('itemActualAmount').value = itemData.actual_amount;
+                itemTargetAmount.value = itemData.target_amount;
+            }
+            
+            const editItemForm = modal.querySelector("#editItemForm");
+            if (editItemForm) {
+                editItemForm.onsubmit = function (e) {
+                    e.preventDefault();
+
+                    let updatedItem = {};
+                    if (itemName.value != itemData.name) {
+                        updatedItem.name = itemName.value;
+                    }
+                    if (itemStartDate.value && itemStartDate.value != DateUtils.toInputFormatDate(itemData.start_date)) {
+                        updatedItem.start_date = itemStartDate.value;
+                    }
+                    if (itemEndDate.value && itemEndDate.value != DateUtils.toInputFormatDate(itemData.end_date)) {
+                        updatedItem.end_date = itemEndDate.value;
+                    }
+                    if (itemTargetAmount.value && itemTargetAmount.value != itemData.target_amount) {
+                        updatedItem.target_amount = itemTargetAmount.value;
+                    }
+
+                    if (Object.keys(updatedItem).length === 0) { 
+                        alertManager.showAlert({
+                            title: `No changes to save.`,
+                            type: 'info',
+                        });
+                        return;
+                    }
+
+                    updatedItem.type = itemData.type;
+                    updatedItem.id = itemData.id;
+
+                    updateItem(updatedItem);
                 };
             }
         }
@@ -407,4 +469,37 @@ async function sendSharedAlert(itemType, item, parsedPartner) {
     const userName = parsedPartner.userName;
     const formattedItem = { id: item.id, type: itemType.account ? 'Account' : (itemType.budget ? 'Budget' : 'Pot')}
     await alertManager.sendSharedAlert(targetPersonId, userName, formattedItem);
+}
+
+async function updateItem(item) {
+    
+    const endpoint = item.type === 'budget' || item.type === 'pot' ? `${item.type}` : 'accounts';
+
+    delete item['type'];
+
+    try {
+        const response = await fetch(`/update-${endpoint}/${item.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update item');
+        }
+
+        closeModal('itemDetailsModal');
+        alertManager.showAlert({
+            title: `Item Updated!`,
+            type: 'success',
+        });
+    } catch (error) {
+        console.error('Error updating item:', error);
+        alertManager.showAlert({
+            title: `Error updating item.`,
+            type: 'error',
+        });
+    }
 }

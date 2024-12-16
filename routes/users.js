@@ -17,6 +17,14 @@ router.get('/profile',
     });
 });
 
+router.put('/update-profile', 
+    requireAuth,
+    userController.updateProfile,
+    (req, res) => {
+        res.status(200).json({ success: true, user: req.user });
+    }
+);
+
 router.get('/search', 
     requireAuth,
     userController.searchUsers, 

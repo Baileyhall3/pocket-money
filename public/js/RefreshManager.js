@@ -202,6 +202,36 @@ class RefreshManager {
         }
     }
 
+    async refreshProfile() {
+        try {
+            const response = await fetch('/profile', {
+                headers: this.headers,
+                credentials: 'same-origin',
+            });
+    
+            if (response.status === 401) {
+                return;
+            }
+    
+            if (!response.ok) throw new Error('Failed to refresh friends');
+    
+            const profileHTML = await response.text();
+    
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(profileHTML, 'text/html');
+            const newProfileContainer = doc.getElementById('user-profile');
+    
+            if (newProfileContainer) {
+                const userProfile = document.getElementById('user-profile');
+                userProfile.innerHTML = newProfileContainer.innerHTML;
+            }
+    
+            initPotCharts();
+        } catch (error) {
+            console.error('Error refreshing pots:', error);
+        }
+    }
+
     async refreshPotChart(chartId, potId) {
         const updatedData = await this.fetchChartData(`/savings/pot-data/${potId}`);
         if (!updatedData) return;

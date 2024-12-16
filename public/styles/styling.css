@@ -1034,20 +1034,6 @@ canvas {
     flex: 1;
 }
 
-/* Rounded and styled dropdowns */
-.input-box {
-    width: 50%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    color: #333;
-    font-size: 16px;
-    appearance: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: border-color 0.3s ease;
-}
-
 .tooltip {
     position: relative;
     display: inline-block;
@@ -1372,7 +1358,7 @@ canvas {
     }
  
     .profile {
-        width: 90%;
+        width: 100%;
         /* margin-top: 10vh; */
     }
  
