@@ -36,7 +36,7 @@ exports.getAccountById = async (req, res, next) => {
             return res.status(404).send('Account not found');
         }
 
-        account.type = 'account';
+        account.itemType = 'account';
 
         req.account = account;
         next();

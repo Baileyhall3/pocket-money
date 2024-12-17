@@ -47,8 +47,9 @@ function openModal(modalId, itemData) {
             let itemStartDate = null;
             let itemEndDate = null;
             let itemTargetAmount = null;
+            let potTargeDate = null;
             
-            if (itemData.type == 'budget') {
+            if (itemData.itemType == 'budget') {
                 document.getElementById('budget-dates').style.display = 'flex';
                 itemStartDate = document.getElementById('itemStartDate');
                 itemEndDate = document.getElementById('itemEndDate');
@@ -57,7 +58,14 @@ function openModal(modalId, itemData) {
                 itemEndDate.value = DateUtils.toInputFormatDate(itemData.end_date) || '';
             }
 
-            if (itemData.type == 'budget' || itemData.type == 'pot') {
+            if (itemData.itemType == 'pot') {
+                document.getElementById('edit-pot-row').style.display = 'flex';
+                potTargeDate = document.getElementById('editPotTargetDate');
+
+                potTargeDate.value = DateUtils.toInputFormatDate(itemData.target_date) || '';
+            }
+
+            if (itemData.itemType == 'budget' || itemData.itemType == 'pot') {
                 document.getElementById('item-actual-amounts').style.display = 'flex';
 
                 itemTargetAmount = document.getElementById('itemTargetAmount');
@@ -74,17 +82,21 @@ function openModal(modalId, itemData) {
                     if (itemName.value != itemData.name) {
                         updatedItem.name = itemName.value;
                     }
-                    if (itemStartDate.value && itemStartDate.value != DateUtils.toInputFormatDate(itemData.start_date)) {
+                    if (itemStartDate && itemStartDate.value != DateUtils.toInputFormatDate(itemData.start_date)) {
                         updatedItem.start_date = itemStartDate.value;
                     }
-                    if (itemEndDate.value && itemEndDate.value != DateUtils.toInputFormatDate(itemData.end_date)) {
+                    if (itemEndDate && itemEndDate.value != DateUtils.toInputFormatDate(itemData.end_date)) {
                         updatedItem.end_date = itemEndDate.value;
                     }
-                    if (itemTargetAmount.value && itemTargetAmount.value != itemData.target_amount) {
+                    if (potTargeDate && potTargeDate != DateUtils.toInputFormatDate(itemData.target_date)) {
+                        updatedItem.target_date = potTargeDate.value;
+                    }
+                    if (itemTargetAmount && itemTargetAmount.value != itemData.target_amount) {
                         updatedItem.target_amount = itemTargetAmount.value;
                     }
 
                     if (Object.keys(updatedItem).length === 0) { 
+                        document.getElementById('info-message').innerText = 'No fields found to update.'
                         alertManager.showAlert({
                             title: `No changes to save.`,
                             type: 'info',
@@ -92,7 +104,7 @@ function openModal(modalId, itemData) {
                         return;
                     }
 
-                    updatedItem.type = itemData.type;
+                    updatedItem.itemType = itemData.itemType;
                     updatedItem.id = itemData.id;
 
                     updateItem(updatedItem);
@@ -102,7 +114,7 @@ function openModal(modalId, itemData) {
 
         let item = {};
 
-        if (Object.keys(itemData).length > 0) {
+        if (itemData && Object.keys(itemData).length > 0) {
             // const modalHeader = modal.querySelector('.modal-header h2');
             // if (modalHeader && itemData.type && itemData.id) {
             //     modalHeader.textContent = `New Transaction for ${itemData.name}`;
@@ -473,9 +485,9 @@ async function sendSharedAlert(itemType, item, parsedPartner) {
 
 async function updateItem(item) {
     
-    const endpoint = item.type === 'budget' || item.type === 'pot' ? `${item.type}` : 'accounts';
+    const endpoint = item.itemType === 'budget' || item.itemType === 'pot' ? `${item.itemType}` : 'account';
 
-    delete item['type'];
+    delete item['itemType'];
 
     try {
         const response = await fetch(`/update-${endpoint}/${item.id}`, {
@@ -495,6 +507,7 @@ async function updateItem(item) {
             title: `Item Updated!`,
             type: 'success',
         });
+        location.reload();
     } catch (error) {
         console.error('Error updating item:', error);
         alertManager.showAlert({

@@ -583,6 +583,10 @@ li {
     margin-bottom: 10px;
 }
 
+.info-text {
+    color: #62b1ff;
+}
+
 .container-header {
     display: flex; 
     justify-content: space-between; 

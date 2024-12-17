@@ -24,6 +24,22 @@
                     </div>
                 </div>
 
+                <div id="account-row" class="modal-row" style="display: none;">
+                    <div class="modal-item">
+                        <label for="edit-account-balance">Balance (£)</label>
+                        <input class="modal-input" type="number" id="edit-account-balance" name="edit-account-balance" disabled>
+                    </div>
+                    <!-- <div class="modal-item">
+                        <label for="itemActualAmount">Account Type</label>
+                        <input class="modal-input" type="number" disabled id="itemActualAmount" name="itemActualAmount">
+                    </div> -->
+                </div>
+
+                <div class="modal-item" id="edit-pot-row" style="display: none;">
+                    <label for="editPotTargetDate">Target Date</label>
+                    <input class="modal-input" type="date" id="editPotTargetDate" name="editPotTargetDate">
+                </div>
+
                 <div id="budget-dates" class="modal-row" style="display: none;">
                     <div class="modal-item">
                         <label for="itemStartDate">Start Date</label>
@@ -34,7 +50,12 @@
                         <input class="modal-input" type="date" id="itemEndDate" name="itemEndDate">
                     </div>
                 </div>
+
+
                 <p id="item-created"></p>
+                <div id="info-message" class="info-text modal-row">
+                    <!--Info msg-->
+                </div>
                 <div id="is-editing" class="modal-buttons-end">
                     <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('itemDetailsModal')">Close</button>
                     <button type="submit" class="modal-footer-btn save-btn">Save</button>

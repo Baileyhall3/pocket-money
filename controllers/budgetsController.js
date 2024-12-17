@@ -46,7 +46,7 @@ exports.getBudgetById = async (req, res, next) => {
             return res.status(404).send('Budget not found');
         }
         
-        budget.type = 'budget';
+        budget.itemType = 'budget';
         
         req.budget = budget;
         next();

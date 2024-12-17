@@ -61,7 +61,7 @@ exports.getPotById = async (req, res, next) => {
         // Transform the participants data
         pot.participants = pot.participants.map(p => p.participant);
 
-        pot.type = 'pot';
+        pot.itemType = 'pot';
 
         req.pot = pot;
         next();
