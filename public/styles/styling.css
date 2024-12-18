@@ -1211,6 +1211,10 @@ canvas {
     align-items: baseline;
 }
 
+.profile-container {
+    justify-content: center;
+}
+
 .forms-container {
     transition: transform 0.5s ease;
 }
@@ -1363,7 +1367,7 @@ canvas {
  
     .profile {
         width: 100%;
-        /* margin-top: 10vh; */
+        margin-top: 0;
     }
  
     .profile-search {
@@ -1449,5 +1453,9 @@ canvas {
  
     .variable-width-35 {
         width: 100%;
+    }
+
+    .profile-container {
+        justify-content: normal;
     }
 }

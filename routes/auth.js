@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
                         first_name,
                         last_name
                     },
-                    emailRedirectTo: `${baseUrl}/login`  // Add redirect URL here
+                    emailRedirectTo: '/login'
                 }
             });
         

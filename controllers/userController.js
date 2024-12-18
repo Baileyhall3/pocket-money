@@ -44,6 +44,92 @@ exports.getUsers = async (req, res, next) => {
     }
 };
 
+exports.getUserPreferences = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+
+        const { data: preferences, error } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('user_id', userId)
+            .single();
+
+        if (error) {
+            // If no preferences exist yet, create default preferences
+            if (error.code === 'PGRST116') {  // PostgreSQL "no rows returned" error
+                const defaultPreferences = {
+                    user_id: userId,
+                    low_balance_threshold: 100,
+                    transaction_alerts: true,
+                    email_notifications: true,
+                    budget_alerts: true,
+                    default_theme: 'auto',
+                    default_account_id: null,
+                    active_budget_id: null,
+                    default_currency: 'GBP'
+                };
+
+                const { data: newPreferences, error: insertError } = await supabase
+                    .from('user_preferences')
+                    .insert([defaultPreferences])
+                    .select()
+                    .single();
+
+                if (insertError) throw insertError;
+                req.userPreferences = newPreferences;
+                return next();
+            }
+            throw error;
+        }
+
+        req.userPreferences = preferences;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateUserPreferences = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        const updates = req.body;
+
+        // Validate the updates
+        const validFields = [
+            'low_balance_threshold',
+            'transaction_alerts',
+            'email_notifications',
+            'budget_alerts',
+            'default_theme',
+            'default_account_id',
+            'active_budget_id',
+            'default_currency'
+        ];
+
+        // Filter out any invalid fields
+        const validUpdates = Object.keys(updates)
+            .filter(key => validFields.includes(key))
+            .reduce((obj, key) => {
+                obj[key] = updates[key];
+                return obj;
+            }, {});
+
+        const { data: updatedPreferences, error } = await supabase
+            .from('user_preferences')
+            .update(validUpdates)
+            .eq('user_id', userId)
+            .select()
+            .single();
+
+        if (error) throw error;
+
+        req.userPreferences = updatedPreferences;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
+
 // Helper function to get user by ID
 const getUserById = async (id) => {
     const { data: user, error } = await supabase
@@ -481,4 +567,3 @@ exports.removeFriend = async (req, res, next) => {
         next(error);
     }
 };
-
