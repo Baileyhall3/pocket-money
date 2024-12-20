@@ -185,3 +185,26 @@ exports.updateAccountBalance = async (req, res, next) => {
         next(error);
     }
 };
+
+
+// PROCS
+exports.transferBalance = async (req, res, next) => {
+    try {
+        const { fromAccountId, toAccountId, amount } = req.body;
+        const userId = req.user.id;
+
+        const { data, error } = await supabase.rpc('account_balance_transfer', {
+            p_user_id: userId,
+            p_from_account_id: fromAccountId,
+            p_to_account_id: toAccountId,
+            p_transaction_value: parseFloat(amount),
+        });
+
+        if (error) throw error;
+
+        res.status(200).json({ success: true, message: 'Transfer successful' });
+    } catch (error) {
+        console.error('Error during balance transfer:', error.message);
+        res.status(500).json({ success: false, message: 'Transfer failed', error: error.message });
+    }
+};

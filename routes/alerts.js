@@ -59,6 +59,13 @@ router.post('/alerts/shared', async (req, res) => {
     }
 });
 
+router.put('/alerts/mark-read/:id', 
+    requireAuth,
+    alertsController.markAlertAsRead,
+    (req, res) => {
+        res.status(200).json({ success: true, alert: req.alert });
+    }
+);
 
 router.delete('/alerts/:id', requireAuth, alertsController.deleteAlert, (req, res) => {
     res.status(200).json({ success: true, message: 'Account deleted successfully' });

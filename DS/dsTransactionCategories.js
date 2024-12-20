@@ -12,7 +12,7 @@ const dsTransactionCategories = [
     { id: "RESTAURANTS", name: "Restaurants", type: "expense", icon: "fa fa-cutlery" },
     { id: "OTHER", name: "Other", type: "expense", icon: "fa fa-ellipsis-h" },
     { id: "PAY_CHECK", name: "Pay Check", type: "income", icon: "fa fa-money" },
-    { id: "GIFT", name: "Gift", type: "income", icon: "fa fa-handshake-o" },
+    { id: "GIFT", name: "Gift", type: "income", icon: "fa fa-gift" },
     // { id: "OTHER", name: "Other", type: "income", icon: "fa fa-ellipsis-h" },
 ];
 

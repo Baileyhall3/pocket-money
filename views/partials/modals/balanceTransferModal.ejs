@@ -1,0 +1,66 @@
+<div id="balanceTransferModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Balance Transfer</h2>
+        </div>
+        
+        <form id="balanceTransferForm" novalidate>
+            <label for="fromAccount">Account From</label>
+            <select id="fromAccount" class="modal-input" name="fromAccount" required>
+                <option value="" selected>-- Select Account --</option>
+            </select>
+
+            <label for="toAccount">Account To</label>
+            <select id="toAccount" class="modal-input" name="toAccount" required>
+                <option value="" selected>-- Select Account --</option>
+            </select>
+                    
+            <label for="transferAmount">Amount (£)</label>
+            <input type="number" min="0.01" value="0" step="0.01" class="modal-input" id="transferAmount" name="transferAmount" required>
+
+            <div class="modal-row" style="margin-top: 20px;">
+                <div class="error-message" id="submit-error-message"></div>
+            </div>
+        
+            <button type="submit" class="btn">Transfer</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     const transferForm = document.getElementById('balanceTransferForm');
+    //     transferForm.addEventListener('submit', async function (e) {
+    //         e.preventDefault();
+
+    //         const formData = new FormData(this);
+    //         const data = {
+    //             fromAccountId: formData.get('fromAccountId'),
+    //             toAccountId: formData.get('toAccountId'),
+    //             amount: formData.get('amount'),
+    //         };
+
+    //         try {
+    //             console.log('Submitting transfer:', data);
+
+    //             const response = await fetch('/accounts/transfer', {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify(data),
+    //             });
+
+    //             const result = await response.json();
+    //             if (result.success) {
+    //                 alert(result.message);
+    //                 location.reload();
+    //             } else {
+    //                 alert(`Error: ${result.message}`);
+    //             }
+    //         } catch (err) {
+    //             console.error('Transfer failed:', err);
+    //             alert('An error occurred during the transfer.');
+    //         }
+    //     });
+    // });
+</script>

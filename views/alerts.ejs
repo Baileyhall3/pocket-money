@@ -73,8 +73,7 @@
                     <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
                         <div class="dropdown-content">
                             <a href="#" onclick="openModal('alertModal-<%= index %>')">View</a>
-                            <a href="#">Mark As Unread</a>
-                            <a href="#">Archive</a>
+                            <a href="#" onclick="updateReadStatus(<%= JSON.stringify(alert) %>)" >Mark As <%- alert.unread ? 'Read' : 'Unread' %></a>
                             <a href="#" onclick="deleteAlert(<%= JSON.stringify(alert) %>)" >Delete</a>
                         </div>
                     </div>
@@ -151,16 +150,51 @@
             });
 
             if (response.ok) {
+                alertManager.showAlert({
+                    title: `Alert deleted successfully`,
+                    type: 'success',
+                });
                 refreshManager.refreshAlerts();
             } else {
                 const error = await response.json();
-                alert(`Failed to delete item: ${error.message}`);
+                alertManager.showAlert({
+                    title: `Unable to delete alert: ${error.message}`,
+                    type: 'error-alert',
+                });
             }
-
-            // const result = await response.json();
         } catch (err) {
             console.error('Error deleting item:', err);
-            alert('An error occurred while deleting the item.');
+            alertManager.showAlert({
+                    title: `An error occurred while deleting the item.`,
+                    type: 'error-alert',
+                });
+        }
+    }
+
+    async function updateReadStatus(alert) {
+        try {
+            const response = await fetch(`/alerts/mark-read/${alert.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to update item');
+            }
+    
+            await alertManager.showAlert({
+                title: `Alert marked as read`,
+                type: 'success',
+            });
+            location.reload();
+        } catch (error) {
+            console.error('Error updating item:', error);
+            alertManager.showAlert({
+                title: `Error updating item.`,
+                type: 'error',
+            });
         }
     }
 

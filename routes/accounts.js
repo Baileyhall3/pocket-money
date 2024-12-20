@@ -42,6 +42,8 @@ router.delete('/accounts/:id', requireAuth, accountsController.deleteAccount, (r
     res.status(200).json({ success: true, message: 'Account deleted successfully' });
 });
 
+router.post('/accounts/transfer', requireAuth, accountsController.transferBalance);
+
 
 // Pots
 router.post('/pots/create', potsController.createPot, (req, res) => {

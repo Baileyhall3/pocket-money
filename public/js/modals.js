@@ -1,14 +1,25 @@
-function openModal(modalId, itemData) {
+function openModal(modalId, itemData = {}) {
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.classList.remove("modal-close-animation");
         modal.classList.add("modal-open-animation");
         modal.style.display = "block";
 
-        const formContainer = modal.querySelector('.modal-content');
-        if (formContainer) {        
-            document.getElementById('category-selection').style.display = 'block';
-            document.getElementById('transaction-details').style.display = 'none';
+        // Handle balance transfer modal population
+        if (modalId === 'balanceTransferModal' && itemData.accounts) {
+            const fromAccountSelect = document.getElementById('fromAccount');
+            const toAccountSelect = document.getElementById('toAccount');
+            
+            // Clear existing options
+            fromAccountSelect.innerHTML = '<option value="" selected>-- Select Account --</option>';
+            toAccountSelect.innerHTML = '<option value="" selected>-- Select Account --</option>';
+            
+            // Populate account options
+            itemData.accounts.forEach(account => {
+                const option = `<option value="${account.id}">${account.name} (£${account.balance})</option>`;
+                fromAccountSelect.insertAdjacentHTML('beforeend', option);
+                toAccountSelect.insertAdjacentHTML('beforeend', option);
+            });
         }
 
         attachCloseEvents();
@@ -36,6 +47,84 @@ function openModal(modalId, itemData) {
                     deleteItem(itemData);
                 };
             }
+        }
+
+        const balanceTransferForm = document.getElementById('balanceTransferForm');
+        if (balanceTransferForm) {
+            balanceTransferForm.addEventListener('submit', async function (event) {
+                const isValid = validateForm(event, balanceTransferForm, 
+                    ['fromAccount', 'toAccount', 'transferAmount']);
+                if (!isValid) return;
+
+                if (await transferBalance(event)) {
+                    console.log('Transfer successful, closing modal and refreshing');
+                    closeModal(modalId);
+                    await refreshManager.refreshAccounts();
+                }
+            });
+        } else {
+            console.log('Balance transfer form not found');
+        }
+
+        const categoryElements = document.querySelectorAll(".category");
+        const selectedCategoryElement = document.querySelector(".selected-category");
+        let selectedCategory = null;
+
+        categoryElements.forEach(category => {
+            categoryElements.forEach(cat => cat.classList.remove("selected"));
+            category.addEventListener("click", function () {
+                const categoryId = this.getAttribute("data-id");
+                const categoryIconClass = this.querySelector("i").className;
+                const categoryName = this.querySelector("span").textContent;
+                const categoryType = this.getAttribute("data-type"); 
+
+                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
+
+                categoryElements.forEach(cat => cat.classList.remove("selected"));
+                this.classList.add("selected");
+            });
+        });
+
+        const formContainer = modal.querySelector('.modal-content');
+        if (formContainer) {        
+            document.getElementById('category-selection').style.display = 'block';
+            document.getElementById('transaction-details').style.display = 'none';
+        }
+
+        let item = {};
+
+        if (itemData && Object.keys(itemData).length > 0) {
+            // const modalHeader = modal.querySelector('.modal-header h2');
+            // if (modalHeader && itemData.type && itemData.id) {
+            //     modalHeader.textContent = `New Transaction for ${itemData.name}`;
+            // }
+            item = { id: itemData.id, type: itemData.type }
+
+            const form = modal.querySelector('form#logTransactionForm');
+            form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
+
+            for (const [key, value] of Object.entries(itemData)) {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = key;
+                hiddenInput.value = value;
+                hiddenInput.classList.add('dynamic-field');
+                form.appendChild(hiddenInput);
+            }
+        }
+
+        const transactionForm = document.getElementById('logTransactionForm');
+        if (transactionForm) {
+            transactionForm.addEventListener('submit', async function (event) {
+                const isValid = validateForm(event, transactionForm, 
+                    ['transactionName', 'transactionAmount', 'transactionDate']);
+                if (!isValid) return;
+
+                if (createTransaction(event, selectedCategory, item)) {
+                    closeModal(modalId);
+                    await refreshManager.refreshTransactions(item);
+                }
+            });
         }
 
         if (modalId === 'itemDetailsModal' && itemData) {
@@ -110,62 +199,6 @@ function openModal(modalId, itemData) {
                     updateItem(updatedItem);
                 };
             }
-        }
-
-        let item = {};
-
-        if (itemData && Object.keys(itemData).length > 0) {
-            // const modalHeader = modal.querySelector('.modal-header h2');
-            // if (modalHeader && itemData.type && itemData.id) {
-            //     modalHeader.textContent = `New Transaction for ${itemData.name}`;
-            //     
-            // }
-            item = { id: itemData.id, type: itemData.type }
-
-            const form = modal.querySelector('form#logTransactionForm');
-            form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
-
-            for (const [key, value] of Object.entries(itemData)) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = key;
-                hiddenInput.value = value;
-                hiddenInput.classList.add('dynamic-field');
-                form.appendChild(hiddenInput);
-            }
-        }
-
-        const categoryElements = document.querySelectorAll(".category");
-        const selectedCategoryElement = document.querySelector(".selected-category");
-        let selectedCategory = null;
-
-        categoryElements.forEach(category => {
-            categoryElements.forEach(cat => cat.classList.remove("selected"));
-            category.addEventListener("click", function () {
-                const categoryId = this.getAttribute("data-id");
-                const categoryIconClass = this.querySelector("i").className;
-                const categoryName = this.querySelector("span").textContent;
-                const categoryType = this.getAttribute("data-type"); // Retrieve the category type
-
-                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
-
-                categoryElements.forEach(cat => cat.classList.remove("selected"));
-                this.classList.add("selected");
-            });
-        });
-
-        const transactionForm = document.getElementById('logTransactionForm');
-        if (transactionForm) {
-            transactionForm.addEventListener('submit', async function (event) {
-                const isValid = validateForm(event, transactionForm, 
-                    ['transactionName', 'transactionAmount', 'transactionDate']);
-                if (!isValid) return;
-
-                if (createTransaction(event, selectedCategory, item)) {
-                    closeModal(modalId);
-                    await refreshManager.refreshTransactions(item);
-                }
-            });
         }
 
         const newAccountForm = document.getElementById('newAccountForm');
@@ -476,6 +509,72 @@ function clearValues(modalId) {
     }
 }
 
+async function transferBalance(event) {
+    event.preventDefault();
+    console.log('Starting balance transfer');
+    
+    try {
+        const formData = new FormData(event.target);
+        const fromAccountId = formData.get('fromAccount');
+        const toAccountId = formData.get('toAccount');
+        const amount = parseFloat(formData.get('transferAmount') || 0);
+
+        console.log('Form values:', { fromAccountId, toAccountId, amount });
+
+        if (!fromAccountId || !toAccountId || !amount) {
+            throw new Error('Please fill in all fields');
+        }
+
+        if (fromAccountId === toAccountId) {
+            throw new Error('Cannot transfer to the same account');
+        }
+
+        if (amount <= 0) {
+            throw new Error('Amount must be greater than 0');
+        }
+
+        const data = { fromAccountId, toAccountId, amount };
+        console.log('Sending transfer request with data:', data);
+
+        const response = await fetch('/accounts/transfer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        console.log('Response status:', response.status);
+        const result = await response.json();
+        console.log('Response data:', result);
+
+        if (!response.ok) {
+            throw new Error(result.error || `Server error: ${response.status}`);
+        }
+
+        if (!result.success) {
+            throw new Error(result.error || 'Transfer failed');
+        }
+
+        console.log('Transfer successful');
+        alertManager.showAlert({
+            title: 'Balance transferred successfully!',
+            type: 'success',
+        });
+        return true;
+    } catch (error) {
+        console.error('Error transferring balance:', error);
+        const errorMessage = document.getElementById('submit-error-message');
+        if (errorMessage) {
+            errorMessage.textContent = error.message || 'An error occurred during transfer';
+        } else {
+            console.error('Error message element not found');
+            alert(error.message || 'An error occurred during transfer');
+        }
+        return false;
+    }
+}
+
 async function sendSharedAlert(itemType, item, parsedPartner) {
     const targetPersonId = item.shared_with_id;
     const userName = parsedPartner.userName;
@@ -512,7 +611,7 @@ async function updateItem(item) {
         console.error('Error updating item:', error);
         alertManager.showAlert({
             title: `Error updating item.`,
-            type: 'error',
+            type: 'error-alert',
         });
     }
 }
