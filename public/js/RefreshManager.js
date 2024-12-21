@@ -50,7 +50,6 @@ class RefreshManager {
     
             if (!response.ok) throw new Error('Failed to refresh budgets');
             
-            
             const savingsHTML = await response.text();
             
             // Parse the received HTML
@@ -61,10 +60,14 @@ class RefreshManager {
             if (newBudgetsContainer) {
                 const budgetsContainer = document.getElementById('budgets-container');
                 budgetsContainer.innerHTML = newBudgetsContainer.innerHTML;
-            }
 
-            initBudgetCharts();
-            
+                // Reinitialize all budget charts
+                const budgetCharts = budgetsContainer.querySelectorAll('canvas[id^="budget-chart-"]');
+                budgetCharts.forEach(canvas => {
+                    const budgetId = canvas.id.replace('budget-chart-', '');
+                    this.refreshBudgetChart(canvas.id, budgetId);
+                });
+            }
         } catch (error) {
             console.error('Error refreshing budgets:', error);
         }
@@ -92,9 +95,14 @@ class RefreshManager {
             if (newPotsContainer) {
                 const potsContainer = document.getElementById('pots-container');
                 potsContainer.innerHTML = newPotsContainer.innerHTML;
+
+                // Reinitialize all pot charts
+                const potCharts = potsContainer.querySelectorAll('canvas[id^="pot-chart-"]');
+                potCharts.forEach(canvas => {
+                    const potId = canvas.id.replace('pot-chart-', '');
+                    this.refreshPotChart(canvas.id, potId);
+                });
             }
-    
-            initPotCharts();
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
@@ -166,7 +174,6 @@ class RefreshManager {
                 alertsContainer.innerHTML = newAlertsContainer.innerHTML;
             }
     
-            initPotCharts();
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
@@ -196,7 +203,6 @@ class RefreshManager {
                 friendsList.innerHTML = newFriendsContainer.innerHTML;
             }
     
-            initPotCharts();
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }
@@ -226,7 +232,6 @@ class RefreshManager {
                 userProfile.innerHTML = newProfileContainer.innerHTML;
             }
     
-            initPotCharts();
         } catch (error) {
             console.error('Error refreshing pots:', error);
         }

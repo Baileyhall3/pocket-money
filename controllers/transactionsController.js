@@ -247,7 +247,7 @@ exports.getAllTransactionsForUser = async (req, res, next) => {
 
 // CRUD
 
-exports.createTransaction = async (req, res, next) => {
+exports.createTransaction = async (req, res) => {
     try {
         const {
             name,
@@ -283,7 +283,12 @@ exports.createTransaction = async (req, res, next) => {
                 .select()
                 .single();
 
-            if (recurrentError) throw recurrentError;
+            if (recurrentError) {
+                return res.status(400).json({
+                    success: false,
+                    error: recurrentError.message
+                });
+            }
 
             // Capture the recurrent transaction ID
             recurrentId = recurrentTransaction.id;
@@ -307,12 +312,33 @@ exports.createTransaction = async (req, res, next) => {
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            // Check if it's a database trigger error (these usually come with a specific message)
+            if (error.message && error.message.includes('date_made')) {
+                return res.status(400).json({
+                    success: false,
+                    error: error.message
+                });
+            }
+            // For other database errors
+            return res.status(400).json({
+                success: false,
+                error: 'Failed to create transaction. Please check your input.'
+            });
+        }
 
-        req.transaction = newTransaction;
-        next();
+        // If we get here, the transaction was created successfully
+        return res.status(200).json({
+            success: true,
+            transaction: newTransaction
+        });
     } catch (error) {
-        next(error);
+        // For unexpected errors
+        console.error('Transaction creation error:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'An unexpected error occurred while creating the transaction.'
+        });
     }
 };
 

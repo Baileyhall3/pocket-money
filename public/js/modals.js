@@ -65,70 +65,72 @@ function openModal(modalId, itemData = {}) {
         } else {
             console.log('Balance transfer form not found');
         }
-
-        const categoryElements = document.querySelectorAll(".category");
-        const selectedCategoryElement = document.querySelector(".selected-category");
-        let selectedCategory = null;
-
-        categoryElements.forEach(category => {
-            categoryElements.forEach(cat => cat.classList.remove("selected"));
-            category.addEventListener("click", function () {
-                const categoryId = this.getAttribute("data-id");
-                const categoryIconClass = this.querySelector("i").className;
-                const categoryName = this.querySelector("span").textContent;
-                const categoryType = this.getAttribute("data-type"); 
-
-                selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
-
-                categoryElements.forEach(cat => cat.classList.remove("selected"));
-                this.classList.add("selected");
-            });
-        });
-
-        const formContainer = modal.querySelector('.modal-content');
-        if (formContainer) {        
-            document.getElementById('category-selection').style.display = 'block';
-            document.getElementById('transaction-details').style.display = 'none';
-        }
-
+        
         let item = {};
 
-        if (itemData && Object.keys(itemData).length > 0) {
-            // const modalHeader = modal.querySelector('.modal-header h2');
-            // if (modalHeader && itemData.type && itemData.id) {
-            //     modalHeader.textContent = `New Transaction for ${itemData.name}`;
-            // }
-            item = { id: itemData.id, type: itemData.type }
+        let selectedCategoryElement = null;
+        let selectedCategory = null;
 
-            const form = modal.querySelector('form#logTransactionForm');
-            form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
+        if (modalId == 'logTransactionModal') {
+            const categoryElements = document.querySelectorAll(".category");
+            selectedCategoryElement = document.querySelector(".selected-category");
+    
+            categoryElements.forEach(category => {
+                categoryElements.forEach(cat => cat.classList.remove("selected"));
+                category.addEventListener("click", function () {
+                    const categoryId = this.getAttribute("data-id");
+                    const categoryIconClass = this.querySelector("i").className;
+                    const categoryName = this.querySelector("span").textContent;
+                    const categoryType = this.getAttribute("data-type"); 
+    
+                    selectedCategory = { id: categoryId, icon: categoryIconClass, name: categoryName, type: categoryType };
+    
+                    categoryElements.forEach(cat => cat.classList.remove("selected"));
+                    this.classList.add("selected");
+                });
+            });
+    
+            const formContainer = modal.querySelector('.modal-content');
+            if (formContainer) {        
+                document.getElementById('category-selection').style.display = 'block';
+                document.getElementById('transaction-details').style.display = 'none';
+            }
 
-            for (const [key, value] of Object.entries(itemData)) {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = key;
-                hiddenInput.value = value;
-                hiddenInput.classList.add('dynamic-field');
-                form.appendChild(hiddenInput);
+            if (itemData && Object.keys(itemData).length > 0) {
+                item = { id: itemData.id, type: itemData.type }
+    
+                const form = modal.querySelector('form#logTransactionForm');
+                form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
+    
+                for (const [key, value] of Object.entries(itemData)) {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = key;
+                    hiddenInput.value = value;
+                    hiddenInput.classList.add('dynamic-field');
+                    form.appendChild(hiddenInput);
+                }
+            }
+
+            const transactionForm = document.getElementById('logTransactionForm');
+            if (transactionForm) {
+                transactionForm.addEventListener('submit', async function (event) {
+                    event.preventDefault();
+                    const isValid = validateForm(event, transactionForm, 
+                        ['transactionName', 'transactionAmount', 'transactionDate']);
+                    if (!isValid) return;
+    
+                    const result = await createTransaction(event, selectedCategory, item);
+                    if (result) {
+                        closeModal(modalId);
+                        await refreshManager.refreshTransactions(item);
+                    }
+                });
             }
         }
 
-        const transactionForm = document.getElementById('logTransactionForm');
-        if (transactionForm) {
-            transactionForm.addEventListener('submit', async function (event) {
-                const isValid = validateForm(event, transactionForm, 
-                    ['transactionName', 'transactionAmount', 'transactionDate']);
-                if (!isValid) return;
-
-                if (createTransaction(event, selectedCategory, item)) {
-                    closeModal(modalId);
-                    await refreshManager.refreshTransactions(item);
-                }
-            });
-        }
 
         if (modalId === 'itemDetailsModal' && itemData) {
-            
             const itemName = document.getElementById('itemName');
             itemName.value = itemData.name || '';
             document.getElementById('item-created').innerText = `Created: ${DateUtils.toDateTime(itemData.created_at)}`; 
@@ -218,11 +220,13 @@ function openModal(modalId, itemData = {}) {
         const newBudgetForm = document.getElementById('newBudgetForm');
         if (newBudgetForm) {
             newBudgetForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
                 const isValid = validateForm(event, newBudgetForm, 
                     ['budgetName', 'budgetAmount']);
                 if (!isValid) return;
-
-                if (createBudget(event)) {
+                
+                const result = await createBudget(event);
+                if (result) {
                     closeModal(modalId);
                     await refreshManager.refreshBudgets();
                 }
@@ -248,7 +252,6 @@ function openModal(modalId, itemData = {}) {
             if (selectedCategory) {
                 selectedCategoryElement.querySelector("i").className = selectedCategory.icon;
                 selectedCategoryElement.querySelector("i").title = selectedCategory.name;
-                // selectedCategoryElement.insertAdjacentHTML("beforeend", `<span>${selectedCategory.name}</span>`);
                 
                 const catSelection = document.getElementById('category-selection');
                 const transactionDetails = document.getElementById('transaction-details');
@@ -265,7 +268,6 @@ function openModal(modalId, itemData = {}) {
                 categoryErrorMessage.textContent = 'Select a category before continuing.';
             }
         };
-
     }
 }
 
@@ -339,6 +341,10 @@ async function createAccount(event) {
                 const parsedPartner = JSON.parse(selectedPartner)
                 await sendSharedAlert(result, result.account, parsedPartner);
             }
+            alertManager.showAlert({
+                title: 'Account created successfully!',
+                type: 'success',
+            });
             return true;
         } else {
             throw new Error(result.error || 'Failed to create account.');
@@ -351,6 +357,10 @@ async function createAccount(event) {
 }
 
 async function createBudget(event) {
+    event.preventDefault();
+    const modal = event.target.closest('.modal');
+    const errorMessage = modal.querySelector('#submit-error-message');
+
     const formData = new FormData(event.target);
     const data = {
         name: formData.get('budgetName'),
@@ -361,6 +371,11 @@ async function createBudget(event) {
         isActive: formData.get('activeBudget') || false,
         sharedWithId: formData.get('sharedWith') || null
     };
+
+    if ((data.startDate && data.endDate) && data.startDate > data.endDate) {
+        errorMessage.textContent = 'Budget start date must be before end date.';
+        return false;
+    }
 
     try {
         console.log('Sending budget data:', data);
@@ -375,13 +390,17 @@ async function createBudget(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            alertManager.showAlert({
+                title: 'Budget created successfully!',
+                type: 'success',
+            });
             return true;
         } else {
             throw new Error(result.error || 'Failed to create budget.');
         }
     } catch (error) {
         console.error('Error creating budget:', error);
-        document.getElementById('submit-error-message').textContent = error.message;
+        errorMessage.textContent = error.message;
         return false;
     }
 }
@@ -396,8 +415,6 @@ async function createPot(event) {
         participants: [],
     };
 
-    console.log(data)
-
     try {
         const response = await fetch('/pots/create', {
             method: 'POST',
@@ -410,6 +427,10 @@ async function createPot(event) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            alertManager.showAlert({
+                title: 'Pot created successfully!',
+                type: 'success',
+            });
             return true;
         } else {
             throw new Error(result.error || 'Failed to create pot.');
@@ -422,6 +443,10 @@ async function createPot(event) {
 }
 
 async function createTransaction(event, selCategory, item) {
+    event.preventDefault();
+    const modal = event.target.closest('.modal');
+    const errorMessage = modal.querySelector('#submit-error-message');
+    
     const formData = new FormData(event.target);
     const data = {
         name: formData.get('transactionName'),
@@ -447,15 +472,16 @@ async function createTransaction(event, selCategory, item) {
         });
 
         const result = await response.json();
-
-        if (response.ok && result.success) {
-            return true;
-        } else {
-            throw new Error(result.error || 'Failed to create transaction.');
+        
+        if (!response.ok || !result.success) {
+            errorMessage.textContent = result.error || 'Failed to create transaction.';
+            return false;
         }
+
+        return true;
     } catch (error) {
         console.error('Error creating transaction:', error);
-        document.getElementById('submit-error-message').textContent = error.message;
+        errorMessage.textContent = error.message || 'An error occurred while creating the transaction.';
         return false;
     }
 }
@@ -473,18 +499,26 @@ async function deleteItem(itemData) {
         });
 
         if (response.ok) {
-            alert(`${itemData.type.charAt(0).toUpperCase() + itemData.type.slice(1)} deleted successfully!`);
             window.location.href = `/${itemData.type === 'account' ? 'accounts' : 'savings'}`;
+            alertManager.showAlert({
+                title: `${itemData.type.charAt(0).toUpperCase() + itemData.type.slice(1)} deleted successfully!`,
+                type: 'success',
+            });
         } else {
             const error = await response.json();
-            alert(`Failed to delete item: ${error.message}`);
+            alertManager.showAlert({
+                title: `Failed to delete item: ${error.message}`,
+                type: 'error-alert',
+            });
         }
     } catch (err) {
         console.error('Error deleting item:', err);
-        alert('An error occurred while deleting the item.');
+        alertManager.showAlert({
+            title: 'An error occurred while deleting the item.',
+            type: 'error-alert',
+        });
     }
 }
-
 
 function clearValues(modalId) {
     const modal = document.getElementById(modalId);
@@ -569,7 +603,10 @@ async function transferBalance(event) {
             errorMessage.textContent = error.message || 'An error occurred during transfer';
         } else {
             console.error('Error message element not found');
-            alert(error.message || 'An error occurred during transfer');
+            alertManager.showAlert({
+                title: error.message || 'An error occurred during transfer',
+                type: 'error-alert',
+            });
         }
         return false;
     }
@@ -583,7 +620,6 @@ async function sendSharedAlert(itemType, item, parsedPartner) {
 }
 
 async function updateItem(item) {
-    
     const endpoint = item.itemType === 'budget' || item.itemType === 'pot' ? `${item.itemType}` : 'account';
 
     delete item['itemType'];

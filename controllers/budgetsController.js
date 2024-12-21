@@ -73,7 +73,7 @@ exports.createBudget = async (req, res, next) => {
             .insert([{
                 name,
                 target_amount: targetAmount,
-                actual_amount: targetAmount,
+                actual_amount: 0,
                 start_date: startDate,
                 end_date: endDate,
                 is_active: isActive,
