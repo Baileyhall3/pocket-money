@@ -133,12 +133,23 @@ function openModal(modalId, itemData = {}) {
         if (modalId === 'itemDetailsModal' && itemData) {
             const itemName = document.getElementById('itemName');
             itemName.value = itemData.name || '';
+
+            itemSharedWithId = document.getElementById('edit-shared-with');
+
+            if (itemData.shared_with_id) {
+                itemSharedWithId.value = itemData.shared_with_id;
+            } else {
+                itemSharedWithId.value = ''; // Default to empty if no shared_with_id
+            }
+
             document.getElementById('item-created').innerText = `Created: ${DateUtils.toDateTime(itemData.created_at)}`; 
 
             let itemStartDate = null;
             let itemEndDate = null;
             let itemTargetAmount = null;
             let potTargeDate = null;
+            let accountType = null;
+            let accountBalance = null;
             
             if (itemData.itemType == 'budget') {
                 document.getElementById('budget-dates').style.display = 'flex';
@@ -163,6 +174,17 @@ function openModal(modalId, itemData = {}) {
                 document.getElementById('itemActualAmount').value = itemData.actual_amount;
                 itemTargetAmount.value = itemData.target_amount;
             }
+
+            if (itemData.itemType === 'account') {
+                document.getElementById('account-row').style.display = 'flex';
+            
+                accountBalance = document.getElementById('edit-account-balance');
+                accountBalance.value = itemData.balance || 0;
+            
+                accountType = document.getElementById('edit-account-type');
+                accountType.value = itemData.type || '';
+            }
+            
             
             const editItemForm = modal.querySelector("#editItemForm");
             if (editItemForm) {
@@ -172,6 +194,9 @@ function openModal(modalId, itemData = {}) {
                     let updatedItem = {};
                     if (itemName.value != itemData.name) {
                         updatedItem.name = itemName.value;
+                    }
+                    if(itemSharedWithId.value !== (itemData.shared_with_id || '')) {
+                        updatedItem.shared_with_id = itemSharedWithId.value || null;
                     }
                     if (itemStartDate && itemStartDate.value != DateUtils.toInputFormatDate(itemData.start_date)) {
                         updatedItem.start_date = itemStartDate.value;
@@ -184,6 +209,12 @@ function openModal(modalId, itemData = {}) {
                     }
                     if (itemTargetAmount && itemTargetAmount.value != itemData.target_amount) {
                         updatedItem.target_amount = itemTargetAmount.value;
+                    }
+                    if (accountBalance && accountBalance.value != itemData.balance) {
+                        updatedItem.balance = accountBalance.value;
+                    }
+                    if (accountType && accountType.value != itemData.type) {
+                        updatedItem.type = accountType.value;
                     }
 
                     if (Object.keys(updatedItem).length === 0) { 

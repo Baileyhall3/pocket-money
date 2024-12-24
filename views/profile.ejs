@@ -6,7 +6,38 @@
             <div class="profile-row">
                 <div style="display: flex; align-items: center;">
                     <div class="profile-icon-wrapper">
-                        <i class="fa fa-user" style="font-size: 36px;"></i>
+                        <% if (user.profile_picture) { %>
+                            <img id="profile-icon" 
+                                src="<%= user.profile_picture %>" 
+                                alt="Profile Picture"
+                                class="profile-img"
+                            />
+                        <% } else { %>
+                            <i id="default-profile-icon" class="fa fa-user" style="font-size: 36px;"></i>
+                        <% } %>
+                    </div>
+                    <div id="profile-pic-edit" style="display: none;">
+                        <a href="#" onclick="openModal('profilePictureUploadModal')">Edit</a>
+                    </div>
+                    
+                    <!-- Modal for user profile picture upload -->
+                    <div id="profilePictureUploadModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close" onclick="closeModal('profilePictureUploadModal')">&times;</span>
+                            <form id="profile-picture-form" enctype="multipart/form-data" style="display: inline-flex;">
+                                <label for="profilePicture">Upload Profile Picture:</label>
+                                <input type="file" id="profilePicture" name="profilePicture" accept="image/*" required>
+                                <button type="submit" style="background-color: #4CAF50;">Save</button>
+                                <p id="upload-status"></p>
+                            </form>
+                            <div style="margin-top: 10px;">
+                                <img id="profile-picture-preview" 
+                                    src="<%= user.profile_picture || '/default-avatar.png' %>" 
+                                    alt="Profile Picture"
+                                    style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover;" 
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="profile-details">
@@ -52,7 +83,15 @@
                     <% if (friends.length > 0) { %>
                         <% friends.forEach((friend, index) => { %>
                             <div class="friend-row" data-name="<%= friend.userName %>">
-                                <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                                <% if (friend.profileImage) { %>
+                                    <img id="profile-icon" 
+                                        src="<%= friend.profileImage %>" 
+                                        alt="Profile Picture"
+                                        class="profile-img"
+                                    />
+                                <% } else { %>
+                                    <i class="fa fa-user friend-icon" style="display: flex;"></i>
+                                <% } %>
                                 <span class="friend-name">
                                     <%= friend.userName %>
                                 </span>
@@ -70,16 +109,16 @@
                                     <div class="modal-content">
                                         <span class="close" onclick="closeModal('friendModal-<%= index %>')">&times;</span>
                                         <h2><%= friend.userName %></h2>
-                                        <h2>Friends since <%= DateUtils.toShortDate(friend.created) %></h2>
+                                        <h2>Friends since <%- DateUtils.toShortDate(friend.created) %></h2>
                                         <!-- Display the friend's friends -->
                                          <h3>Friends List</h3>
-                                        <% if (friend.friendsOfFriend.length > 0) { %>
-                                            <% friend.friendsOfFriend.forEach(f => { %>
-                                                <p><%= f.friendName %></p>
-                                            <% }); %>
-                                        <% } else { %>
+                                        <% if (friend.friendsOfFriend.length > 0) { -%>
+                                            <% friend.friendsOfFriend.forEach(f => { -%>
+                                                <p><%- f.friendName %></p>
+                                            <% }); -%>
+                                        <% } else { -%>
                                             <p>No friends to show.</p>
-                                        <% } %>
+                                        <% } -%>
                                     </div>
                                 </div>
                                 
@@ -90,7 +129,7 @@
                                         <div class="modal-header">
                                             <h2>Please Confirm</h2>
                                         </div>
-                                        <p>Are you sure you want to remove <%= friend.userName %> as a friend?</p>
+                                        <p>Are you sure you want to remove <%- friend.userName %> as a friend?</p>
                                         <p>Shared items with this user will no longer be visible. </p>
                                         <div class="modal-buttons-end">
                                             <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('deleteFriendModal-<%= index %>')">Cancel</button>
@@ -115,6 +154,30 @@
 
 <!-- Initialize the search function -->
 <script>
+    function updateProfileIcon(imageUrl) {
+        const profileIconWrapper = document.querySelector('.profile-icon-wrapper');
+        // Clear existing content
+        profileIconWrapper.innerHTML = '';
+        
+        // Create new image element
+        const img = document.createElement('img');
+        img.id = 'profile-icon';
+        img.src = imageUrl;
+        img.alt = 'Profile Picture';
+        img.style.width = '50px';
+        img.style.height = '50px';
+        img.style.borderRadius = '50%';
+        img.style.objectFit = 'cover';
+        
+        // Add error handler to show default icon if image fails to load
+        img.onerror = function() {
+            profileIconWrapper.innerHTML = '<i id="default-profile-icon" class="fa fa-user" style="font-size: 36px;"></i>';
+        };
+        
+        // Add the image to the wrapper
+        profileIconWrapper.appendChild(img);
+    }
+
     searchUsers('user-search-bar', 'friends-list');
 
     const user = <%- JSON.stringify(user) %>;
@@ -128,6 +191,8 @@
         const currentUerEmail = document.getElementById('profile-user-email');
         const editUserEmail = document.getElementById('edit-profile-email');
 
+        const editProfilePic = document.getElementById('profile-pic-edit');
+
         if (edit) {
             noEditElem.style.display = 'none';
             editElems.style.display = 'flex';
@@ -137,15 +202,20 @@
 
             currentUsername.style.display = 'none';
             currentUerEmail.style.display = 'none';
+
+            editProfilePic.style.display = 'flex';
+
         } else {
             noEditElem.style.display = 'flex';
             editElems.style.display = 'none'; 
-
+            
             editUserName.style.display = 'none';
             editUserEmail.style.display = 'none';
-
+            
             currentUsername.style.display = 'flex';
             currentUerEmail.style.display = 'flex';
+
+            editProfilePic.style.display = 'none';
         }
     }
 
@@ -226,10 +296,85 @@
         } catch (err) {
             console.error('Error removing friend:', err);
             alertManager.showAlert({
-                    title: 'An error occurred while removing friend.',
-                    body: `Error: ${err}`,
-                    type: 'error-alert',
-                });
+                title: 'An error occurred while removing friend.',
+                body: `Error: ${err}`,
+                type: 'error-alert',
+            });
         }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fileInput = document.getElementById('profilePicture');
+        const previewImage = document.getElementById('profile-picture-preview');
+        const uploadStatus = document.getElementById('upload-status');
+        const form = document.getElementById('profile-picture-form');
+
+        // Live Preview on File Selection
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.src = user.profile_picture || '/default-avatar.png';
+                uploadStatus.textContent = 'Please select a valid image file.';
+            }
+        });
+
+        // Form Submit Handler
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const file = fileInput.files[0];
+
+            if (!file) {
+                uploadStatus.textContent = 'No file selected!';
+                return;
+            }
+
+            formData.append('profilePicture', file);
+
+            try {
+                const response = await fetch('/profile/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    uploadStatus.textContent = 'Profile picture uploaded successfully!';
+                    // Update both preview and main profile images
+                    previewImage.src = result.url;
+                    
+                    // Update the main profile icon
+                    updateProfileIcon(result.url);
+                    
+                    // Close the modal after successful upload
+                    closeModal('profilePictureUploadModal');
+                } else {
+                    throw new Error(result.error || 'Failed to upload.');
+                }
+            } catch (error) {
+                console.error('Upload error:', error.message);
+                uploadStatus.textContent = error.message;
+            }
+        });
+    });
+
 </script>
+
+<style>
+#profile-picture-preview {
+    max-width: 150px;
+    max-height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    margin-top: 10px;
+}
+</style>

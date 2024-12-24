@@ -29,13 +29,25 @@
                         <label for="edit-account-balance">Balance (£)</label>
                         <input class="modal-input" type="number" id="edit-account-balance" name="edit-account-balance" disabled>
                     </div>
-                    <!-- <div class="modal-item">
-                        <label for="itemActualAmount">Account Type</label>
-                        <input class="modal-input" type="number" disabled id="itemActualAmount" name="itemActualAmount">
-                    </div> -->
+                    <div class="modal-item">
+                        <label for="edit-account-type">Type</label>
+                        <select id="edit-account-type" class="modal-input" name="edit-account-type" required>
+                            <% Object.keys(accountTypes).forEach(key => { %>
+                                <option value="<%= key %>"><%= accountTypes[key] %></option>
+                            <% }) %>
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Need shared with also -->
+                <label for="edit-shared-with">Joining Partner</label>
+                <select id="edit-shared-with" class="modal-input" name="edit-shared-with">
+                    <option value="">--- Select a joining partner ---</option>
+                    <% if (friends.length > 0) { %>
+                        <% friends.forEach((friend, index) => { %>
+                            <option value="<%= friend.userId %>"><%= friend.userName %></option>
+                        <% }); %>
+                    <% } %>
+                </select>
 
                 <div class="modal-item" id="edit-pot-row" style="display: none;">
                     <label for="editPotTargetDate">Target Date</label>

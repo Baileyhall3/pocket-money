@@ -157,12 +157,14 @@ exports.getFriends = async (req, res, next) => {
                 user:user_id (
                     id,
                     first_name,
-                    last_name
+                    last_name,
+                    profile_picture
                 ),
                 friend:friend_id (
                     id,
                     first_name,
-                    last_name
+                    last_name,
+                    profile_picture
                 )
             `)
             .or(`user_id.eq.${userId},friend_id.eq.${userId}`)
@@ -182,12 +184,14 @@ exports.getFriends = async (req, res, next) => {
                     user:user_id (
                         id,
                         first_name,
-                        last_name
+                        last_name,
+                        profile_picture
                     ),
                     friend:friend_id (
                         id,
                         first_name,
-                        last_name
+                        last_name,
+                        profile_picture
                     )
                 `)
                 .or(`user_id.eq.${friend.id},friend_id.eq.${friend.id}`)
@@ -202,7 +206,8 @@ exports.getFriends = async (req, res, next) => {
 
                 return {
                     friendId: friendOfFriend.id,
-                    friendName: `${friendOfFriend.first_name} ${friendOfFriend.last_name}`
+                    friendName: `${friendOfFriend.first_name} ${friendOfFriend.last_name}`,
+                    friendProfileImage: friendOfFriend.profile_picture
                 };
             });
 
@@ -217,7 +222,8 @@ exports.getFriends = async (req, res, next) => {
                 userId: friend.id,
                 userName: `${friend.first_name} ${friend.last_name}`,
                 created: friendship.created_at,
-                friendsOfFriend: transformedFriendsOfFriend
+                friendsOfFriend: transformedFriendsOfFriend,
+                profileImage: friend.profile_picture
             };
         }));
 
@@ -266,7 +272,8 @@ exports.searchUsers = async (req, res, next) => {
                 .select(`
                     friend:friend_id (
                         first_name,
-                        last_name
+                        last_name,
+                        profile_picture
                     )
                 `)
                 .or(`user_id.eq.${user.id},friend_id.eq.${user.id}`)
@@ -565,5 +572,88 @@ exports.removeFriend = async (req, res, next) => {
         next();
     } catch (error) {
         next(error);
+    }
+};
+
+exports.uploadProfilePicture = async (req, res, next) => {
+    try {
+        // Check if a file is provided
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded.' });
+        }
+
+        const userId = req.user.id;
+
+        // Skip bucket check since it's already created in Supabase dashboard
+        // Just ensure we have the correct bucket policies set
+        const { error: policyError } = await supabase.storage
+            .from('profile_pictures')
+            .createSignedUrl(`test.txt`, 60); // Test if we can create signed URLs
+
+        if (policyError && policyError.message.includes('bucket not found')) {
+            throw new Error('Profile pictures bucket not accessible. Please check bucket exists and policies are set correctly in Supabase dashboard.');
+        }
+
+        try {
+            // Delete any existing profile picture for this user
+            const { data: existingFiles } = await supabase.storage
+                .from('profile_pictures')
+                .list(userId);
+
+            if (existingFiles && existingFiles.length > 0) {
+                await Promise.all(existingFiles.map(file => 
+                    supabase.storage
+                        .from('profile_pictures')
+                        .remove([`${userId}/${file.name}`])
+                ));
+            }
+        } catch (error) {
+            console.error('Error cleaning up existing files:', error);
+            // Continue even if cleanup fails
+        }
+
+        // Upload new profile picture
+        const fileName = `profile_${Date.now()}.${req.file.mimetype.split('/')[1]}`;
+        const { error: uploadError } = await supabase.storage
+            .from('profile_pictures')
+            .upload(`${userId}/${fileName}`, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: true,
+            });
+
+        if (uploadError) {
+            console.error('Supabase Upload Error:', uploadError.message);
+            throw new Error('Failed to upload profile picture.');
+        }
+
+        // Get the public URL for the uploaded image
+        const { data: publicUrlData } = supabase.storage
+            .from('profile_pictures')
+            .getPublicUrl(`${userId}/${fileName}`);
+
+        if (!publicUrlData) {
+            throw new Error('Failed to get public URL for profile picture.');
+        }
+
+        // Update the user's profile picture URL in the users table
+        const { error: userError } = await supabase
+            .from('users')
+            .update({ profile_picture: publicUrlData.publicUrl })
+            .eq('id', userId);
+
+        if (userError) {
+            console.error('User Update Error:', userError.message);
+            throw new Error('Failed to update user with new picture URL.');
+        }
+
+        // Success response
+        res.status(200).json({ 
+            success: true, 
+            url: publicUrlData.publicUrl,
+            message: 'Profile picture updated successfully!'
+        });
+    } catch (error) {
+        console.error('Upload Profile Picture Error:', error.message);
+        res.status(500).json({ error: error.message });
     }
 };
