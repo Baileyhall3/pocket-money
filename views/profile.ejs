@@ -83,15 +83,17 @@
                     <% if (friends.length > 0) { %>
                         <% friends.forEach((friend, index) => { %>
                             <div class="friend-row" data-name="<%= friend.userName %>">
-                                <% if (friend.profileImage) { %>
-                                    <img id="profile-icon" 
-                                        src="<%= friend.profileImage %>" 
-                                        alt="Profile Picture"
-                                        class="profile-img"
-                                    />
-                                <% } else { %>
-                                    <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                                <% } %>
+                                <div class="friend-icon">
+                                    <% if (friend.profileImage) { %>
+                                        <img id="profile-icon" 
+                                            src="<%= friend.profileImage %>" 
+                                            alt="Profile Picture"
+                                            class="profile-img"
+                                        />
+                                    <% } else { %>
+                                        <i class="fa fa-user" style="display: flex;"></i>
+                                    <% } %>
+                                </div>
                                 <span class="friend-name">
                                     <%= friend.userName %>
                                 </span>

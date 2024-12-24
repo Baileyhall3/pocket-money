@@ -12,15 +12,17 @@
         <% if (usersExcludingCurrent.length > 0) { %>
             <% usersExcludingCurrent.forEach((result, index) => { %>
                 <div class="friend-row" data-name="<%= result.first_name + result.last_name %>">
-                    <% if (result.profile_picture) { %>
-                        <img id="profile-icon" 
-                            src="<%= result.profile_picture %>" 
-                            alt="Profile Picture"
-                            class="profile-img"
-                        />
-                    <% } else { %>
-                        <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                    <% } %>
+                    <div class="friend-icon">
+                        <% if (result.profile_picture) { %>
+                            <img id="profile-icon" 
+                                src="<%= result.profile_picture %>" 
+                                alt="Profile Picture"
+                                class="profile-img"
+                            />
+                        <% } else { %>
+                            <i class="fa fa-user" style="display: flex;"></i>
+                        <% } %>
+                    </div>
                     <span class="friend-name">
                         <%= result.first_name + ' ' + result.last_name %>
                     </span>
