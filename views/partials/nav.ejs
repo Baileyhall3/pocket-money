@@ -11,7 +11,17 @@
     <div class="profile-dropdown-container">
         <div class="dropdown">
             <button class="profile-btn" id="profile-btn">
-                <i class="fa fa-user"></i>
+                <div class="friend-icon" style="width: 30px; height: 30px;">
+                    <% if (user.profile_picture) { %>
+                        <img id="profile-icon" 
+                            src="<%= user.profile_picture %>" 
+                            alt="Profile Picture"
+                            class="profile-img"
+                        />
+                    <% } else { %>
+                        <i class="fa fa-user" style="display: flex;"></i>
+                    <% } %>
+                </div>
                 <span id="user-name"><%= user.first_name %></span>
             </button>
             <div class="dropdown-content left" id="profile-dropdown">

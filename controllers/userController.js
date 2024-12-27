@@ -302,14 +302,22 @@ exports.searchUsers = async (req, res, next) => {
 exports.getSharedWithUser = async (req, res, next) => {
     try {
         const sharedWithId = req.sharedWithId;
+        const ownerId = req.owner_id;
+        const userId = req.user.id;
 
         if (!sharedWithId) {
             req.sharedWithUser = null;
             return next();
         }
+        
+        let sharedWithUser = null;
+        if (sharedWithId == userId) {
+            sharedWithUser = await getUserById(ownerId);
+        } else {
+            sharedWithUser = await getUserById(sharedWithId);
+        }
 
-        const sharedWithUser = await getUserById(sharedWithId);
-        req.sharedWithUser = sharedWithUser;
+        req.sharedWithUser = {...sharedWithUser, owner_id: ownerId };
         next();
     } catch (error) {
         next(error);

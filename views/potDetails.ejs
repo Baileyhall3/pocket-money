@@ -22,7 +22,8 @@
                         <%- include('partials/savingsDoughnut', { 
                             chartId: `pot-chart-${pot.id}`, 
                             actualAmount: pot.actual_amount, 
-                            totalAmount: pot.target_amount 
+                            totalAmount: pot.target_amount,
+                            reverseColours: false
                         }) %>
                         <h3 id="title-display">Savings Goal: £<%= pot.actual_amount + " / £" + pot.target_amount %></h3>
                         <% if (pot.target_date) { %>
@@ -48,23 +49,57 @@
             
             <div class="charts-wrapper">
                 <% if (pot.shared_with_id) { %>
-                    <div class="container-rounded variable-width-50">
-                        <h3>Pot Participants</h3>
-                        <div class="friend-row">
-                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                            <span class="friend-name">
-                                <%= sharedWithUser.first_name + " " + sharedWithUser.last_name %>
-                            </span>
-            
-                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
-                                <div class="dropdown-content">
-                                    <a href="#">Profile</a>
-                                    <a href="#">Remove from Pot</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <%- include('partials/itemParticipants', { 
+                        user: user, 
+                        sharedWithUser: sharedWithUser, 
+                        sharedWithTitle: 'Pot Participants' 
+                    }) %>
                 <% } %>
+
+                <div class="container-rounded variable-width-50">
+                    <h3>Pot Analytics</h3>
+                    <% if (pot.target_date) { 
+                        const today = new Date();
+                        const targetDate = new Date(pot.target_date);
+                        const daysLeft = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+                        const remainingAmount = pot.target_amount - pot.actual_amount;
+                        const dailySavings = (remainingAmount / daysLeft).toFixed(2);
+                        const weeklySavings = (remainingAmount / (daysLeft / 7)).toFixed(2);
+                        const monthlySavings = (remainingAmount / (daysLeft / 30)).toFixed(2);
+                        const isAfterTargetDate = targetDate < today;
+                        const endDaysAgo = Math.ceil((today - targetDate) / (1000 * 60 * 60 * 24));
+                        %>
+                            <% if (!isAfterTargetDate) { %>
+                                <% if (daysLeft <= 7) { %>
+                                    <p>💡 You need to save <strong>£<%= dailySavings %></strong> per day to meet your target by <%= DateUtils.toLongDate(pot.target_date) %>.</p>
+                                <% } else if (daysLeft <= 30) { %>
+                                    <p>💡 You need to save <strong>£<%= weeklySavings %></strong> per week to meet your target by <%= DateUtils.toLongDate(pot.target_date) %>.</p>
+                                <% } else { %>
+                                    <p>💡 You need to save <strong>£<%= monthlySavings %></strong> per month to meet your target by <%= DateUtils.toLongDate(pot.target_date) %>.</p>
+                                <% } %>
+                            <% } else { %>
+                                <% if (pot.actual_amount != pot.target_amount) { %>
+                                <p>
+                                    <!-- <i class="fa fa-exclamation-triangle" style="color: red;"></i> -->
+                                    ⚠️ Your target date was <%= endDaysAgo %> days ago and you haven't reached your target amount! Consider changing your target date.
+                                </p>
+                                <% } else { %>
+                                    <p>
+                                        ✅ Your target date was <strong><%= endDaysAgo %></strong> days ago, and you reached your goal. Well done!
+                                    </p>
+                                <% } %>
+                            <% } %>
+                    <% } %>
+                    <% const nextMilestone = Math.ceil(pot.actual_amount / pot.target_amount * 100 / 25) * 25; 
+                        const milestoneAmount = (pot.target_amount * (nextMilestone / 100)).toFixed(2);
+                        const amountToMilestone = (milestoneAmount - pot.actual_amount).toFixed(2);
+                    %>
+                    <% if(amountToMilestone != 0 && nextMilestone != 0) { %>
+                        <p>You’re £<%= amountToMilestone %> away from reaching <strong><%= nextMilestone %>%</strong> of your savings goal!</p>
+                    <% } else if (amountToMilestone == 0 && nextMilestone != 0) { %>
+                        <p>You just reached the <strong><%= nextMilestone %>%</strong> mark of your savings goal!</p>
+                    <% } %>
+                </div>
             </div>
         </div>
     </div>

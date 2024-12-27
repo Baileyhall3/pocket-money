@@ -106,6 +106,7 @@ router.get('/accounts/:id',
     accountsController.getAccountById, 
     (req, res, next) => {
         req.sharedWithId = req.account.shared_with_id;
+        req.owner_id = req.account.user_id;
         req.type = 'account';
         req.id = req.account.id;
         next();
@@ -219,6 +220,7 @@ router.get('/savings/pot/:id',
     potsController.getPotById,
     (req, res, next) => {
         req.sharedWithId = req.pot.shared_with_id;
+        req.owner_id = req.pot.user_id;
         next();
     },
     userController.getSharedWithUser,
@@ -251,6 +253,7 @@ router.get('/savings/budget/:id',
     budgetsController.getBudgetById,
     (req, res, next) => {
         req.sharedWithId = req.budget.shared_with_id;
+        req.owner_id = req.budget.user_id;
         req.type = 'budget';
         req.id = req.budget.id;
         next();

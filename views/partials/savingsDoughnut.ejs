@@ -4,8 +4,9 @@
         const chartId = '<%= chartId %>';
         const actual = <%= actualAmount %>;
         const total = <%= totalAmount %>;
+        const reverse = <%= reverseColours %>;
 
-        refreshManager.createDoughnutChart(chartId, actual, total)
+        refreshManager.createDoughnutChart(chartId, actual, total, reverse)
 
     });
 </script>

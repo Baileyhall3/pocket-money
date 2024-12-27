@@ -45,22 +45,11 @@
                     <canvas id="balanceHistoryChart"></canvas>
                 </div> -->
                 <% if (account.shared_with_id) { %>
-                    <div class="container-rounded variable-width-50">
-                        <h3>Account Partner</h3>
-                        <div class="friend-row">
-                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                            <span class="friend-name">
-                                <%= sharedWithUser.first_name + " " + sharedWithUser.last_name %>
-                            </span>
-            
-                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
-                                <div class="dropdown-content">
-                                    <a href="#">Profile</a>
-                                    <a href="#">Remove from account</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <%- include('partials/itemParticipants', { 
+                        user: user, 
+                        sharedWithUser: sharedWithUser, 
+                        sharedWithTitle: 'Account Partner' 
+                    }) %>
                 <% } %>
                 <div  class="transaction-section-detail variable-width-50">
                     <%- include('partials/transactions', { 

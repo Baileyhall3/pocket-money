@@ -1,0 +1,42 @@
+<div class="container-rounded variable-width-50">
+    <h3><%- sharedWithTitle %></h3>
+    <div class="friend-row">
+        <div class="friend-icon">
+            <% if (user.profile_picture) { %>
+                <img id="profile-icon" 
+                    src="<%= user.profile_picture %>" 
+                    alt="Profile Picture"
+                    class="profile-img"
+                />
+            <% } else { %>
+                <i class="fa fa-user" style="display: flex;"></i>
+            <% } %>
+        </div>
+        <span class="friend-name">
+            Me <%= sharedWithUser.owner_id == user.id ? ' (owner)' : '' %>
+        </span>
+    </div>
+    <div class="friend-row">
+        <div class="friend-icon">
+            <% if (sharedWithUser.profile_picture) { %>
+                <img id="profile-icon" 
+                    src="<%= sharedWithUser.profile_picture %>" 
+                    alt="Profile Picture"
+                    class="profile-img"
+                />
+            <% } else { %>
+                <i class="fa fa-user" style="display: flex;"></i>
+            <% } %>
+        </div>
+        <span class="friend-name">
+            <%= sharedWithUser.first_name + " " + sharedWithUser.last_name + (sharedWithUser.owner_id == sharedWithUser.id ? ' (owner)' : '') %>
+        </span>
+
+        <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+            <div class="dropdown-content">
+                <a href="#">Profile</a>
+                <a href="#">Remove Participant</a>
+            </div>
+        </div>
+    </div>
+</div>

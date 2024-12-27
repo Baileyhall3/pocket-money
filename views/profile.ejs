@@ -4,7 +4,7 @@
     <div class="profile">
         <div id="user-profile" class="login" style="display: contents;">
             <div class="profile-row">
-                <div style="display: flex; align-items: center;">
+                <div style=" align-items: center;">
                     <div class="profile-icon-wrapper">
                         <% if (user.profile_picture) { %>
                             <img id="profile-icon" 
@@ -17,7 +17,7 @@
                         <% } %>
                     </div>
                     <div id="profile-pic-edit" style="display: none;">
-                        <a href="#" onclick="openModal('profilePictureUploadModal')">Edit</a>
+                        <a href="#" style="margin-top: 0;" onclick="openModal('profilePictureUploadModal')">Edit</a>
                     </div>
                     
                     <!-- Modal for user profile picture upload -->
@@ -98,7 +98,10 @@
                                     <%= friend.userName %>
                                 </span>
                 
-                                <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                                <div class="dropdown">
+                                    <a href="#" class="link">
+                                        <i class="fa fa-ellipsis-h"></i>
+                                    </a>
                                     <div class="dropdown-content">
                                         <a href="#" onclick="openModal('friendModal-<%= index %>')">View Friends</a>
                                         <a href="#">Nudge</a>
@@ -205,7 +208,7 @@
             currentUsername.style.display = 'none';
             currentUerEmail.style.display = 'none';
 
-            editProfilePic.style.display = 'flex';
+            editProfilePic.style.display = 'block';
 
         } else {
             noEditElem.style.display = 'flex';
@@ -374,7 +377,7 @@
 #profile-picture-preview {
     max-width: 150px;
     max-height: 150px;
-    border-radius: 50%;
+    /* border-radius: 50%; */
     object-fit: cover;
     border: 2px solid #ddd;
     margin-top: 10px;

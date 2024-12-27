@@ -246,7 +246,7 @@ class RefreshManager {
             delete this.doughNutCharts[chartId];
         }
 
-        this.doughNutCharts[chartId] = this.createDoughnutChart(chartId, updatedData.actual_amount, updatedData.target_amount);
+        this.doughNutCharts[chartId] = this.createDoughnutChart(chartId, updatedData.actual_amount, updatedData.target_amount, false);
     }
 
     async refreshBudgetChart(chartId, budgetId) {
@@ -258,7 +258,7 @@ class RefreshManager {
             delete this.doughNutCharts[chartId];
         }
 
-        this.doughNutCharts[chartId] = this.createDoughnutChart(chartId, updatedData.actual_amount, updatedData.target_amount);
+        this.doughNutCharts[chartId] = this.createDoughnutChart(chartId, updatedData.actual_amount, updatedData.target_amount, true);
     }
 
     async fetchChartData(apiEndpoint) {
@@ -275,7 +275,7 @@ class RefreshManager {
         }
     }
 
-    createDoughnutChart(chartId, actual, total) {
+    createDoughnutChart(chartId, actual, total, reverse) {
         const ctx = document.getElementById(chartId)?.getContext('2d');
 
         if (!ctx) {
@@ -284,10 +284,18 @@ class RefreshManager {
         }
 
         const percentage = (actual / total) * 100;
-        const actualColor = 
-            percentage > 75 ? '#45a049' : 
-            percentage > 25 ? '#FFA500' : 
-            '#FF0000';
+        let actualColor = '';
+        if (reverse) {
+            actualColor = 
+                percentage > 75 ? '#FF0000' : 
+                percentage > 25 ? '#FFA500' : 
+                '#45a049';
+        } else {
+            actualColor = 
+                percentage > 75 ? '#45a049' : 
+                percentage > 25 ? '#FFA500' : 
+                '#FF0000';
+        }
 
         // Create the doughnut chart
         const chart = new Chart(ctx, {

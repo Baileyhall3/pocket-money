@@ -80,9 +80,7 @@
     const accountsData = JSON.parse('<%- JSON.stringify(accounts) %>');
     
     function handleTransferClick() {
-        console.log('clicking')
         openModal('balanceTransferModal', { accounts: accountsData });
-        debugger
     }
 
     // This function renders charts for each account

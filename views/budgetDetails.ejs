@@ -20,13 +20,14 @@
                 <div class="balance-container">
                     <div class="chart-container">
                         <!-- <div id="money-bar">
-                            <div class="money-pot actual"></div>
-                            <div class="money-pot remaining"></div>
+                            <div class="money-budget actual"></div>
+                            <div class="money-budget remaining"></div>
                         </div> -->
                         <%- include('partials/savingsDoughnut', { 
                             chartId: `budget-chart-${budget.id}`, 
                             actualAmount: budget.actual_amount, 
-                            totalAmount: budget.target_amount 
+                            totalAmount: budget.target_amount,
+                            reverseColours: true
                         }) %>
                         <h3 id="title-display">Spending Performance: £<%= budget.actual_amount + " / £" + budget.target_amount %></h3>
                         <h3>Budget Period: 
@@ -42,34 +43,7 @@
                         </div>
                     <% } %> -->
                 </div>
-                
-                <% if (transactions.length > 0) { %>
-                    <div class="spending-categories-container chart-container">
-                        <h3>Spending Breakdown by Category</h3>
-                        <canvas id="spendingCategoriesChart"></canvas>
-                    </div>
-                <% } %>
-            </div>            
-            
-            <div class="charts-wrapper">
-                <% if (budget.shared_with_id) { %>
-                    <div class="container-rounded variable-width-50">
-                        <h3>Budget Buddies</h3>
-                        <div class="friend-row">
-                            <i class="fa fa-user friend-icon" style="display: flex;"></i>
-                            <span class="friend-name">
-                                <%= sharedWithUser.first_name + " " + sharedWithUser.last_name %>
-                            </span>
-            
-                            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
-                                <div class="dropdown-content">
-                                    <a href="#">Profile</a>
-                                    <a href="#">Remove from budget</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <% } %>
+
                 <div id="transactions-container" class="transaction-section-detail variable-width-50"">
                     <%- include('partials/transactions', { 
                         transactions: transactions, 
@@ -77,7 +51,97 @@
                         totalPages: totalPages 
                     }) %>
                 </div>
+            </div>            
+            
+            <div class="charts-wrapper">
+                <% if (budget.shared_with_id) { %>
+                    <%- include('partials/itemParticipants', { 
+                        user: user, 
+                        sharedWithUser: sharedWithUser, 
+                        sharedWithTitle: 'Budget Buddies' 
+                    }) %>
+                <% } %>
+                <div class="container-rounded variable-width-50">
+                    <h3>Budget Analytics</h3>
+                    
+                    <% if (budget.end_date) { 
+                        const today = new Date();
+                        const endDate = new Date(budget.end_date);
+                        const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+                        const spentAmount = budget.actual_amount;
+                        const budgetAmount = budget.target_amount;
+                        const remainingBudget = budgetAmount - spentAmount;
+                        const dailyBudget = (remainingBudget / daysLeft).toFixed(2);
+                        const weeklyBudget = (remainingBudget / (daysLeft / 7)).toFixed(2);
+                        const monthlyBudget = (remainingBudget / (daysLeft / 30)).toFixed(2);
+                        const isAfterEndDate = endDate < today;
+                        const endDaysAgo = Math.ceil((today - endDate) / (1000 * 60 * 60 * 24));
+                    %>
+                    
+                        <% if (!isAfterEndDate) { %>
+                            <% if (daysLeft <= 7) { %>
+                                <p>💡 You can spend <strong>£<%= dailyBudget %></strong> per day to stay within your budget until <%= DateUtils.toLongDate(budget.end_date) %>.</p>
+                            <% } else if (daysLeft <= 30) { %>
+                                <p>💡 You can spend <strong>£<%= weeklyBudget %></strong> per week to stay within your budget until <%= DateUtils.toLongDate(budget.end_date) %>.</p>
+                            <% } else { %>
+                                <p>💡 You can spend <strong>£<%= monthlyBudget %></strong> per month to stay within your budget until <%= DateUtils.toLongDate(budget.end_date) %>.</p>
+                            <% } %>
+                        <% } else { %>
+                            <% if (spentAmount > budgetAmount) { %>
+                                <p>
+                                    <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                                    Your budget period ended <strong><%= endDaysAgo %></strong> days ago, and you exceeded your budget by <strong>£<%= (spentAmount - budgetAmount).toFixed(2) %></strong>.
+                                </p>
+                            <% } else { %>
+                                <p>
+                                    ✅ Your budget period ended <strong><%= endDaysAgo %></strong> days ago, and you stayed within budget. Well done!
+                                </p>
+                            <% } %>
+                        <% } %>
+                        
+                        <% if (spentAmount >= budgetAmount && !isAfterEndDate) { %>
+                            <p>
+                                <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                                ⚠️ You've already reached your budget limit, but the budget period is still ongoing! Reduce spending to avoid overspending.
+                            </p>
+                        <% } %>
+                        
+                        <% const nextMilestone = Math.ceil(spentAmount / budgetAmount * 100 / 25) * 25; 
+                           const milestoneAmount = (budgetAmount * (nextMilestone / 100)).toFixed(2);
+                           const amountToMilestone = (milestoneAmount - spentAmount).toFixed(2);
+                        %>
+                        
+                        <% if (nextMilestone < 100 && amountToMilestone > 0) { %>
+                            <p>
+                                ⚠️ You’re <strong>£<%= amountToMilestone %></strong> away from utilizing <strong><%= nextMilestone %>%</strong> of your budget.
+                            </p>
+                        <% } else if (nextMilestone == 100 && amountToMilestone == 0 && !isAfterEndDate) { %>
+                            <p>
+                                <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                                ⚠️ You've fully utilized your budget, but the budget period is not over yet.
+                            </p>
+                        <% } %>
+                        
+                        <% if (spentAmount < budgetAmount && !isAfterEndDate && transactions.length > 0) { 
+                            const spendRate = (spentAmount / (budgetAmount / (daysLeft + (budgetAmount / spentAmount)))).toFixed(2);
+                        %>
+                            <p>
+                                📊 At your current spending rate, you're projected to have <strong>£<%= (remainingBudget - (spendRate * daysLeft)).toFixed(2) %></strong> remaining by the end of your budget period.
+                            </p>
+                        <% } %>
+                    <% } %>
+                </div>
             </div>
+
+            <!-- <% if (transactions.length > 0) { %>
+                <div class="spending-categories-container chart-container">
+                    <h3>Spending Breakdown by Category</h3>
+                    <canvas id="spendingCategoriesChart"></canvas>
+                </div>
+            <% } %> -->
+
+            
+            
         </div>
     </div>
 </div>

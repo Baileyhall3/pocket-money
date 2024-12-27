@@ -26,7 +26,8 @@
                                 <%- include('partials/savingsDoughnut', { 
                                     chartId: `pot-chart-${pot.id}`, 
                                     actualAmount: pot.actual_amount, 
-                                    totalAmount: pot.target_amount 
+                                    totalAmount: pot.target_amount,
+                                    reverseColours: false
                                 }) %>
                             </a>
                         <% }); %>
@@ -49,7 +50,10 @@
                 <div id="budgets-container" class="savings-container">
                     <% if (budgets.length > 0) { %>
                         <% budgets.forEach((budget)=> { %>
-                            <a href="/savings/budget/<%= budget.id %>" class="side-container" style="text-decoration: none; color: inherit;">
+                            <a href="/savings/budget/<%= budget.id %>" class="side-container budget-item" style="text-decoration: none; color: inherit;">
+                                <% if (budget.is_active) { %>
+                                    <i class="fa fa-star active-star" title="This is the active budget"></i>
+                                <% } %>
                                 <h5 style="font-size: 16px">
                                     <% if (budget.shared_with_id) { %>
                                         <i class="fa fa-handshake-o" title="This is a shared budget"></i>
@@ -63,7 +67,8 @@
                                 <%- include('partials/savingsDoughnut', { 
                                     chartId: `budget-chart-${budget.id}`, 
                                     actualAmount: budget.actual_amount, 
-                                    totalAmount: budget.target_amount 
+                                    totalAmount: budget.target_amount,
+                                    reverseColours: true
                                 }) %>
                             </a>
                         <% }); %>
