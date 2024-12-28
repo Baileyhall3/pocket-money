@@ -200,3 +200,27 @@ exports.updateBudgetAmount = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getActiveBudget = async (req, res, next) => {
+    try {
+        const userId = req.user.id;
+        
+        const { data: activeBudget, error } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('is_active', true)
+            .single();
+
+        if (error) throw error;
+        
+        if (!activeBudget) {
+            return res.status(404).send('No active budget');
+        }
+
+        req.activeBudget = activeBudget;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

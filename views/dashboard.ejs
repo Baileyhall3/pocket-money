@@ -55,7 +55,48 @@
                         </div>
                     <% } %>
                 </div>
-            </div>            
+            </div>         
+            
+            <% if (activeBudget) { %>
+                <div class="container-rounded variable-width-50">
+                    <h3>Active Budget: <%= activeBudget.name %></h3>
+                    <p>
+                        <strong>Budget Period: </strong> 
+                        <%= DateUtils.toLongDate(activeBudget.start_date) + (activeBudget.end_date ? ' - ' + DateUtils.toLongDate(activeBudget.end_date) : '') %>
+                    </p>
+                    <div id="money-bar">
+                        <% 
+                            const progressPercentage = (activeBudget.actual_amount / activeBudget.target_amount) * 100; 
+                            const progress = progressPercentage > 100 ? 100 : progressPercentage; // Cap at 100%
+                            const barClass = progress > 90 ? 'over' : (progress > 70 ? 'warning' : '');
+                        %>
+                        <div class="money-budget actual <%= barClass %>" style="width: <%= progress %>%;">
+                            <!-- <span><%= progress.toFixed(1) %>%</span> -->
+                        </div>
+                        <% if (activeBudget.start_date && activeBudget.end_date) { 
+                            const today = new Date();
+                            const startDate = new Date(activeBudget.start_date);
+                            const endDate = new Date(activeBudget.end_date);
+                            
+                            if (today >= startDate && today <= endDate) {
+                                const totalDays = (endDate - startDate) / (1000 * 60 * 60 * 24); // Total budget duration in days
+                                const daysPassed = (today - startDate) / (1000 * 60 * 60 * 24); // Days passed since start
+                                const todayPercentage = (daysPassed / totalDays) * 100; // Position marker on the bar
+                        %>
+                        <div class="today-marker" style="left: <%= todayPercentage %>%;">
+                            <div class="today-label">Today</div>
+                        </div>
+                        <% 
+                            }
+                        } %>
+                    </div>
+                    <p>
+                        £<%= activeBudget.actual_amount %> spent out of £<%= activeBudget.target_amount %>
+                    </p>
+                </div>
+            <% } %>
+            
+
             <!-- <div class="side-container-group">    
                 <div class="container-rounded container-rounded-pointer" data-type="account">
                     <h5 class="account-title">My Accounts</h5>

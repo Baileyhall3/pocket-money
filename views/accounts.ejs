@@ -18,7 +18,7 @@
                         const limitedTransactions = accountTransactions.slice(0, 5);
                     %>
                     <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;">
-                        <div class="account-container container-rounded-pointer">
+                        <div class="account-container container-rounded-pointer account-item">
                             <% if (limitedTransactions.length > 0) { %>
                                 <div class="account-chart-container">
                                     <canvas id="account-chart-<%= account.id %>"></canvas>
@@ -32,6 +32,9 @@
                                         | 
                                     <% } %>
                                     <%= account.name + ' (£' + account.balance + ')' %>
+                                    <% if (account.is_active) { %>
+                                        <i class="fa fa-star active-account-star" title="This is the active account"></i>
+                                    <% } %>
                                 </h5>
                                 <% if (limitedTransactions.length > 0) { %>
                                     <% limitedTransactions.forEach(transaction => { %>
