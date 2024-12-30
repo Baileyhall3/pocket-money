@@ -27,6 +27,23 @@ router.post('/alerts/friend-request', async (req, res) => {
     }
 });
 
+
+router.post('/alerts/milestone', async (req, res) => {
+    const { userId, potName, targetAmount, currentAmount } = req.body;
+
+    if (!userId || !potName || !targetAmount || !currentAmount) {
+        return res.status(400).json({ error: 'Missing values' });
+    }
+
+    try {
+        await alertsController.createMilestoneAlert(userId, potName, targetAmount, currentAmount);
+        res.status(201).json({ success: true, message: 'Milestone alert created.' });
+    } catch (error) {
+        console.error('Error creating milestone alert:', error);
+        res.status(500).json({ success: false, error: 'Failed to create milestone alert.' });
+    }
+})
+
 router.post('/alerts/nudge', async (req, res) => {
     const { userId, friendName, sentById } = req.body;
 

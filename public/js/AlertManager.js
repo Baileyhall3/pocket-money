@@ -147,6 +147,40 @@ class AlertManager {
         }
     }
 
+    // TODO: Finish this
+    async sendMilestoneAlert(userId, potName, targetAmount, currentAmount) {
+        try {
+            const response = await fetch('/alerts/milestone', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: targetPerson.id,
+                    friendName: `${currentUser.first_name} ${currentUser.last_name}`,
+                    sentById: currentUser.id,
+                }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                console.log('Milestone alert created successfully:', result.message);
+
+                // this.showAlert({
+                //     title: 'Nudge Sent!',
+                //     body: `Your nudge to ${targetPerson.first_name} was successful.`,
+                //     type: 'milestone',
+                // });
+            } else {
+                console.error('Error creating nudge alert:', result.error);
+            }
+        } catch (error) {
+            this.networkError();           
+            console.error('Error sending nudge alert:', error);
+        }
+    }
+
     networkError() {
         this.showAlert({
             title: 'Network Error',

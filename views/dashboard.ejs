@@ -12,9 +12,20 @@
                     <canvas id="spending-chart"></canvas>
                     <% if (transactions.length > 0) { %>
                         <div class="account-summary">
-                            <!-- <p>Total Spent Last 30 Days: £2,800</p>
-                            <p>Largest Transaction: <span id="largest-transaction">0</span></p>
-                            <p>Most Spent Category: Housing</p> -->
+                            <% const largestExpenseTransaction = transactions
+                                .filter(t => t.type === 'expense')
+                                .reduce((max, t) => (t.amount > (max?.amount || 0) ? t : max), null);
+
+                                const today = new Date();
+                                const thirtyDaysAgo = new Date();
+                                thirtyDaysAgo.setDate(today.getDate() - 30);
+                        
+                                const totalSpendLast30Days = transactions
+                                    .filter(t => t.type === 'expense' && new Date(t.date_made) >= thirtyDaysAgo)
+                                    .reduce((sum, t) => sum + t.amount, 0);
+                            %>
+                            <p>💡<strong>Total Spending (Last 30 Days):</strong> £<%= totalSpendLast30Days.toFixed(2) %></p>
+                            <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpenseTransaction.amount.toFixed(2) + ' (' + largestExpenseTransaction.name + ')' %></p>
                         </div>
                     <% } else { %>
                         <div class="">
@@ -24,10 +35,10 @@
                 </div>
                 
                 <div class="chart-container">
-                    <h3>Savings by Account</h3>
+                    <h3>Balance by Account</h3>
                     <canvas id="savingsByAccountChart"></canvas>
 
-                    <h5 class="account-title">Recent Transactions</h5>
+                    <h5 class="account-title" style="font-size: 18px;">Recent Transactions</h5>
                     <% if (transactions.length > 0) { %>
                         <% transactions.slice(0, 5).forEach(transaction => { %>
                             <div class="transaction">
@@ -95,32 +106,8 @@
                     </p>
                 </div>
             <% } %>
-            
-
-            <!-- <div class="side-container-group">    
-                <div class="container-rounded container-rounded-pointer" data-type="account">
-                    <h5 class="account-title">My Accounts</h5>
-                    <% if (accounts.length > 0) { %>
-                        <% accounts.slice(0, 3).forEach((account)=> { %>
-                            <div class="transaction">
-                                <div class="money-bar-header" style="margin-top: 10px;">
-                                    <h5 style="font-size: 18px; margin: 0;">
-                                        <%= account.name %>
-                                        <% if (account.sharedWithId) { %>
-                                            - shared with <%= account.sharedWithId %>
-                                        <% } %>
-                                    </h5>
-                                    <p style="font-size: 20px; margin: 0; color: #45a049">£<%= account.balance %></p>
-                                </div>
-                            </div>
-                        <% }); %>
-                    <% } %>              
-                </div>
-            </div> -->
         </div>
     </div>
-
-    
 </div>
 
 
@@ -188,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Savings',
+                    label: 'Balance',
                     data: data, 
                     backgroundColor: [
                         'rgba(75, 192, 192, 0.6)',

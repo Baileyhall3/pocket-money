@@ -64,9 +64,10 @@ exports.createBudget = async (req, res, next) => {
             endDate = null,
             accountId = null,
             isActive = false,
-            sharedWithId = null
+            sharedWithId = null,
         } = req.body;
         const userId = req.user.id;
+        const includeRecurring = req.body.includeRecurring || false;
 
         const { data: newBudget, error } = await supabase
             .from('budgets')
@@ -85,6 +86,31 @@ exports.createBudget = async (req, res, next) => {
             .single();
 
         if (error) throw error;
+
+        if (includeRecurring) {
+            console.log('Importing recurring transactions for budget:', newBudget.id);
+            try {
+                const { data, error: procedureError } = await supabase.rpc('import_recurrent_transactions', {
+                    new_budget_id: newBudget.id,
+                    current_user_id: userId
+                });
+                
+                if (procedureError) {
+                    console.error('Error importing recurring transactions:', procedureError);
+                    return res.status(500).json({ 
+                        success: false, 
+                        error: `Failed to import recurring transactions: ${procedureError.message}` 
+                    });
+                }
+                console.log('Successfully imported recurring transactions');
+            } catch (rpcError) {
+                console.error('RPC call failed:', rpcError);
+                return res.status(500).json({ 
+                    success: false, 
+                    error: 'Failed to import recurring transactions. Please try again.' 
+                });
+            }
+        }
 
         req.budget = newBudget;
         next();

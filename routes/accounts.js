@@ -22,7 +22,7 @@ router.get('/accounts',
 );
 
 // Accounts
-router.post('/accounts/create', accountsController.createAccount, (req, res) => {
+router.post('/accounts/create', requireAuth, accountsController.createAccount, (req, res) => {
     res.json({ success: true, account: req.account });
 });
 
@@ -46,7 +46,7 @@ router.post('/accounts/transfer', requireAuth, accountsController.transferBalanc
 
 
 // Pots
-router.post('/pots/create', potsController.createPot, (req, res) => {
+router.post('/pots/create', requireAuth, potsController.createPot, (req, res) => {
     res.json({ success: true, pot: req.pot });
 });
 
@@ -68,7 +68,7 @@ router.delete('/pots/:id', requireAuth, potsController.deletePot, (req, res) => 
 
 
 // Budgets
-router.post('/budgets/create', budgetsController.createBudget, (req, res) => {
+router.post('/budgets/create', requireAuth, budgetsController.createBudget, (req, res) => {
     res.json({ success: true, budget: req.budget });
 });
 

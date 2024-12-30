@@ -29,7 +29,7 @@
                     </div>
                     <% if (transactions.length > 0) { %>
                         <!-- Make this show savings if account is savings account, line chart instead ???-->
-                        <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
+                        <div class="chart-container" style="max-height: 600px; padding-bottom: 10vh;">
                             <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
                             <canvas id="accountTransactionsChart"></canvas>
                         </div>
@@ -104,7 +104,7 @@
                     const averageDailySpend = (totalExpense / daysSinceCreation).toFixed(2);
                 %>
             
-                <p>💡<strong>Net Spend:</strong> £<%= netSpend.toFixed(2) %></p>
+                <p>💡<strong>Net Spend Since Account Creation:</strong> £<%= netSpend.toFixed(2) %></p>
                 <p>💡<strong>Total Spending (Last 7 Days):</strong> £<%= totalSpendLast7Days.toFixed(2) %></p>
                 <p>💡<strong>Largest Single Income:</strong> £<%= largestIncome.toFixed(2) %></p>
                 <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpense.toFixed(2) %></p>
@@ -118,7 +118,7 @@
                     </p>
                 <% } %>
             
-                <% if (totalSpendLast7Days > (totalExpense / daysSinceCreation * 7)) { %>
+                <% if (totalSpendLast7Days > (totalExpense / (daysSinceCreation * 7))) { %>
                     <p style="color: orange;">
                         <i class="fa fa-exclamation-circle"></i>
                         Your spending in the last 7 days is higher than your average weekly spend.

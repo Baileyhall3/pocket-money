@@ -22,7 +22,25 @@
                         
                         <% if (transactionsForFrequency.length > 0) { %>
                             <% transactionsForFrequency.forEach(transaction => { %>
-                                <div class="transaction">
+                                <div id="recTransactionModal-<%= transaction.id %>" class="modal">
+                                    <div class="modal-content">
+                                        <span class="close" onclick="closeModal('recTransactionModal-<%= transaction.id %>')">&times;</span>
+                                        <div class="modal-header">
+                                            <h2><%= transaction.description %></h2>
+                                        </div>
+                                        <p>Amount: £<%- transaction.amount %></p>
+                                        <p>Start Date: <%- DateUtils.toDateTime(transaction.start_date) %> </p>
+                                        <!--Made by???-->
+                                        <div class="modal-buttons-end">
+                                            <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('recTransactionModal-<%= transaction.id %>')">Cancel</button>
+                                            <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction(<%= JSON.stringify(transaction) %>)">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="transaction transaction-editable" onclick="openModal('recTransactionModal-<%- transaction.id %>')">
                                     <div class="money-bar-header">
                                         <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type === 'expense' ? 'expense' : '' %>">
                                             <%= transaction.description %>
@@ -36,7 +54,7 @@
                                             <%= transaction.category %>
                                         </h5>
                                         <p style="font-size: 14px; margin: 0;" class="<%= transaction.type === 'expense' ? 'expense' : 'normal' %>">
-                                            <%= transaction.startDate %>
+                                            <%= DateUtils.toShortDate(transaction.start_date) %>
                                         </p>
                                     </div>
                                 </div>
@@ -49,7 +67,6 @@
                     </div>
                 <% }); %>
             </div>
-            
         </div>
     </div>
             
@@ -89,16 +106,46 @@
             'end-date'
         );
 
-        const filterBtn = document.getElementById('filter-btn');
-        const filtersSection = document.getElementById('filters-section');
+        // const filterBtn = document.getElementById('filter-btn');
+        // const filtersSection = document.getElementById('filters-section');
 
-        filterBtn.addEventListener('click', function(e) {
-            e.preventDefault();
+        // filterBtn.addEventListener('click', function(e) {
+        //     e.preventDefault();
             
-            filtersSection.classList.toggle('visible');
-            filtersSection.style.display = 'block'
-        });
+        //     filtersSection.classList.toggle('visible');
+        //     filtersSection.style.display = 'block'
+        // });
     });
+
+    async function deleteTransaction(transaction) {
+
+        try {
+            const response = await fetch(`/recurrent-transactions/${transaction.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                closeModal(`recTransactionModal-${transaction.id}`)
+                alertManager.showAlert({
+                    title: 'Transaction Deleted Successfully.',
+                    type: 'success',
+                });
+            } else {
+                const error = await response.json();
+                alertManager.showAlert({
+                    title: 'Delete Failed',
+                    body: `Error: while deleting transaction: ${error}`,
+                    type: 'error-alert',
+                });
+            }
+        } catch (err) {
+            console.error('Error deleting transaction:', err);
+            alert('An error occurred while deleting the transaction.');
+        }
+    }
 
     
 </script>

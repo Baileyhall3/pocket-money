@@ -411,8 +411,9 @@ async function createBudget(event) {
         startDate: formData.get('budgetStartDate') ? new Date(formData.get('budgetStartDate')).toISOString().split('T')[0] : null,
         endDate: formData.get('budgetEndDate') ? new Date(formData.get('budgetEndDate')).toISOString().split('T')[0] : null,
         accountId: formData.get('accountId') || null,
-        isActive: formData.get('activeBudget') || false,
-        sharedWithId: formData.get('sharedWith') || null
+        isActive: formData.get('activeBudget') === 'on',
+        sharedWithId: formData.get('sharedWith') || null,
+        includeRecurring: formData.get('importRecurring') === 'on',
     };
 
     if ((data.startDate && data.endDate) && data.startDate > data.endDate) {
@@ -428,9 +429,22 @@ async function createBudget(event) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
+            credentials: 'include' // Add this to include authentication cookies
         });
 
-        const result = await response.json();
+        // Log the raw response for debugging
+        console.log('Response status:', response.status);
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Failed to parse response as JSON:', e);
+            errorMessage.textContent = 'Server returned invalid response. You may need to log in again.';
+            return false;
+        }
 
         if (response.ok && result.success) {
             alertManager.showAlert({
@@ -443,7 +457,7 @@ async function createBudget(event) {
         }
     } catch (error) {
         console.error('Error creating budget:', error);
-        errorMessage.textContent = error.message;
+        errorMessage.textContent = error.message || 'An error occurred. Please try logging in again.';
         return false;
     }
 }
