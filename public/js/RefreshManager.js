@@ -143,6 +143,8 @@ class RefreshManager {
                 this.refreshPotChart(chartId, item.id);
             } else if (item.type == 'budget') {
                 this.refreshBudgetChart(chartId, item.id);
+            } else {
+                location.reload();
             }
 
         } catch (error) {

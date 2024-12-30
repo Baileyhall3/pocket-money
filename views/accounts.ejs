@@ -16,6 +16,7 @@
                     <% 
                         const accountTransactions = transactions.filter(transaction => transaction.account_id === account.id);
                         const limitedTransactions = accountTransactions.slice(0, 5);
+                        const sortedTransactions = limitedTransactions.sort((a, b) => new Date(b.date_made) - new Date(a.date_made));
                     %>
                     <a href="/accounts/<%= account.id %>" style="text-decoration: none; color: inherit;">
                         <div class="account-container container-rounded-pointer account-item">
@@ -102,11 +103,9 @@
                 // Get the last 7 days in DD/MM/YYYY format
                 const labels = getLast7Days();
 
-                // Prepare the data for the chart
                 const spendingData = labels.map(date => {
-                    // Sum up the transactions for each specific date
                     const dailyTotal = accountTransactions
-                        .filter(transaction => transaction.date_made === date) // Compare against the formatted date
+                        .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
                         .reduce((total, transaction) => total + transaction.amount, 0);
                     return dailyTotal;
                 });

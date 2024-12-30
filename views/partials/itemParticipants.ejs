@@ -32,11 +32,13 @@
             <%= sharedWithUser.first_name + " " + sharedWithUser.last_name + (sharedWithUser.owner_id == sharedWithUser.id ? ' (owner)' : '') %>
         </span>
 
-        <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
-            <div class="dropdown-content">
-                <a href="#">Profile</a>
-                <a href="#">Remove Participant</a>
+        <% if (sharedWithUser.owner_id == user.id) { %>
+            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                <div class="dropdown-content">
+                    <!-- <a href="#">Profile</a> -->
+                    <a href="#">Remove Participant</a>
+                </div>
             </div>
-        </div>
+        <% } %>
     </div>
 </div>

@@ -10,8 +10,13 @@
                 <h3><a class="link" id="budget-actions-btn" href="#">Budget Actions</a></h3>
                 <div class="dropdown-content" id="budget-actions-dropdown">
                     <a onclick="openModal('logTransactionModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= escape(budget.name) %>' })" href="#">Log Transaction</a>
-                    <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(budget) %>)" href="#">Edit Budget</a>
-                    <a onclick="openModal('deleteConfirmModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= escape(budget.name) %>' })" href="#">Delete Budget</a>
+                    <% if (sharedWithUser && sharedWithUser.owner_id != user.id) { %>
+                            <a href="#" class="disabled-link" title="Only the owner can edit this budget">Edit Budget</a>
+                            <a href="#" class="disabled-link" title="Only the owner can delete this budget">Delete Budget</a>
+                        <% } else { %>
+                            <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(budget) %>)" href="#">Edit Budget</a>
+                            <a onclick="openModal('deleteConfirmModal', { id: '<%= budget.id %>', type: 'budget', name: '<%= escape(budget.name) %>' })" href="#">Delete Budget</a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -19,10 +24,6 @@
             <div class="charts-wrapper">
                 <div class="balance-container">
                     <div class="chart-container">
-                        <!-- <div id="money-bar">
-                            <div class="money-budget actual"></div>
-                            <div class="money-budget remaining"></div>
-                        </div> -->
                         <%- include('partials/savingsDoughnut', { 
                             chartId: `budget-chart-${budget.id}`, 
                             actualAmount: budget.actual_amount, 
@@ -89,7 +90,7 @@
                         <% } else { %>
                             <% if (spentAmount > budgetAmount) { %>
                                 <p>
-                                    <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                                    <!-- <i class="fa fa-exclamation-triangle" style="color: red;"></i> -->
                                     Your budget period ended <strong><%= endDaysAgo %></strong> days ago, and you exceeded your budget by <strong>£<%= (spentAmount - budgetAmount).toFixed(2) %></strong>.
                                 </p>
                             <% } else { %>
@@ -101,7 +102,7 @@
                         
                         <% if (spentAmount >= budgetAmount && !isAfterEndDate) { %>
                             <p>
-                                <i class="fa fa-exclamation-triangle" style="color: red;"></i>
+                                <!-- <i class="fa fa-exclamation-triangle" style="color: red;"></i> -->
                                 ⚠️ You've already reached your budget limit, but the budget period is still ongoing! Reduce spending to avoid overspending.
                             </p>
                         <% } %>
@@ -115,13 +116,7 @@
                             <p>
                                 ⚠️ You’re <strong>£<%= amountToMilestone %></strong> away from utilizing <strong><%= nextMilestone %>%</strong> of your budget.
                             </p>
-                        <% } else if (nextMilestone == 100 && amountToMilestone == 0 && !isAfterEndDate) { %>
-                            <p>
-                                <i class="fa fa-exclamation-triangle" style="color: red;"></i>
-                                ⚠️ You've fully utilized your budget, but the budget period is not over yet.
-                            </p>
                         <% } %>
-                        
                         <% if (spentAmount < budgetAmount && !isAfterEndDate && transactions.length > 0) { 
                             const spendRate = (spentAmount / (budgetAmount / (daysLeft + (budgetAmount / spentAmount)))).toFixed(2);
                         %>
@@ -132,16 +127,6 @@
                     <% } %>
                 </div>
             </div>
-
-            <!-- <% if (transactions.length > 0) { %>
-                <div class="spending-categories-container chart-container">
-                    <h3>Spending Breakdown by Category</h3>
-                    <canvas id="spendingCategoriesChart"></canvas>
-                </div>
-            <% } %> -->
-
-            
-            
         </div>
     </div>
 </div>

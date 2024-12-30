@@ -1267,6 +1267,14 @@ canvas {
     z-index: 10;
 }
 
+.disabled-link {
+    cursor:none;
+    color: #bbb;
+    cursor: not-allowed;
+    background-color: #ddd;
+    /* text-decorationrgb(191, 191, 192)through; */
+}
+
 .profile-container {
     justify-content: center;
 }
@@ -1517,7 +1525,7 @@ canvas {
 
     .dropdown-content {
         left: 0;
-        transform: translateX(-75%);
+        transform: translateX(-50%);
     }
 
     .dropdown {

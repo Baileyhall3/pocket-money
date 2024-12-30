@@ -64,12 +64,18 @@
                         <input class="modal-input" type="date" id="itemEndDate" name="itemEndDate">
                     </div>
                 </div>
-
+                
+                <div id="itemActiveRow" style="display: none;">
+                    <label for="editItemActive">
+                        <input type="checkbox" id="editItemActive" name="editItemActive">
+                        Is active
+                    </label>
+                </div>
 
                 <p id="item-created"></p>
-                <div id="info-message" class="info-text modal-row">
-                    <!--Info msg-->
-                </div>
+                <div id="info-message" class="info-text modal-row"></div>
+                <div id="error-message" class="error modal-row"></div>
+
                 <div id="is-editing" class="modal-buttons-end">
                     <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('itemDetailsModal')">Close</button>
                     <button type="submit" class="modal-footer-btn save-btn">Save</button>

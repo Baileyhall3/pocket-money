@@ -52,7 +52,8 @@
     </div>
 
     <% if (transactions.length > 0) { %>
-        <% transactions.forEach((transaction, index) => { %>
+        <% const sortedTransactions = transactions.sort((a, b) => new Date(b.date_made) - new Date(a.date_made));
+        sortedTransactions.forEach((transaction, index) => { %>
 
             <div id="transactionModal-<%= index %>" class="modal">
                 <div class="modal-content">

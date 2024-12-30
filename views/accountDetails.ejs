@@ -10,8 +10,13 @@
                 <h3><a class="link" href="#">Actions</a></h3>
                 <div class="dropdown-content" id="add-dropdown">
                     <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Log Transaction</a>
-                    <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(account) %>)" href="#">Edit Account</a>
-                    <a onclick="openModal('deleteConfirmModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Remove Account</a>
+                    <% if (sharedWithUser && sharedWithUser.owner_id != user.id) { %>
+                            <a href="#" class="disabled-link" title="Only the owner can edit this account">Edit Account</a>
+                            <a href="#" class="disabled-link" title="Only the owner can delete this account">Remove Account</a>
+                        <% } else { %>
+                            <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(account) %>)" href="#">Edit Account</a>
+                            <a onclick="openModal('deleteConfirmModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Remove Account</a>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -51,7 +56,7 @@
                         sharedWithTitle: 'Account Partner' 
                     }) %>
                 <% } %>
-                <div  class="transaction-section-detail variable-width-50">
+                <div class="transaction-section-detail variable-width-50">
                     <%- include('partials/transactions', { 
                         transactions: transactions, 
                         currentPage: currentPage, 
@@ -59,6 +64,68 @@
                     }) %>
                 </div>
             </div>
+
+            <div class="container-rounded variable-width-50">
+                <h3>Account Analytics</h3>
+                <% 
+                    const today = new Date();
+                    const accountCreationDate = new Date(account.created_at);
+                    const daysSinceCreation = Math.ceil((today - accountCreationDate) / (1000 * 60 * 60 * 24));
+            
+                    // Calculate net spend
+                    const totalIncome = transactions
+                        .filter(t => t.type === 'income')
+                        .reduce((sum, t) => sum + t.amount, 0);
+            
+                    const totalExpense = transactions
+                        .filter(t => t.type === 'expense')
+                        .reduce((sum, t) => sum + t.amount, 0);
+            
+                    const netSpend = totalIncome - totalExpense;
+            
+                    // Total spend over last 7 days
+                    const sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(today.getDate() - 7);
+            
+                    const totalSpendLast7Days = transactions
+                        .filter(t => t.type === 'expense' && new Date(t.date_made) >= sevenDaysAgo)
+                        .reduce((sum, t) => sum + t.amount, 0);
+            
+                    // Largest single income and expense
+                    const largestIncome = transactions
+                        .filter(t => t.type === 'income')
+                        .reduce((max, t) => t.amount > max ? t.amount : max, 0);
+            
+                    const largestExpense = transactions
+                        .filter(t => t.type === 'expense')
+                        .reduce((max, t) => t.amount > max ? t.amount : max, 0);
+            
+                    // Average daily spend
+                    const averageDailySpend = (totalExpense / daysSinceCreation).toFixed(2);
+                %>
+            
+                <p>💡<strong>Net Spend:</strong> £<%= netSpend.toFixed(2) %></p>
+                <p>💡<strong>Total Spending (Last 7 Days):</strong> £<%= totalSpendLast7Days.toFixed(2) %></p>
+                <p>💡<strong>Largest Single Income:</strong> £<%= largestIncome.toFixed(2) %></p>
+                <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpense.toFixed(2) %></p>
+                <p>📊 <strong>Average Daily Spend:</strong> £<%= averageDailySpend %></p>
+                <p>💡<strong>Days Since Account Creation:</strong> <%= daysSinceCreation %> days</p>
+            
+                <% if (netSpend < 0) { %>
+                    <p style="color: red;">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        Your account has a negative net spend. Consider reviewing your expenses.
+                    </p>
+                <% } %>
+            
+                <% if (totalSpendLast7Days > (totalExpense / daysSinceCreation * 7)) { %>
+                    <p style="color: orange;">
+                        <i class="fa fa-exclamation-circle"></i>
+                        Your spending in the last 7 days is higher than your average weekly spend.
+                    </p>
+                <% } %>
+            </div>
+            
 
         </div>
     </div>
@@ -74,8 +141,6 @@
         
         if (transactions.length > 0) {
 
-            console.log(account)
-
             // Get the last 7 days in DD/MM/YYYY format
             const labels = getLast7Days();
 
@@ -83,7 +148,7 @@
             const accountTransactionData = labels.map(date => {
                 // Sum up the transactions for each specific date
                 const dailyTotal = transactions
-                    .filter(transaction => transaction.dateMade === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
+                    .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
                     .reduce((total, transaction) => total + transaction.amount, 0);
                 return dailyTotal;
             });
@@ -96,7 +161,7 @@
                     labels: labels, // Last 7 days
                     datasets: [{
                         label: account.type == 'Savings' ? 'Savings' : 'Spending',
-                        data: accountTransactionData, // Dynamic spending data
+                        data: accountTransactionData, 
                         backgroundColor: 'rgba(54, 162, 235, 0.2)',
                         borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1

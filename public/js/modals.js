@@ -150,6 +150,7 @@ function openModal(modalId, itemData = {}) {
             let potTargeDate = null;
             let accountType = null;
             let accountBalance = null;
+            let isActive = null;
             
             if (itemData.itemType == 'budget') {
                 document.getElementById('budget-dates').style.display = 'flex';
@@ -184,6 +185,14 @@ function openModal(modalId, itemData = {}) {
                 accountType = document.getElementById('edit-account-type');
                 accountType.value = itemData.type || '';
             }
+
+            if (itemData.itemType == 'budget' || itemData.itemType == 'account') {
+                document.getElementById('itemActiveRow').style.display = 'flex';
+                console.log(itemData)
+
+                isActive = document.getElementById('editItemActive');
+                isActive.checked = itemData.is_active;
+            }
             
             
             const editItemForm = modal.querySelector("#editItemForm");
@@ -195,7 +204,7 @@ function openModal(modalId, itemData = {}) {
                     if (itemName.value != itemData.name) {
                         updatedItem.name = itemName.value;
                     }
-                    if(itemSharedWithId.value !== (itemData.shared_with_id || '')) {
+                    if (itemSharedWithId.value !== (itemData.shared_with_id || '')) {
                         updatedItem.shared_with_id = itemSharedWithId.value || null;
                     }
                     if (itemStartDate && itemStartDate.value != DateUtils.toInputFormatDate(itemData.start_date)) {
@@ -216,9 +225,12 @@ function openModal(modalId, itemData = {}) {
                     if (accountType && accountType.value != itemData.type) {
                         updatedItem.type = accountType.value;
                     }
+                    if (isActive && isActive.checked != itemData.is_active) {
+                        updatedItem.is_active = isActive.checked;
+                    }
 
                     if (Object.keys(updatedItem).length === 0) { 
-                        document.getElementById('info-message').innerText = 'No fields found to update.'
+                        document.getElementById('info-message').innerText = 'No fields found to update.';
                         alertManager.showAlert({
                             title: `No changes to save.`,
                             type: 'info',
