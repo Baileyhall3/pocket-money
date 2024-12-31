@@ -186,6 +186,40 @@ exports.updateAccountBalance = async (req, res, next) => {
     }
 };
 
+exports.leaveAccount = async (req, res, next) => {
+    try {
+        const accountId = req.params.id;
+        const userId = req.user.id;
+
+        // Verify the user is actually shared with this account
+        const { data: account, error: fetchError } = await supabase
+            .from('accounts')
+            .select('*')
+            .eq('id', accountId)
+            .eq('shared_with_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!account) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Not authorized to leave this account' 
+            });
+        }
+
+        // Remove the user from the account
+        const { error: updateError } = await supabase
+            .from('accounts')
+            .update({ shared_with_id: null })
+            .eq('id', accountId);
+
+        if (updateError) throw updateError;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
 
 // PROCS
 exports.transferBalance = async (req, res, next) => {
@@ -208,3 +242,4 @@ exports.transferBalance = async (req, res, next) => {
         res.status(500).json({ success: false, message: 'Transfer failed', error: error.message });
     }
 };
+

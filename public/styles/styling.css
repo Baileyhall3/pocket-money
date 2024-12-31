@@ -1111,7 +1111,7 @@ canvas {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     background: white;
     border-radius: 8px;
@@ -1273,6 +1273,17 @@ canvas {
     cursor: not-allowed;
     background-color: #ddd;
     /* text-decorationrgb(191, 191, 192)through; */
+}
+
+.carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.containers-vertical {
+    width: 50%;
 }
 
 .profile-container {
@@ -1459,7 +1470,7 @@ canvas {
     }
  
     .home-carousel {
-        height: 50vh; /* Adjust height for carousel */
+        height: 55vh; /* Adjust height for carousel */
     }
  
     /* .login-section {
@@ -1534,5 +1545,12 @@ canvas {
 
     .left {
         transform: translateX(0%);
+    }
+
+    .carousel-image {
+        width: 70%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 10px;
     }
 }

@@ -8,7 +8,7 @@
             </div>
             <div class="charts-wrapper">
                 <div class="spending-categories-container chart-container">
-                    <h3>Spending Breakdown by Category</h3>
+                    <h3>Spending Breakdown (Last 30 Days)</h3>
                     <canvas id="spending-chart"></canvas>
                     <% if (transactions.length > 0) { %>
                         <div class="account-summary">
@@ -23,8 +23,12 @@
                                 const totalSpendLast30Days = transactions
                                     .filter(t => t.type === 'expense' && new Date(t.date_made) >= thirtyDaysAgo)
                                     .reduce((sum, t) => sum + t.amount, 0);
+                                
+                                const averageDailySpend = (totalSpendLast30Days / 30).toFixed(2);
+                                
                             %>
-                            <p>💡<strong>Total Spending (Last 30 Days):</strong> £<%= totalSpendLast30Days.toFixed(2) %></p>
+                            <p>💡<strong>Total Spending:</strong> £<%= totalSpendLast30Days.toFixed(2) %></p>
+                            <p>💡<strong>Average Daily Spend:</strong> £<%= averageDailySpend %></p>
                             <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpenseTransaction.amount.toFixed(2) + ' (' + largestExpenseTransaction.name + ')' %></p>
                         </div>
                     <% } else { %>
@@ -47,7 +51,7 @@
                                         <%= transaction.name %>
                                     </h5>
                                     <p style="font-size: 20px; margin: 0;">
-                                        £<%= transaction.amount %>
+                                        <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount.toFixed(2) %>
                                     </p>
                                 </div>
                                 <div class="money-bar-header" style="margin-bottom: 20px;">

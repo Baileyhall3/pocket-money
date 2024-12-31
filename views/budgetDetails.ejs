@@ -49,7 +49,8 @@
                     <%- include('partials/transactions', { 
                         transactions: transactions, 
                         currentPage: currentPage, 
-                        totalPages: totalPages 
+                        totalPages: totalPages,
+                        isShared: budget.shared_with_id ? true : false
                     }) %>
                 </div>
             </div>            
@@ -59,7 +60,8 @@
                     <%- include('partials/itemParticipants', { 
                         user: user, 
                         sharedWithUser: sharedWithUser, 
-                        sharedWithTitle: 'Budget Buddies' 
+                        sharedWithTitle: 'Budget Buddies',
+                        item: budget
                     }) %>
                 <% } %>
                 <div class="container-rounded variable-width-50">

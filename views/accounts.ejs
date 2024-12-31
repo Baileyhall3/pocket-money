@@ -22,7 +22,11 @@
                         <div class="account-container container-rounded-pointer account-item">
                             <% if (limitedTransactions.length > 0) { %>
                                 <div class="account-chart-container">
-                                    <canvas id="account-chart-<%= account.id %>"></canvas>
+                                    <%- include('partials/accountChart', { 
+                                        chartId: `account-chart-${account.id}`, 
+                                        accountTransactions: transactions, 
+                                        account: account
+                                    }) %>
                                 </div>
                             <% } %>
                             
@@ -37,13 +41,14 @@
                                         <i class="fa fa-star active-account-star" title="This is the active account"></i>
                                     <% } %>
                                 </h5>
-                                <% if (limitedTransactions.length > 0) { %>
-                                    <% limitedTransactions.forEach(transaction => { %>
+                                <% if (sortedTransactions.length > 0) { %>
+                                    <% sortedTransactions.forEach(transaction => { %>
                                         <% if (transaction.account_id === account.id) { %>
                                             <div class="transaction">
                                                 <div class="money-bar-header">
                                                     <h5 style="font-size: 18px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : '' %>">
-                                                        <%= account.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
+                                                        <!-- <%= account.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %> -->
+                                                         <%= transaction.name %>
                                                     </h5>
                                                     <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
                                                         <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
@@ -87,57 +92,6 @@
         openModal('balanceTransferModal', { accounts: accountsData });
     }
 
-    // This function renders charts for each account
-    document.addEventListener('DOMContentLoaded', function() {
-        const accounts = JSON.parse('<%- JSON.stringify(accounts) %>'); // Get account data
-        const transactions = JSON.parse('<%- JSON.stringify(transactions) %>'); // Get transaction data
-
-        accounts.forEach(account => {
-            const accountId = account.id;
-
-            // Filter transactions for the specific account
-            const accountTransactions = transactions.filter(transaction => transaction.account_id === accountId);
-
-            if (accountTransactions.length > 0) {
-
-                // Get the last 7 days in DD/MM/YYYY format
-                const labels = getLast7Days();
-
-                const spendingData = labels.map(date => {
-                    const dailyTotal = accountTransactions
-                        .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
-                        .reduce((total, transaction) => total + transaction.amount, 0);
-                    return dailyTotal;
-                });
-
-                // Chart configuration
-                const ctx = document.getElementById(`account-chart-${accountId}`).getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels, // Last 7 days
-                        datasets: [{
-                            label: 'Spending',
-                            data: spendingData, // Dynamic spending data
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: Math.max(...spendingData) + 50 // Add some buffer above the max value
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    });
 </script>
 
 <style>

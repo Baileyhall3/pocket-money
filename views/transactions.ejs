@@ -74,7 +74,7 @@
                                                     <%= account.shared_with_id ? transaction.name + ' made by ' + transaction.user_id : transaction.name %>
                                                 </h5>
                                                 <p style="font-size: 20px; margin: 0;" class="<%= transaction.type == 'expense' ? 'expense' : 'income' %>">
-                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount %>
+                                                    <%= transaction.type == 'expense' ? '- ' : '' %> £<%= transaction.amount.toFixed(2) %>
                                                 </p>
                                             </div>
                                             <div class="money-bar-header" style="margin-bottom: 20px;">

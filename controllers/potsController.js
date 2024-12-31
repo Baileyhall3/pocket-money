@@ -249,3 +249,38 @@ exports.updatePotAmount = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.leavePot = async (req, res, next) => {
+    try {
+        const potId = req.params.id;
+        const userId = req.user.id;
+
+        // Verify the user is actually shared with this pot
+        const { data: pot, error: fetchError } = await supabase
+            .from('pots')
+            .select('*')
+            .eq('id', potId)
+            .eq('shared_with_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!pot) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Not authorized to leave this pot' 
+            });
+        }
+
+        // Remove the user from the pot
+        const { error: updateError } = await supabase
+            .from('pots')
+            .update({ shared_with_id: null })
+            .eq('id', potId);
+
+        if (updateError) throw updateError;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

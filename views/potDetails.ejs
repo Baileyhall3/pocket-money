@@ -47,7 +47,8 @@
                     <%- include('partials/transactions', { 
                         transactions: transactions, 
                         currentPage: currentPage, 
-                        totalPages: totalPages 
+                        totalPages: totalPages,
+                        isShared: pot.shared_with_id ? true : false
                     }) %>
                 </div>
             </div>            
@@ -57,7 +58,8 @@
                     <%- include('partials/itemParticipants', { 
                         user: user, 
                         sharedWithUser: sharedWithUser, 
-                        sharedWithTitle: 'Pot Participants' 
+                        sharedWithTitle: 'Pot Participants',
+                        item: pot
                     }) %>
                 <% } %>
 
@@ -100,9 +102,9 @@
                         const amountToMilestone = (milestoneAmount - pot.actual_amount).toFixed(2);
                     %>
                     <% if(amountToMilestone != 0 && nextMilestone != 0) { %>
-                        <p>You’re £<%= amountToMilestone %> away from reaching <strong><%= nextMilestone %>%</strong> of your savings goal!</p>
+                        <p> 🎯 You’re £<%= amountToMilestone %> away from reaching <strong><%= nextMilestone %>%</strong> of your savings goal!</p>
                     <% } else if (amountToMilestone == 0 && nextMilestone != 0) { %>
-                        <p>You just reached the <strong><%= nextMilestone %>%</strong> mark of your savings goal!</p>
+                        <p> ✅ You just reached the <strong><%= nextMilestone %>%</strong> mark of your savings goal!</p>
                     <% } %>
                 </div>
             </div>

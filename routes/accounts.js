@@ -38,6 +38,10 @@ router.put('/accounts/:id', accountsController.updateAccount, (req, res) => {
     res.status(200).json({ success: true, message: 'Account updated successfully' });
 });
 
+router.put('/accounts/:id/leave', requireAuth, accountsController.leaveAccount, (req, res) => {
+    res.status(200).json({ success: true, message: 'Successfully left the account' });
+});
+
 router.delete('/accounts/:id', requireAuth, accountsController.deleteAccount, (req, res) => {
     res.status(200).json({ success: true, message: 'Account deleted successfully' });
 });
@@ -62,6 +66,10 @@ router.put('/pots/:id', potsController.updatePot, (req, res) => {
     res.status(200).json({ success: true, message: 'Pot updated successfully' });
 });
 
+router.put('/pots/:id/leave', requireAuth, potsController.leavePot, (req, res) => {
+    res.status(200).json({ success: true, message: 'Successfully left the pot' });
+});
+
 router.delete('/pots/:id', requireAuth, potsController.deletePot, (req, res) => {
     res.status(200).json({ success: true, message: 'Pot deleted successfully' });
 });
@@ -82,6 +90,10 @@ router.put('/update-budget/:id',
 
 router.put('/budgets/:id', budgetsController.updateBudget, (req, res) => {
     res.status(200).json({ success: true, message: 'Budget updated successfully' });
+});
+
+router.put('/budgets/:id/leave', requireAuth, budgetsController.leaveBudget, (req, res) => {
+    res.status(200).json({ success: true, message: 'Successfully left the budget' });
 });
 
 router.delete('/budgets/:id', requireAuth, budgetsController.deleteBudget, (req, res) => {
@@ -112,7 +124,7 @@ router.get('/accounts/:id',
         next();
     },
     userController.getSharedWithUser,
-    transactionsController.getTransactionsForAccount, 
+    transactionsController.getTransactionsForAccount,  
     transactionsController.getTotalSpendingByCategoryByUser,
     (req, res) => {
         const page = 1; // Default to the first page
@@ -281,6 +293,22 @@ router.get('/savings/budget/:id',
             transactions: paginatedTransactions,
             currentPage: page,
             totalPages
+        });
+    }
+);
+
+router.get('/accounts/account-data/:id', 
+    accountsController.getAccountById,
+    transactionsController.getTransactionsForAccount,
+    (req, res) => {
+        if (!req.account) {
+            return res.status(404).json({ error: 'Chart not found' });
+        }
+
+        res.json({
+            id: req.account.id,
+            account: req.account,
+            transactions: req.accountTransactions,
         });
     }
 );

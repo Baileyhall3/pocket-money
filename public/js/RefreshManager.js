@@ -6,6 +6,7 @@ class RefreshManager {
             'Pragma': 'no-cache'
         };
         this.doughNutCharts = {};
+        this.accountCharts = {};
     }
 
     async refreshAccounts() {
@@ -31,6 +32,13 @@ class RefreshManager {
             if (newAccountsContainer) {
                 const accountsContainer = document.getElementById('accounts-container');
                 accountsContainer.innerHTML = newAccountsContainer.innerHTML; // Replace only inner content
+
+                // Reinitialize all account charts
+                const accountCharts = accountsContainer.querySelectorAll('canvas[id^="account-chart-"]');
+                accountCharts.forEach(canvas => {
+                    const accountId = canvas.id.replace('account-chart-', '');
+                    this.refreshAccountChart(canvas.id, accountId);
+                });
             }
         } catch (error) {
             console.error('Error refreshing accounts:', error);
@@ -263,6 +271,20 @@ class RefreshManager {
         this.doughNutCharts[chartId] = this.createDoughnutChart(chartId, updatedData.actual_amount, updatedData.target_amount, true);
     }
 
+    async refreshAccountChart(chartId, accountId) {
+        const updatedData = await this.fetchChartData(`/accounts/account-data/${accountId}`);
+        if (!updatedData) return;
+
+        if (this.accountCharts[chartId]) {
+            this.accountCharts[chartId].destroy();
+            delete this.accountCharts[chartId];
+        }
+
+        debugger
+
+        this.accountCharts[chartId] = this.createAccountChart(chartId, updatedData.transactions, updatedData.account);
+    }
+
     async fetchChartData(apiEndpoint) {
         try {
             const response = await fetch(apiEndpoint);
@@ -328,6 +350,52 @@ class RefreshManager {
 
         this.doughNutCharts = this.doughNutCharts || {};
         this.doughNutCharts[chartId] = chart;
+
+        return chart;
+    }
+
+    createAccountChart(chartId, transactions, account) {
+        debugger
+        if (!transactions || transactions.length == 0) { return; }
+
+        // Get the last 7 days in DD/MM/YYYY format
+        const labels = DateUtils.getLast7Days();
+        const accountTransactions = transactions.filter(transaction => transaction.account_id === account.id);
+
+        const spendingData = labels.map(date => {
+            const dailyTotal = accountTransactions
+                .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense'))
+                .reduce((total, transaction) => total + transaction.amount, 0);
+            return dailyTotal;
+        });
+
+        const ctx = document.getElementById(`${chartId}`).getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Spending',
+                    data: spendingData, // Dynamic spending data
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: Math.max(...spendingData) + 50
+                    }
+                }
+            }
+        });
+
+        this.accountCharts = this.accountCharts || {};
+        this.accountCharts[chartId] = chart;
 
         return chart;
     }

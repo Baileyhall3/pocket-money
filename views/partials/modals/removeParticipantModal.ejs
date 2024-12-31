@@ -1,0 +1,19 @@
+<div id="removeParticipantModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal('removeParticipantModal')">&times;</span>
+            <h2>Confirm Removal</h2>
+        </div>
+        <form id="removeParticipantForm" novalidate>
+            <div id="participant-remove-confirm">
+                <div class="modal-row" id="remove-message">
+                    <!-- Dynamic message -->
+                </div>
+                <div class="modal-buttons-end">
+                    <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('removeParticipantModal')">Close</button>
+                    <button type="submit" class="modal-footer-btn save-btn">Confirm</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

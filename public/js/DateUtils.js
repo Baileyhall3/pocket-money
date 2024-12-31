@@ -37,6 +37,24 @@ class DateUtils {
 
         return `${year}-${month}-${day}`; // Example: "2024/12/30"
     }
+
+    static getLast7Days() {
+        let today = new Date();
+        let last7Days = [];
+    
+        for (let i = 6; i >= 0; i--) {
+            let date = new Date();
+            date.setDate(today.getDate() - i);
+            
+            // Format the date as DD/MM/YYYY
+            const formattedDate = ("0" + date.getDate()).slice(-2) + "/" +
+                                  ("0" + (date.getMonth() + 1)).slice(-2) + "/" +
+                                  date.getFullYear();
+            last7Days.push(formattedDate);
+        }
+    
+        return last7Days;
+    }
 }
 
 // Export for server-side usage

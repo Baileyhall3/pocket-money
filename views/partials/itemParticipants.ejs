@@ -1,4 +1,4 @@
-<div class="container-rounded variable-width-50">
+<div class="container-rounded variable-width-50" style="height: fit-content;">
     <h3><%- sharedWithTitle %></h3>
     <div class="friend-row">
         <div class="friend-icon">
@@ -15,6 +15,14 @@
         <span class="friend-name">
             Me <%= sharedWithUser.owner_id == user.id ? ' (owner)' : '' %>
         </span>
+
+        <% if (sharedWithUser.owner_id != user.id) { %>
+            <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openModal('removeParticipantModal', <%= JSON.stringify({ ...item, removeSelf: true }) %>)">Remove Myself</a>
+                </div>
+            </div>
+        <% } %>
     </div>
     <div class="friend-row">
         <div class="friend-icon">
@@ -35,10 +43,11 @@
         <% if (sharedWithUser.owner_id == user.id) { %>
             <div class="dropdown"><a href="#" class="link"><i class="fa fa-ellipsis-h"></i></a>
                 <div class="dropdown-content">
-                    <!-- <a href="#">Profile</a> -->
-                    <a href="#">Remove Participant</a>
+                    <a href="#" onclick="openModal('removeParticipantModal', <%= JSON.stringify(item) %>)">Remove Participant</a>
                 </div>
             </div>
         <% } %>
     </div>
 </div>
+
+<script src="/js/shared.js"></script>

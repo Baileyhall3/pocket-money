@@ -44,7 +44,7 @@ const getPotTransactions = async (userId, potIds) => {
 // Fetch budget transactions for a user (including shared budgets)
 const getBudgetTransactions = async (budgetIds) => {
     const { data, error } = await supabase
-        .from('transactions')
+        .from('transactions_with_users')
         .select('*')
         .in('budget_id', budgetIds);
 
@@ -219,7 +219,7 @@ exports.getRecentTransactionsForUser = async (req, res, next) => {
         const userId = req.user.id;
         const accountIds = req.userAccounts.map(account => account.id);
         const today = new Date();
-        const recentDate = new Date(today.setDate(today.getDate() - 60)).toISOString();
+        const recentDate = new Date(today.setDate(today.getDate() - 30)).toISOString();
 
         const recentTrans = await getRecentTransactions(userId, accountIds, recentDate);
         req.recentTransactions = recentTrans;

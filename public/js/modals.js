@@ -5,7 +5,7 @@ function openModal(modalId, itemData = {}) {
         modal.classList.add("modal-open-animation");
         modal.style.display = "block";
 
-        // Handle balance transfer modal population
+        // Balance transfer modal
         if (modalId === 'balanceTransferModal' && itemData.accounts) {
             const fromAccountSelect = document.getElementById('fromAccount');
             const toAccountSelect = document.getElementById('toAccount');
@@ -20,7 +20,25 @@ function openModal(modalId, itemData = {}) {
                 fromAccountSelect.insertAdjacentHTML('beforeend', option);
                 toAccountSelect.insertAdjacentHTML('beforeend', option);
             });
+
+            const balanceTransferForm = document.getElementById('balanceTransferForm');
+            if (balanceTransferForm) {
+                balanceTransferForm.addEventListener('submit', async function (event) {
+                    const isValid = validateForm(event, balanceTransferForm, 
+                        ['fromAccount', 'toAccount', 'transferAmount']);
+                    if (!isValid) return;
+    
+                    if (await transferBalance(event)) {
+                        console.log('Transfer successful, closing modal and refreshing');
+                        closeModal(modalId);
+                        await refreshManager.refreshAccounts();
+                    }
+                });
+            } else {
+                console.log('Balance transfer form not found');
+            }
         }
+        
 
         attachCloseEvents();
 
@@ -34,6 +52,7 @@ function openModal(modalId, itemData = {}) {
             categoryErrorMessage.textContent = '';
         }
 
+        // Delete confirm modal
         if (modalId === 'deleteConfirmModal' && itemData) {
             const messageElement = modal.querySelector("#delete-message");
             if (messageElement) {
@@ -48,29 +67,13 @@ function openModal(modalId, itemData = {}) {
                 };
             }
         }
-
-        const balanceTransferForm = document.getElementById('balanceTransferForm');
-        if (balanceTransferForm) {
-            balanceTransferForm.addEventListener('submit', async function (event) {
-                const isValid = validateForm(event, balanceTransferForm, 
-                    ['fromAccount', 'toAccount', 'transferAmount']);
-                if (!isValid) return;
-
-                if (await transferBalance(event)) {
-                    console.log('Transfer successful, closing modal and refreshing');
-                    closeModal(modalId);
-                    await refreshManager.refreshAccounts();
-                }
-            });
-        } else {
-            console.log('Balance transfer form not found');
-        }
         
         let item = {};
 
         let selectedCategoryElement = null;
         let selectedCategory = null;
 
+        // Log transaction modal
         if (modalId == 'logTransactionModal') {
             const categoryElements = document.querySelectorAll(".category");
             selectedCategoryElement = document.querySelector(".selected-category");
@@ -129,7 +132,31 @@ function openModal(modalId, itemData = {}) {
             }
         }
 
+        // Remove participant modal
+        if (modalId == 'removeParticipantModal') {
+            if (itemData && Object.keys(itemData).length > 0) {
 
+                const messageElement = modal.querySelector("#remove-message");
+                if (messageElement) {
+                    messageElement.textContent = `Are you sure you want to remove ${itemData.removeSelf ? 'yourself' : 'this participant'} from the ${itemData.itemType}?`;
+                }
+                
+                let updatedItem = {};
+                updatedItem.shared_with_id = null;
+                updatedItem.itemType = itemData.itemType;
+                updatedItem.id = itemData.id;
+
+                const removeParticipantForm = modal.querySelector("#removeParticipantForm");
+                if (removeParticipantForm) {
+                    removeParticipantForm.onsubmit = function (e) {
+                        e.preventDefault();
+                        updateItem(updatedItem, itemData.removeSelf);
+                    };
+                }
+            }
+        }
+
+        // Edit item modal
         if (modalId === 'itemDetailsModal' && itemData) {
             const itemName = document.getElementById('itemName');
             itemName.value = itemData.name || '';
@@ -193,7 +220,6 @@ function openModal(modalId, itemData = {}) {
                 isActive = document.getElementById('editItemActive');
                 isActive.checked = itemData.is_active;
             }
-            
             
             const editItemForm = modal.querySelector("#editItemForm");
             if (editItemForm) {
@@ -283,7 +309,8 @@ function openModal(modalId, itemData = {}) {
                     ['potName', 'savingGoal']);
                 if (!isValid) return;
 
-                if (createPot(event)) {
+                const result = await createPot(event);
+                if (result) {
                     closeModal(modalId);
                     await refreshManager.refreshPots();
                 }
@@ -500,7 +527,6 @@ async function createPot(event) {
 }
 
 async function createTransaction(event, selCategory, item) {
-    event.preventDefault();
     const modal = event.target.closest('.modal');
     const errorMessage = modal.querySelector('#submit-error-message');
     
@@ -676,13 +702,16 @@ async function sendSharedAlert(itemType, item, parsedPartner) {
     await alertManager.sendSharedAlert(targetPersonId, userName, formattedItem);
 }
 
-async function updateItem(item) {
-    const endpoint = item.itemType === 'budget' || item.itemType === 'pot' ? `${item.itemType}` : 'account';
+async function updateItem(item, isSelfRemoval = false) {
+    const itemType = item.itemType === 'budget' || item.itemType === 'pot' ? `${item.itemType}` : 'account';
+    const endpoint = isSelfRemoval ? 
+        `/${itemType}s/${item.id}/leave` : 
+        `/update-${itemType}/${item.id}`;
 
     delete item['itemType'];
 
     try {
-        const response = await fetch(`/update-${endpoint}/${item.id}`, {
+        const response = await fetch(endpoint, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -694,12 +723,21 @@ async function updateItem(item) {
             throw new Error('Failed to update item');
         }
 
-        closeModal('itemDetailsModal');
-        alertManager.showAlert({
-            title: `Item Updated!`,
-            type: 'success',
-        });
-        location.reload();
+        if (isSelfRemoval) {
+            // Redirect to the main listing page for this type of item
+            window.location.href = `/${itemType == 'account' ? 'account' : 'saving'}s`;
+            alertManager.showAlert({
+                title: `Successfully left the ${itemType}!`,
+                type: 'success',
+            });
+        } else {
+            closeModal('itemDetailsModal');
+            alertManager.showAlert({
+                title: `Item Updated!`,
+                type: 'success',
+            });
+            location.reload();
+        }
     } catch (error) {
         console.error('Error updating item:', error);
         alertManager.showAlert({

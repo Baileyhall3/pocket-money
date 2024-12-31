@@ -29,19 +29,24 @@
                     </div>
                     <% if (transactions.length > 0) { %>
                         <!-- Make this show savings if account is savings account, line chart instead ???-->
-                        <div class="chart-container" style="max-height: 600px; padding-bottom: 10vh;">
+                        <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
                             <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
-                            <canvas id="accountTransactionsChart"></canvas>
+                            <%- include('partials/accountChart', { 
+                                chartId: `account-chart-${account.id}`, 
+                                accountTransactions: transactions, 
+                                account: account
+                            }) %>
                         </div>
                     <% } %>
                 </div>
 
-                <% if (transactions.length > 0) { %>
-                    <div class="spending-categories-container chart-container">
-                        <h3>Spending Breakdown by Category</h3>
-                        <canvas id="spendingCategoriesChart"></canvas>
-                    </div>
-                <% } %>
+                <div class="transaction-section-detail variable-width-50">
+                    <%- include('partials/transactions', { 
+                        transactions: transactions, 
+                        currentPage: currentPage, 
+                        totalPages: totalPages,
+                    }) %>
+                </div>
             </div>            
             
             <div class="charts-wrapper">
@@ -49,84 +54,87 @@
                     <h3>Balance History</h3>
                     <canvas id="balanceHistoryChart"></canvas>
                 </div> -->
-                <% if (account.shared_with_id) { %>
-                    <%- include('partials/itemParticipants', { 
-                        user: user, 
-                        sharedWithUser: sharedWithUser, 
-                        sharedWithTitle: 'Account Partner' 
-                    }) %>
-                <% } %>
-                <div class="transaction-section-detail variable-width-50">
-                    <%- include('partials/transactions', { 
-                        transactions: transactions, 
-                        currentPage: currentPage, 
-                        totalPages: totalPages 
-                    }) %>
+                <div class="containers-vertical">
+                    <% if (account.shared_with_id) { %>
+                        <%- include('partials/itemParticipants', { 
+                            user: user, 
+                            sharedWithUser: sharedWithUser, 
+                            sharedWithTitle: 'Account Partner',
+                            item: account
+                        }) %>
+                    <% } %>
+                    <% if (transactions.length > 0) { %>
+                        <div class="container-rounded variable-width-50" style="height: fit-content;">
+                            <h3>Account Analytics</h3>
+                            <% 
+                                const today = new Date();
+                                const accountCreationDate = new Date(account.created_at);
+                                const daysSinceCreation = Math.ceil((today - accountCreationDate) / (1000 * 60 * 60 * 24));
+                        
+                                // Calculate net spend
+                                const totalIncome = transactions
+                                    .filter(t => t.type === 'income')
+                                    .reduce((sum, t) => sum + t.amount, 0);
+                        
+                                const totalExpense = transactions
+                                    .filter(t => t.type === 'expense')
+                                    .reduce((sum, t) => sum + t.amount, 0);
+                        
+                                const netSpend = totalIncome - totalExpense;
+                        
+                                // Total spend over last 7 days
+                                const sevenDaysAgo = new Date();
+                                sevenDaysAgo.setDate(today.getDate() - 7);
+                        
+                                const totalSpendLast7Days = transactions
+                                    .filter(t => t.type === 'expense' && new Date(t.date_made) >= sevenDaysAgo)
+                                    .reduce((sum, t) => sum + t.amount, 0);
+                        
+                                // Largest single income and expense
+                                const largestIncome = transactions
+                                    .filter(t => t.type === 'income')
+                                    .reduce((max, t) => t.amount > max ? t.amount : max, 0);
+                        
+                                const largestExpense = transactions
+                                    .filter(t => t.type === 'expense')
+                                    .reduce((max, t) => t.amount > max ? t.amount : max, 0);
+                        
+                                // Average daily spend
+                                const averageDailySpend = (totalExpense / daysSinceCreation).toFixed(2);
+                            %>
+                            
+                                <p>💡<strong>Net Spend Since Account Creation:</strong> £<%= netSpend.toFixed(2) %></p>
+                                <p>💡<strong>Total Spending (Last 7 Days):</strong> £<%= totalSpendLast7Days.toFixed(2) %></p>
+                                <p>💡<strong>Largest Single Income:</strong> £<%= largestIncome.toFixed(2) %></p>
+                                <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpense.toFixed(2) %></p>
+                                <p>📊 <strong>Average Daily Spend:</strong> £<%= averageDailySpend %></p>
+                            <p>💡<strong>Days Since Account Creation:</strong> <%= daysSinceCreation %> days</p>
+                        
+                            <% if (netSpend < 0) { %>
+                                <p style="color: red;">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                    Your account has a negative net spend. Consider reviewing your expenses.
+                                </p>
+                            <% } %>
+                        
+                            <% if (totalSpendLast7Days > (totalExpense / (daysSinceCreation * 7))) { %>
+                                <p style="color: orange;">
+                                    <i class="fa fa-exclamation-circle"></i>
+                                    Your spending in the last 7 days is higher than your average weekly spend.
+                                </p>
+                            <% } %>
+                        </div>
+                    <% } %>
                 </div>
-            </div>
-
-            <div class="container-rounded variable-width-50">
-                <h3>Account Analytics</h3>
-                <% 
-                    const today = new Date();
-                    const accountCreationDate = new Date(account.created_at);
-                    const daysSinceCreation = Math.ceil((today - accountCreationDate) / (1000 * 60 * 60 * 24));
-            
-                    // Calculate net spend
-                    const totalIncome = transactions
-                        .filter(t => t.type === 'income')
-                        .reduce((sum, t) => sum + t.amount, 0);
-            
-                    const totalExpense = transactions
-                        .filter(t => t.type === 'expense')
-                        .reduce((sum, t) => sum + t.amount, 0);
-            
-                    const netSpend = totalIncome - totalExpense;
-            
-                    // Total spend over last 7 days
-                    const sevenDaysAgo = new Date();
-                    sevenDaysAgo.setDate(today.getDate() - 7);
-            
-                    const totalSpendLast7Days = transactions
-                        .filter(t => t.type === 'expense' && new Date(t.date_made) >= sevenDaysAgo)
-                        .reduce((sum, t) => sum + t.amount, 0);
-            
-                    // Largest single income and expense
-                    const largestIncome = transactions
-                        .filter(t => t.type === 'income')
-                        .reduce((max, t) => t.amount > max ? t.amount : max, 0);
-            
-                    const largestExpense = transactions
-                        .filter(t => t.type === 'expense')
-                        .reduce((max, t) => t.amount > max ? t.amount : max, 0);
-            
-                    // Average daily spend
-                    const averageDailySpend = (totalExpense / daysSinceCreation).toFixed(2);
-                %>
-            
-                <p>💡<strong>Net Spend Since Account Creation:</strong> £<%= netSpend.toFixed(2) %></p>
-                <p>💡<strong>Total Spending (Last 7 Days):</strong> £<%= totalSpendLast7Days.toFixed(2) %></p>
-                <p>💡<strong>Largest Single Income:</strong> £<%= largestIncome.toFixed(2) %></p>
-                <p>💡<strong>Largest Single Expense:</strong> £<%= largestExpense.toFixed(2) %></p>
-                <p>📊 <strong>Average Daily Spend:</strong> £<%= averageDailySpend %></p>
-                <p>💡<strong>Days Since Account Creation:</strong> <%= daysSinceCreation %> days</p>
-            
-                <% if (netSpend < 0) { %>
-                    <p style="color: red;">
-                        <i class="fa fa-exclamation-triangle"></i>
-                        Your account has a negative net spend. Consider reviewing your expenses.
-                    </p>
+                <% if (transactions.length > 0) { %>
+                    <div class="spending-categories-container chart-container" >
+                        <h3>Spending Breakdown by Category</h3>
+                        <canvas id="spendingCategoriesChart"></canvas>
+                    </div>
                 <% } %>
-            
-                <% if (totalSpendLast7Days > (totalExpense / (daysSinceCreation * 7))) { %>
-                    <p style="color: orange;">
-                        <i class="fa fa-exclamation-circle"></i>
-                        Your spending in the last 7 days is higher than your average weekly spend.
-                    </p>
-                <% } %>
-            </div>
-            
 
+                
+            </div>
         </div>
     </div>
 </div>
@@ -140,43 +148,6 @@
         const account = <%- JSON.stringify(account) %>; // Get transaction data
         
         if (transactions.length > 0) {
-
-            // Get the last 7 days in DD/MM/YYYY format
-            const labels = getLast7Days();
-
-            // Prepare the data for the chart
-            const accountTransactionData = labels.map(date => {
-                // Sum up the transactions for each specific date
-                const dailyTotal = transactions
-                    .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense')) // Compare against the formatted date
-                    .reduce((total, transaction) => total + transaction.amount, 0);
-                return dailyTotal;
-            });
-
-            // Chart configuration
-            const ctx = document.getElementById('accountTransactionsChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels, // Last 7 days
-                    datasets: [{
-                        label: account.type == 'Savings' ? 'Savings' : 'Spending',
-                        data: accountTransactionData, 
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                        }
-                    }
-                }
-            });
 
             const categorySpending = <%- JSON.stringify(categorySpending) %>; 
 

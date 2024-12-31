@@ -250,3 +250,38 @@ exports.getActiveBudget = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.leaveBudget = async (req, res, next) => {
+    try {
+        const budgetId = req.params.id;
+        const userId = req.user.id;
+
+        // Verify the user is actually shared with this budget
+        const { data: budget, error: fetchError } = await supabase
+            .from('budgets')
+            .select('*')
+            .eq('id', budgetId)
+            .eq('shared_with_id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+        if (!budget) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Not authorized to leave this budget' 
+            });
+        }
+
+        // Remove the user from the budget
+        const { error: updateError } = await supabase
+            .from('budgets')
+            .update({ shared_with_id: null })
+            .eq('id', budgetId);
+
+        if (updateError) throw updateError;
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+};
