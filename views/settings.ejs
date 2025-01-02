@@ -2,10 +2,10 @@
 
 <div class="flex-container">
     <div class="settings-container variable-width-35">
-        <h2>SETTINGS</h2>
+        <h2>Settings</h2>
         
-        <div style="border-bottom: 1px solid rgb(131 131 131);">
-            <div class="settings-section">
+        <div style="border-top: 1px solid rgb(131 131 131); border-bottom: 1px solid rgb(131 131 131);">
+            <div class="settings-section" style="margin-top: 20px;">
                 <h3>Default Currency</h3>
                 <select id="currency-selector" class="input-box">
                     <option value="GBP" <%= userPreferences.default_currency === 'GBP' ? 'selected' : '' %>>British Pound (£)</option>

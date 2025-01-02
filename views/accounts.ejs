@@ -24,7 +24,7 @@
                                 <div class="account-chart-container">
                                     <%- include('partials/accountChart', { 
                                         chartId: `account-chart-${account.id}`, 
-                                        accountTransactions: transactions, 
+                                        accountTransactions: accountTransactions, 
                                         account: account
                                     }) %>
                                 </div>
@@ -41,8 +41,8 @@
                                         <i class="fa fa-star active-account-star" title="This is the active account"></i>
                                     <% } %>
                                 </h5>
-                                <% if (sortedTransactions.length > 0) { %>
-                                    <% sortedTransactions.forEach(transaction => { %>
+                                <% if (limitedTransactions.length > 0) { %>
+                                    <% limitedTransactions.forEach(transaction => { %>
                                         <% if (transaction.account_id === account.id) { %>
                                             <div class="transaction">
                                                 <div class="money-bar-header">
@@ -93,18 +93,3 @@
     }
 
 </script>
-
-<style>
-    .account-chart-container {
-        height: 100%;
-        max-height: 800px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .account-chart-container canvas {
-        height: 100% !important;
-        width: 100% !important;
-    }
-</style>

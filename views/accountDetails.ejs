@@ -24,12 +24,15 @@
             <div class="charts-wrapper">
                 <div class="balance-container">
                     <div class="container-rounded">
-                        <h2>Balance: £<%= account.balance %></h2>
-                        <h3>Account Type: <span><%= accountTypes[account.type] %></span></h3>
+                        <div>
+                            <h3 style="margin: 0;">Balance</h3>
+                            <h2 class="account-balance">£<%= account.balance %></h2>
+                        </div>
+                        <!-- <h3>Account Type: <span><%= accountTypes[account.type] %></span></h3> -->
                     </div>
                     <% if (transactions.length > 0) { %>
                         <!-- Make this show savings if account is savings account, line chart instead ???-->
-                        <div class="chart-container" style="max-height: 800px; padding-bottom: 10vh;">
+                        <div class="chart-container" style="max-height: 60vh; padding-bottom: 10vh;">
                             <h3><%= account.type == 'Savings' ? 'Savings' : 'Spending' %> Over the Last 7 Days</h3>
                             <%- include('partials/accountChart', { 
                                 chartId: `account-chart-${account.id}`, 

@@ -1,11 +1,11 @@
 <% layout('layout') %>    
     <div class="flex-container transactions">
         <div class="transaction-section" style="overflow-y: auto; height: fit-content;">
-            <div class="container-header">
+            <div class="container-header" style="border-bottom: 1px solid rgb(131 131 131);">
                 <h3>Recurrent Transactions</h3>
             </div>
 
-            <div class="transactions-container">
+            <div class="transactions-container" style="margin-top: 10px;">
                 <% 
                     const frequencies = Object.values(RecTransactionEnums.RecTransactionFrequencies);
                 %>

@@ -76,14 +76,14 @@
                 <div class="container-rounded variable-width-50">
                     <h3>Active Budget: <%= activeBudget.name %></h3>
                     <p>
-                        <strong>Budget Period: </strong> 
+                        <strong>Period: </strong> 
                         <%= DateUtils.toLongDate(activeBudget.start_date) + (activeBudget.end_date ? ' - ' + DateUtils.toLongDate(activeBudget.end_date) : '') %>
                     </p>
                     <div id="money-bar">
                         <% 
                             const progressPercentage = (activeBudget.actual_amount / activeBudget.target_amount) * 100; 
                             const progress = progressPercentage > 100 ? 100 : progressPercentage; // Cap at 100%
-                            const barClass = progress > 90 ? 'over' : (progress > 70 ? 'warning' : '');
+                            const barClass = progress > 90 ? 'over' : (progress > 70 ? 'budget-warning' : '');
                         %>
                         <div class="money-budget actual <%= barClass %>" style="width: <%= progress %>%;">
                             <!-- <span><%= progress.toFixed(1) %>%</span> -->

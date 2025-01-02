@@ -31,7 +31,7 @@
                             reverseColours: true
                         }) %>
                         <h3 id="title-display">Spending Performance: £<%= budget.actual_amount + " / £" + budget.target_amount %></h3>
-                        <h3>Budget Period: 
+                        <h3>Period: 
                             <span class="time-period-dates">
                                 <%= DateUtils.toLongDate(budget.start_date) + (budget.end_date ? ' - ' + DateUtils.toLongDate(budget.end_date) : '') %>
                             </span>

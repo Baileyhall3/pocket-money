@@ -280,8 +280,6 @@ class RefreshManager {
             delete this.accountCharts[chartId];
         }
 
-        debugger
-
         this.accountCharts[chartId] = this.createAccountChart(chartId, updatedData.transactions, updatedData.account);
     }
 
@@ -355,7 +353,7 @@ class RefreshManager {
     }
 
     createAccountChart(chartId, transactions, account) {
-        debugger
+        // debugger
         if (!transactions || transactions.length == 0) { return; }
 
         // Get the last 7 days in DD/MM/YYYY format
@@ -364,7 +362,7 @@ class RefreshManager {
 
         const spendingData = labels.map(date => {
             const dailyTotal = accountTransactions
-                .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'Savings' ? transaction.type === 'income' : transaction.type === 'expense'))
+                .filter(transaction => DateUtils.toShortDate(transaction.date_made) === date && (account.type == 'SAVINGS' ? transaction.type === 'income' : transaction.type === 'expense'))
                 .reduce((total, transaction) => total + transaction.amount, 0);
             return dailyTotal;
         });
