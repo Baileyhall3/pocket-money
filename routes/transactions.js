@@ -43,6 +43,13 @@ router.get('/recurrentTransactions',
     }
 );
 
+router.put('/update-recurrent-transactions/:id', 
+    transactionsController.updateRecurringTransaction,
+    (req, res) => {
+        res.status(200).json({ success: true, recTransaction: req.recTransaction });
+    }
+);
+
 router.delete('/recurrent-transactions/:id', requireAuth, transactionsController.deleteRecurrentTransaction, (req, res) => {
     res.status(200).json({ success: true, message: 'Transaction deleted successfully' });
 });

@@ -9,21 +9,18 @@ router.get('/settings',
     accountsController.getAccountsForUser, 
     transactionsController.getRecentTransactionsForUser,
     budgetsController.getBudgetsForUser,
-    userController.getUserPreferences,
     (req, res) => {
         res.render('settings',
             { title: "Settings",
                 accounts: req.userAccounts,
                 transactions: req.recentTransactions,
-                budgets: req.userBudgets,
-                userPreferences: req.userPreferences
+                budgets: req.userBudgets
             }
         );
 });
 
-// Add POST endpoint for updating preferences
 router.post('/settings/preferences',
-    userController.getUser,  // Ensure we have the user
+    userController.getUser,
     userController.updateUserPreferences,
     (req, res) => {
         res.json({

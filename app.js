@@ -70,11 +70,15 @@ app.use(async (req, res, next) => {
     await userController.getFriends(req, res, () => {});
     res.locals.friends = req.friendsList || [];
     
+    // Get user preferences
+    await userController.getUserPreferences(req, res, () => {});
+    res.locals.userPreferences = req.userPreferences || null;
+    
     // Set user in locals from the auth middleware
     res.locals.user = req.user || null;
     next();
   } catch (err) {
-    console.error('Error setting global user and alerts:', err);
+    console.error('Error setting global user, alerts, and preferences:', err);
     next(err);
   }
 });

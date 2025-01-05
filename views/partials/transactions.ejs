@@ -157,11 +157,11 @@
     async function deleteTransaction(transaction, index) {
         let item = {}
         if (transaction.budget_id) {
-            item = { id: transaction.budget_id, type: 'budget' }
+            item = { id: transaction.budget_id, itemType: 'budget' }
         } else if (transaction.pot_id) {
-            item = { id: transaction.pot_id, type: 'pot' }
+            item = { id: transaction.pot_id, itemType: 'pot' }
         } else if (transaction.account_id) {
-            item = { id: transaction.account_id, type: 'account' }
+            item = { id: transaction.account_id, itemType: 'account' }
         }
 
         try {

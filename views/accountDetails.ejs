@@ -9,13 +9,13 @@
             <div class="dropdown">
                 <h3><a class="link" href="#">Actions</a></h3>
                 <div class="dropdown-content" id="add-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', <%= JSON.stringify(account) %>)" href="#">Log Transaction</a>
                     <% if (sharedWithUser && sharedWithUser.owner_id != user.id) { %>
                             <a href="#" class="disabled-link" title="Only the owner can edit this account">Edit Account</a>
                             <a href="#" class="disabled-link" title="Only the owner can delete this account">Remove Account</a>
                         <% } else { %>
                             <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(account) %>)" href="#">Edit Account</a>
-                            <a onclick="openModal('deleteConfirmModal', { id: '<%= account.id %>', type: 'account', name: '<%= escape(account.name) %>' })" href="#">Remove Account</a>
+                            <a onclick="openModal('deleteConfirmModal', <%= JSON.stringify(account) %>)" href="#">Remove Account</a>
                     <% } %>
                 </div>
             </div>

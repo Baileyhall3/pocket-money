@@ -44,7 +44,8 @@
             <h3>Notifications</h3>
             <label><input type="checkbox" id="transaction-alerts" <%= userPreferences.transaction_alerts ? 'checked' : '' %>> Transaction Alerts</label><br>
             <label><input type="checkbox" id="email-alerts" <%= userPreferences.email_notifications ? 'checked' : '' %>> Email Notifications</label><br>
-            <label><input type="checkbox" id="budget-alerts" <%= userPreferences.budget_alerts ? 'checked' : '' %>> Budget Alerts</label>
+            <label><input type="checkbox" id="budget-alerts" <%= userPreferences.budget_alerts ? 'checked' : '' %>> Budget Alerts</label><br>
+            <label><input type="checkbox" id="milestone-alerts" <%= userPreferences.milestone_alerts ? 'checked' : '' %>> Milestone Alerts</label>
         </div>
     
         <div class="notifications-section">
@@ -133,6 +134,10 @@
 
     document.getElementById('budget-alerts').addEventListener('change', function() {
         savePreference('budget_alerts', this.checked);
+    });
+
+    document.getElementById('milestone-alerts').addEventListener('change', function() {
+        savePreference('milestone_alerts', this.checked);
     });
 
     // Theme selection

@@ -56,7 +56,7 @@ function openModal(modalId, itemData = {}) {
         if (modalId === 'deleteConfirmModal' && itemData) {
             const messageElement = modal.querySelector("#delete-message");
             if (messageElement) {
-                messageElement.textContent = `Are you sure you want to delete this ${itemData.type}?`;
+                messageElement.textContent = `Are you sure you want to delete this ${itemData.itemType}?`;
             }
 
             const deleteForm = modal.querySelector("#deleteConfirmForm");
@@ -100,7 +100,6 @@ function openModal(modalId, itemData = {}) {
             }
 
             if (itemData && Object.keys(itemData).length > 0) {
-                item = { id: itemData.id, type: itemData.type }
     
                 const form = modal.querySelector('form#logTransactionForm');
                 form.querySelectorAll('.dynamic-field').forEach(el => el.remove());
@@ -115,6 +114,12 @@ function openModal(modalId, itemData = {}) {
                 }
             }
 
+            if (itemData.itemType == 'recurrentTransaction') {
+                const isRecurring = document.getElementById('recurring');
+                isRecurring.checked = true;
+                isRecurring.disabled = true;
+            }
+
             const transactionForm = document.getElementById('logTransactionForm');
             if (transactionForm) {
                 transactionForm.addEventListener('submit', async function (event) {
@@ -123,10 +128,10 @@ function openModal(modalId, itemData = {}) {
                         ['transactionName', 'transactionAmount', 'transactionDate']);
                     if (!isValid) return;
     
-                    const result = await createTransaction(event, selectedCategory, item);
+                    const result = await createTransaction(event, selectedCategory, itemData);
                     if (result) {
                         closeModal(modalId);
-                        await refreshManager.refreshTransactions(item);
+                        await refreshManager.refreshTransactions(itemData);
                     }
                 });
             }
@@ -210,7 +215,7 @@ function openModal(modalId, itemData = {}) {
                 accountBalance.value = itemData.balance || 0;
             
                 accountType = document.getElementById('edit-account-type');
-                accountType.value = itemData.type || '';
+                accountType.value = itemData.itemType || '';
             }
 
             if (itemData.itemType == 'budget' || itemData.itemType == 'account') {
@@ -248,8 +253,8 @@ function openModal(modalId, itemData = {}) {
                     if (accountBalance && accountBalance.value != itemData.balance) {
                         updatedItem.balance = accountBalance.value;
                     }
-                    if (accountType && accountType.value != itemData.type) {
-                        updatedItem.type = accountType.value;
+                    if (accountType && accountType.value != itemData.itemType) {
+                        updatedItem.itemType = accountType.value;
                     }
                     if (isActive && isActive.checked != itemData.is_active) {
                         updatedItem.is_active = isActive.checked;
@@ -333,6 +338,18 @@ function openModal(modalId, itemData = {}) {
                     catSelection.style.display = 'block';
                 } else if (target === 'details') {
                     transactionDetails.style.display = 'block';
+                    
+                    if (itemData.itemType == 'recurrentTransaction') {
+                        // const isRecurring = document.getElementById('recurring');
+                        // isRecurring.checked = true;
+                        // isRecurring.disabled = true;
+    
+                        const recTransactionsSection = document.getElementById('rec-transactions-section'); 
+                        if (!recTransactionsSection) { return; }
+                        
+                        recTransactionsSection.classList.toggle('visible');
+                        recTransactionsSection.style.display = 'block';
+                    }
                 }
             } else {
                 categoryErrorMessage.textContent = 'Select a category before continuing.';
@@ -529,7 +546,6 @@ async function createPot(event) {
 async function createTransaction(event, selCategory, item) {
     const modal = event.target.closest('.modal');
     const errorMessage = modal.querySelector('#submit-error-message');
-    
     const formData = new FormData(event.target);
     const data = {
         name: formData.get('transactionName'),
@@ -537,10 +553,10 @@ async function createTransaction(event, selCategory, item) {
         type: selCategory.type,
         category: selCategory.name,
         dateMade: formData.get('transactionDate') ? new Date(formData.get('transactionDate')).toISOString().split('T')[0] : null,
-        accountId: item.type == 'account' ? item.id : null,
-        budgetId: item.type == 'budget' ? item.id : null,
-        potId: item.type == 'pot' ? item.id : null,
-        isRecurring: formData.get('recurring') || false,
+        accountId: item.itemType == 'account' ? item.id : null,
+        budgetId: item.itemType == 'budget' ? item.id : null,
+        potId: item.itemType == 'pot' ? item.id : null,
+        isRecurring: item.itemType == 'recurrentTransaction' ? true : (formData.get('recurring') || false),
         recurrency: formData.get('transactionFrequency') || null,
         recurrentEnd: formData.get('transactionEndDate') ? new Date(formData.get('transactionEndDate')).toISOString().split('T')[0] : null,
     };
@@ -561,6 +577,13 @@ async function createTransaction(event, selCategory, item) {
             return false;
         }
 
+        if (item.itemType == 'pot') {
+            const percentage = (item.actual_amount / item.target_amount) * 100;
+            if (percentage == 25 || percentage == 50 || percentage == 75 || percentage == 100) {
+                alertManager.sendMilestoneAlert(item.user_id, item.name, item.target_amount, item.actual_amount);
+            }
+        }
+
         return true;
     } catch (error) {
         console.error('Error creating transaction:', error);
@@ -572,7 +595,7 @@ async function createTransaction(event, selCategory, item) {
 async function deleteItem(itemData) {
     try {
         // Ensure proper pluralization
-        const endpoint = itemData.type === 'budget' || itemData.type === 'pot' ? `${itemData.type}s` : 'accounts';
+        const endpoint = itemData.itemType === 'budget' || itemData.itemType === 'pot' ? `${itemData.itemType}s` : 'accounts';
 
         const response = await fetch(`/${endpoint}/${itemData.id}`, {
             method: 'DELETE',
@@ -582,9 +605,9 @@ async function deleteItem(itemData) {
         });
 
         if (response.ok) {
-            window.location.href = `/${itemData.type === 'account' ? 'accounts' : 'savings'}`;
+            window.location.href = `/${itemData.itemType === 'account' ? 'accounts' : 'savings'}`;
             alertManager.showAlert({
-                title: `${itemData.type.charAt(0).toUpperCase() + itemData.type.slice(1)} deleted successfully!`,
+                title: `${itemData.itemType.charAt(0).toUpperCase() + itemData.itemType.slice(1)} deleted successfully!`,
                 type: 'success',
             });
         } else {

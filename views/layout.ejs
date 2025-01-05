@@ -24,4 +24,8 @@
     <script src="/js/RefreshManager.js" defer></script>
     <script src="/js/DateUtils.js"></script>
     <script src="/js/AlertManager.js"></script>
+    <script>
+        // Initialize AlertManager with user preferences
+        window.alertManager = new AlertManager(<%- JSON.stringify(userPreferences) %>);
+    </script>
 </body>

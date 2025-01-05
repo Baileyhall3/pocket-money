@@ -1,8 +1,11 @@
 <% layout('layout') %>    
     <div class="flex-container transactions">
         <div class="transaction-section" style="overflow-y: auto; height: fit-content;">
-            <div class="container-header" style="border-bottom: 1px solid rgb(131 131 131);">
+            <div class="container-header" style="border-bottom: 1px solid rgb(131 131 131); justify-content: normal;">
                 <h3>Recurrent Transactions</h3>
+                <button class="icon-btn" style="margin-left: 2em;" id="add-btn" title="Add a new recurrent Transaction" onclick="openModal('logTransactionModal', {itemType: 'recurrentTransaction'})">
+                    <i class="fa fa-plus"></i>
+                </button>
             </div>
 
             <div class="transactions-container" style="margin-top: 10px;">
@@ -28,15 +31,65 @@
                                         <div class="modal-header">
                                             <h2><%= transaction.description %></h2>
                                         </div>
-                                        <p>Amount: £<%- transaction.amount %></p>
-                                        <p>Start Date: <%- DateUtils.toDateTime(transaction.start_date) %> </p>
-                                        <!--Made by???-->
-                                        <div class="modal-buttons-end">
-                                            <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('recTransactionModal-<%= transaction.id %>')">Cancel</button>
-                                            <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction(<%= JSON.stringify(transaction) %>)">
-                                                Delete
-                                            </button>
-                                        </div>
+                                        <form id="editItemForm" novalidate>
+                                            <div id="edit-item">
+                                                <div class="modal-row">
+                                                    <div class="modal-item">
+                                                        <label for="recTransactionName">Description</label>
+                                                        <input class="modal-input" type="text" id="recTransactionName" name="recTransactionName" value="<%= transaction.description %>">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-row">
+                                                    <div class="modal-item">
+                                                        <label for="recTransactionAmount">Amount (£)</label>
+                                                        <input class="modal-input" type="number" id="recTransactionAmount" name="recTransactionAmount" value="<%= transaction.amount %>">
+                                                    </div>
+                                                    <div class="modal-item">
+                                                        <label for="recTransactionType">Type</label>
+                                                        <select id="recTransactionType" class="modal-input" name="recTransactionType">
+                                                            <option value="income" <%= transaction.type == 'income' ? 'selected' : '' %> >Income</option>
+                                                            <option value="expense" <%= transaction.type == 'expense' ? 'selected' : '' %> >Expense</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-item">
+                                                    <label for="transactionFrequency">Frequency</label>
+                                                    <select id="transactionFrequency" class="modal-input" name="transactionFrequency">
+                                                        <% 
+                                                            const frequencies = Object.values(RecTransactionEnums.RecTransactionFrequencies);
+                                                        %>
+                                                        <% frequencies.forEach(freq => { %>
+                                                            <option value="<%= freq %>" <%= transaction.frequency == freq ? 'selected' : '' %> ><%= freq %></option>
+                                                        <% }) %>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-row">
+                                                    <div class="modal-item">
+                                                        <label for="recTransactionStartDate">Start Date</label>
+                                                        <input class="modal-input" type="date" id="recTransactionStartDate" name="recTransactionStartDate" value="<%= DateUtils.toInputFormatDate(transaction.start_date) %>">
+                                                    </div>
+                                                    <div class="modal-item">
+                                                        <label for="recTransactionEndDate">End Date</label>
+                                                        <input class="modal-input" type="date" id="recTransactionEndDate" name="recTransactionEndDate" 
+                                                            value="<%= transaction.end_date ? DateUtils.toInputFormatDate(transaction.end_date) : null %>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="rec-transaction-created">
+                                                Created: <%= DateUtils.toDateTime(transaction.created_at)  %>
+                                            </p>
+                                            <div id="rec-transaction-info-message" class="info-text modal-row"></div>
+                                            <div id="rec-transaction-error-message" class="error modal-row"></div>
+                                            <div class="modal-buttons-end">
+                                                <button type="button" class="modal-footer-btn cancel-btn" onclick="closeModal('recTransactionModal-<%= transaction.id %>')">Cancel</button>
+                                                <button type="button" class="modal-footer-btn delete-btn" onclick="deleteTransaction(<%= JSON.stringify(transaction) %>)">
+                                                    Delete
+                                                </button>
+                                                <button type="button" class="modal-footer-btn save-btn" onclick="saveChanges(<%= JSON.stringify(transaction) %>)">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
 
@@ -117,8 +170,78 @@
         // });
     });
 
-    async function deleteTransaction(transaction) {
+    async function saveChanges(transaction) {
 
+        const transactionName = document.getElementById('recTransactionName').value;
+        const transactionAmount = document.getElementById('recTransactionAmount').value;
+        const transactionType = document.getElementById('recTransactionType').value;
+        const transactionFrequency = document.getElementById('transactionFrequency').value;
+        const transactionStartDate = document.getElementById('recTransactionStartDate').value;
+        const transactionEndDate = document.getElementById('recTransactionEndDate').value;
+        const errorMessage = document.getElementById('rec-transaction-error-message');
+
+        let updatedItem = {};
+        if (transactionName != transaction.description) {
+            updatedItem.description = transactionName;
+        }
+        if (transactionAmount != transaction.amount) {
+            updatedItem.amount = transactionAmount;
+        }
+        if (transactionType != transaction.type) {
+            updatedItem.type = transactionType;
+        }
+        if (transactionFrequency != transaction.frequency) {
+            updatedItem.frequency = transactionFrequency;
+        }
+        if (transactionStartDate != DateUtils.toInputFormatDate(transaction.start_date)) {
+            updatedItem.start_date = transactionStartDate;
+        }
+        if (transactionEndDate && (transactionEndDate != DateUtils.toInputFormatDate(transaction.end_date))) {
+            updatedItem.end_date = transactionEndDate;
+        }
+
+        if (Object.keys(updatedItem).length === 0) { 
+            document.getElementById('rec-transaction-info-message').innerText = 'No fields found to update.';
+            alertManager.showAlert({
+                title: `No changes to save.`,
+                type: 'info',
+            });
+            return;
+        }
+
+        updatedItem.id = transaction.id;
+        
+        try {
+            const response = await fetch(`/update-recurrent-transactions/${transaction.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedItem),
+            });
+            
+            if (!response.ok) {
+                errorMessage.innerText = 'Failed to update item';
+                throw new Error('Failed to update item');
+            }
+
+            closeModal(`recTransactionModal-${transaction.id}`)
+            alertManager.showAlert({
+                title: `Item Updated!`,
+                type: 'success',
+            });
+            location.reload();
+        } catch (error) {
+            errorMessage.innerText = `Error: ${error}`;
+            console.error('Error updating item:', error);
+            alertManager.showAlert({
+                title: `Error updating item.`,
+                type: 'error-alert',
+            });
+        }
+    }
+
+    async function deleteTransaction(transaction) {
         try {
             const response = await fetch(`/recurrent-transactions/${transaction.id}`, {
                 method: 'DELETE',

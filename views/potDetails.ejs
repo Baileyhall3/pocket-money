@@ -9,13 +9,13 @@
             <div class="dropdown">
                 <h3><a class="link" id="pot-actions-btn" href="#">Pot Actions</a></h3>
                 <div class="dropdown-content" id="pot-actions-dropdown">
-                    <a onclick="openModal('logTransactionModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= escape(pot.name) %>' })" href="#">Log Transaction</a>
+                    <a onclick="openModal('logTransactionModal', <%= JSON.stringify(pot) %>)" href="#">Log Transaction</a>
                     <% if (sharedWithUser && sharedWithUser.owner_id != user.id) { %>
                         <a href="#" class="disabled-link" title="Only the owner can edit this pot">Edit Pot</a>
                         <a href="#" class="disabled-link" title="Only the owner can delete this pot">Delete Pot</a>
                     <% } else { %>
                         <a onclick="openModal('itemDetailsModal', <%= JSON.stringify(pot) %>)" href="#">Edit Pot</a>
-                        <a onclick="openModal('deleteConfirmModal', { id: '<%= pot.id %>', type: 'pot', name: '<%= escape(pot.name) %>' })" href="#">Delete Pot</a>
+                        <a onclick="openModal('deleteConfirmModal', <%= JSON.stringify(pot) %>)" href="#">Delete Pot</a>
                     <% } %>
                 </div>
             </div>

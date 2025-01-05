@@ -121,10 +121,16 @@ class RefreshManager {
             const endpointMap = {
                 account: `/accounts/${item.id}/transactions`,
                 budget: `/savings/budget/${item.id}/transactions`,
-                pot: `/savings/pot/${item.id}/transactions`
+                pot: `/savings/pot/${item.id}/transactions`,
+                recurrentTransaction: '/recurrentTransactions'
             };
+
+            if (item.itemType == 'recurrentTransaction') {
+                location.reload();
+                return;
+            }
     
-            const endpoint = endpointMap[item.type];
+            const endpoint = endpointMap[item.itemType];
             if (!endpoint) throw new Error('Invalid item type for transactions');
     
             const response = await fetch(`${endpoint}?_=${Date.now()}`, {
@@ -146,10 +152,10 @@ class RefreshManager {
                 // Reinitialize JavaScript dependencies here
             }
 
-            const chartId = `${item.type}-chart-${item.id}`;
-            if (item.type == 'pot') {
+            const chartId = `${item.itemType}-chart-${item.id}`;
+            if (item.itemType == 'pot') {
                 this.refreshPotChart(chartId, item.id);
-            } else if (item.type == 'budget') {
+            } else if (item.itemType == 'budget') {
                 this.refreshBudgetChart(chartId, item.id);
             } else {
                 location.reload();

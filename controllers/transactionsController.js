@@ -404,3 +404,28 @@ exports.deleteRecurrentTransaction = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.updateRecurringTransaction = async (req, res, next) => {
+    try {
+        const recTransactionId = req.params.id;
+        const { ...updates } = req.body;
+        const userId = req.user.id;
+
+        // Perform the update
+        const { data: updatedRecTransaction, error: updateError } = await supabase
+            .from('recurrent_transactions')
+            .update({
+                ...updates,
+            })
+            .eq('id', recTransactionId)
+            .select()
+            .single();
+
+        if (updateError) throw updateError;
+
+        req.recTransaction = updatedRecTransaction;
+        next();
+    } catch (error) {
+        next(error);
+    }
+};

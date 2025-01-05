@@ -1,10 +1,37 @@
 class AlertManager {
-    constructor() {
+    constructor(userPreferences) {
         this.defaultFadeOutTime = 3000; // 3 seconds
+        this.userPreferences = userPreferences || {
+            transaction_alerts: true,
+            email_notifications: true,
+            budget_alerts: true,
+            milestone_alerts: true
+        };
+    }
+
+    shouldShowAlert(type) {
+        switch(type) {
+            case 'transaction':
+                return this.userPreferences.transaction_alerts;
+            case 'budget':
+                return this.userPreferences.budget_alerts;
+            case 'milestone':
+                return this.userPreferences.milestone_alerts;
+            // Friend requests, nudges, and network errors should always show
+            case 'friend_request':
+            case 'nudge':
+            case 'error-alert':
+                return true;
+            default:
+                return true;
+        }
     }
 
     // Show an alert with the given parameters
     showAlert({ id = 'alert', title = '', body = '', type = 'success', fadeOutTime = this.defaultFadeOutTime }) {
+        // Check if this type of alert should be shown based on user preferences
+        if (!this.shouldShowAlert(type)) return;
+
         const alertElement = document.getElementById(id);
         if (!alertElement) return;
 
@@ -147,7 +174,6 @@ class AlertManager {
         }
     }
 
-    // TODO: Finish this
     async sendMilestoneAlert(userId, potName, targetAmount, currentAmount) {
         try {
             const response = await fetch('/alerts/milestone', {
@@ -156,9 +182,10 @@ class AlertManager {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    userId: targetPerson.id,
-                    friendName: `${currentUser.first_name} ${currentUser.last_name}`,
-                    sentById: currentUser.id,
+                    userId: userId,
+                    potName: potName,
+                    targetAmount: targetAmount,
+                    currentAmount: currentAmount
                 }),
             });
 
@@ -190,5 +217,4 @@ class AlertManager {
     }
 }
 
-const alertManager = new AlertManager();
-window.alertManager = alertManager;
+// AlertManager will be initialized in alertsDisplay.ejs with user preferences
