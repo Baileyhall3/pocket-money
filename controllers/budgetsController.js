@@ -238,13 +238,12 @@ exports.getActiveBudget = async (req, res, next) => {
             .eq('is_active', true)
             .single();
 
-        if (error) throw error;
-        
-        if (!activeBudget) {
-            return res.status(404).send('No active budget');
+        // Don't throw error if no active budget found
+        if (error && error.code !== 'PGRST116') {
+            throw error;
         }
-
-        req.activeBudget = activeBudget;
+        
+        req.activeBudget = activeBudget ?? {};
         next();
     } catch (error) {
         next(error);

@@ -72,13 +72,15 @@
                 </div>
             </div>         
             
-            <% if (activeBudget) { %>
+            <% if (Object.keys(activeBudget).length > 0) { %>
                 <div class="container-rounded variable-width-50">
                     <h3>Active Budget: <%= activeBudget.name %></h3>
-                    <p>
-                        <strong>Period: </strong> 
-                        <%= DateUtils.toLongDate(activeBudget.start_date) + (activeBudget.end_date ? ' - ' + DateUtils.toLongDate(activeBudget.end_date) : '') %>
-                    </p>
+                    <% if (activeBudget.start_date) { %>
+                        <p>
+                            <strong>Period: </strong> 
+                            <%= DateUtils.toLongDate(activeBudget.start_date) + (activeBudget.end_date ? ' - ' + DateUtils.toLongDate(activeBudget.end_date) : '') %>
+                        </p>
+                    <% } %>
                     <div id="money-bar">
                         <% 
                             const progressPercentage = (activeBudget.actual_amount / activeBudget.target_amount) * 100; 
@@ -86,7 +88,6 @@
                             const barClass = progress > 90 ? 'over' : (progress > 70 ? 'budget-warning' : '');
                         %>
                         <div class="money-budget actual <%= barClass %>" style="width: <%= progress %>%;">
-                            <!-- <span><%= progress.toFixed(1) %>%</span> -->
                         </div>
                         <% if (activeBudget.start_date && activeBudget.end_date) { 
                             const today = new Date();
